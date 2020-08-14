@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System.IO;
+﻿using digitalcounterfeit.mediaplayer.api.Services;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Controllers
@@ -9,21 +9,31 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
     [Route("api/audio")]
     public class AudioController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
+        private readonly IAzureAudioStorage _azureAudioStorage;        
 
-        public AudioController(IConfiguration configuration)
+        public AudioController(IAzureAudioStorage azureAudioStorage)
         {
-            _configuration = configuration;
+            _azureAudioStorage = azureAudioStorage;            
         }
 
-        [HttpGet("track")]
-        public async Task<IActionResult> GetAudioTrackAsync()
+        [HttpGet("track/{id:guid}")]
+        public async Task<IActionResult> GetAudioTrackAsync(Guid id)
         {
-            await Task.Yield();
+            var blobName = $"{id}";            
+            var audioTrack = await _azureAudioStorage.DownloadAudioTrackAsync(blobName);
 
-            var fileStream = new FileStream(_configuration.GetValue<string>("AudioFilename"), FileMode.Open);
+            return audioTrack;
+        }
 
-            return new FileStreamResult(fileStream, "audio/mpeg");
+        [HttpPut("track/{id:guid}")]
+        public async Task<IActionResult> PutAudioTrackAsync(Guid id)
+        {
+            if (Request.ContentLength <= 0)
+                return BadRequest("Empty request body; Cannot upload an empty audio file...");
+
+            var blobName = $"{id}";
+            await _azureAudioStorage.UploadAudioTrackAsync(Request.Body, blobName, Request.ContentType);
+            return NoContent();
         }
     }
 }
