@@ -15,5 +15,18 @@ namespace digitalcounterfeit.mediaplayer.api.Extensions
                 opt.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             });
         }
+
+        public static void ConfigureCors(this IServiceCollection services, string policyName)
+        {
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy(
+                    name: policyName,
+                    builder =>
+                    {
+                        builder.WithHeaders("X-UserId");
+                    });
+            });
+        }
     }
 }

@@ -11,6 +11,8 @@ namespace digitalcounterfeit.mediaplayer.api
 {
     public class Startup
     {
+        private readonly string _corsPolicy = "CorsPolicy";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -22,7 +24,8 @@ namespace digitalcounterfeit.mediaplayer.api
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {            
+        {
+            services.ConfigureCors(_corsPolicy);
             services.ConfigureControllers();
 
             services.AddSwaggerGen(opt =>
@@ -41,6 +44,7 @@ namespace digitalcounterfeit.mediaplayer.api
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors(_corsPolicy);
             app.ConfigureExceptionHandler();
             app.UseRouting();
             app.UseAuthorization();
