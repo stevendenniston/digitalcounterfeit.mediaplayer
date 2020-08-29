@@ -2,6 +2,9 @@ import { Component } from "@angular/core";
 import { AudioService } from "../../services/audio.service";
 import { CloudService } from "../../services/cloud.service";
 import { StreamState } from "../../interfaces/stream-state";
+import { AuthService } from "src/app/services/auth.service";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { AppSettings } from "src/app/app-settings.service";
 
 @Component({
   selector: "app-player",
@@ -15,15 +18,17 @@ export class PlayerComponent {
   files: Array<any> = [];
 
   constructor(
-    public audioService: AudioService,
-    public cloudService: CloudService
+    private audioService: AudioService,
+    private cloudService: CloudService,
+    private authService: AuthService,
+    private httpClient: HttpClient
   ) {
     this.cloudService.getFiles().subscribe(files => this.files = files);
     this.audioService.getState().subscribe(state => this.state = state);
   }
 
   playStream(url): void {
-    this.audioService.playStream(url).subscribe(events => {console.log(events)});
+    this.audioService.playStream(url).subscribe(events => {console.log(events); });
   }
 
   isFirstPlaying(): boolean {
@@ -47,7 +52,7 @@ export class PlayerComponent {
   }
 
   onSliderChangeEnd(event): void {
-    this.audioService.seekTo(event.value)
+    this.audioService.seekTo(event.value);
   }
 
   pause(): void {
@@ -65,7 +70,15 @@ export class PlayerComponent {
   openFile(file, index): void {
     this.currentFile = { file, index };
     this.audioService.stop();
-    this.playStream(file.url);
+    this.authService.getAccessToken().then(async token => {
+      const headers = new HttpHeaders()
+        .set("Authorization", `Bearer ${token}`)
+        .set("Content-Type", "text/plain; charset=utf-8");
+      this.httpClient
+        .get(`${AppSettings.mediaPlayerApiUrl}/audio/track/${file.id}/uri`, { headers, responseType: "text" })
+        .subscribe(url => {
+          this.playStream(url);
+      });
+    });
   }
-
 }

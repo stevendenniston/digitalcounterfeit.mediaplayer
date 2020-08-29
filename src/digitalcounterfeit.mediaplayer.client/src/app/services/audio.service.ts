@@ -37,7 +37,7 @@ export class AudioService {
 
   constructor() { }
 
-  playStream(url: any) {
+  playStream(url: any): Observable<unknown> {
     return this.streamObservable(url).pipe(takeUntil(this.stop$));
   }
 
@@ -57,7 +57,7 @@ export class AudioService {
     this.audioObj.currentTime = seconds;
   }
 
-  formatTime(time: number, format: string = "mm:ss") {
+  formatTime(time: number, format: string = "mm:ss"): string {
     const momentTime = time * 1000;
     return moment.utc(momentTime).format(format);
   }
@@ -89,7 +89,7 @@ export class AudioService {
         this.resetState();
         this.state.error = true;
         break;
-    }  
+    }
     this.stateChange.next(this.state);
   }
 
@@ -106,12 +106,12 @@ export class AudioService {
   }
 
   private streamObservable(url): Observable<unknown> {
-    return new Observable(observer => {      
+    return new Observable(observer => {
       const handler = (event: Event) => {
         this.updateStateEvents(event);
         observer.next();
-      }
-      
+      };
+
       this.addEvents(this.audioObj, this.audioEvents, handler);
 
       this.audioObj.src = url;
@@ -129,7 +129,7 @@ export class AudioService {
 
   private addEvents(obj, events, handler): void {
     events.forEach(event => {
-      obj.addEventListener(event, handler);      
+      obj.addEventListener(event, handler);
     });
   }
 
