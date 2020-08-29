@@ -2,7 +2,7 @@
 using digitalcounterfeit.mediaplayer.api.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Controllers
@@ -11,22 +11,17 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
     [Route("api/audio")]
     public class AudioController : ControllerBase
     {
-        private readonly IAzureAudioStorage _azureAudioStorage;
-        private string _userId;
+        private readonly IAzureAudioStorage _azureAudioStorage;        
 
         public AudioController(IAzureAudioStorage azureAudioStorage)
         {
-            _azureAudioStorage = azureAudioStorage;
-            _userId = User?.GetUserSubjectId();
+            _azureAudioStorage = azureAudioStorage;            
         }
 
         [HttpGet("track/{id:guid}/uri")]
-        public async Task<ActionResult<string>> GetAudioTrackSasUriAsync(Guid id)
+        public async Task<ActionResult<IEnumerable<string>>> GetAudioTrackSasUriAsync(Guid id)
         {
-            if (string.IsNullOrWhiteSpace(_userId))
-                _userId = Request.Headers.FirstOrDefault(header => "X-UserId".Equals(header.Key)).Value;
-
-            var blobName = $@"{_userId}/{id}";
+            var blobName = $@"{User?.GetUserSubjectId()}/{id}";
             var audioTrackUri = await _azureAudioStorage.GetAudioTrackSasUriAsync(blobName);
 
             if (string.IsNullOrWhiteSpace(audioTrackUri))
@@ -34,17 +29,15 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
 
             return Ok(audioTrackUri);
         }
-
+                
         [HttpPut("track/{id:guid}")]
         public async Task<IActionResult> PutAudioTrackAsync(Guid id)
         {
-            if (string.IsNullOrWhiteSpace(_userId))
-                _userId = Request.Headers.FirstOrDefault(header => "X-UserId".Equals(header.Key)).Value;
-
             if (Request.ContentLength <= 0)
                 return BadRequest("Empty request body; Cannot upload an empty audio file...");
+            
+            var blobName = $@"{User?.GetUserSubjectId()}/{id}";
 
-            var blobName = $@"{_userId}/{id}";
             await _azureAudioStorage.UploadAudioTrackAsync(Request.Body, blobName, Request.ContentType);
             return NoContent();
         }

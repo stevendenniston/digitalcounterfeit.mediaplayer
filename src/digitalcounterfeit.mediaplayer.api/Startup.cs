@@ -25,8 +25,9 @@ namespace digitalcounterfeit.mediaplayer.api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.ConfigureCors(_corsPolicy);
-            services.ConfigureControllers();
+            services.ConfigureCors(Configuration, _corsPolicy);
+            services.ConfigureAuthentication(Configuration);
+            services.ConfigureControllers();            
 
             services.AddSwaggerGen(opt =>
             {
@@ -48,6 +49,7 @@ namespace digitalcounterfeit.mediaplayer.api
             app.ConfigureExceptionHandler();
             app.UseRouting();
             app.UseAuthorization();
+            app.UseAuthentication();
             app.UseSwagger();
             app.UseSwaggerUI(config =>
             {
