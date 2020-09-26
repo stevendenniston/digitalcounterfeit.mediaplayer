@@ -1,3 +1,5 @@
+using digitalcounterfeit.mediaplayer.api.Data;
+using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.api.Extensions;
 using digitalcounterfeit.mediaplayer.api.Services;
 using Microsoft.AspNetCore.Builder;
@@ -34,7 +36,13 @@ namespace digitalcounterfeit.mediaplayer.api
                 opt.SwaggerDoc(name: Version, new OpenApiInfo { Title = "DigitalCounterfeit Media Player Api", Version = Version });
             });
 
-            services.AddSingleton<IAzureAudioStorage, AzureAudioStorage>();
+            services.AddScoped<IAzureAudioStorage, AzureAudioStorage>();
+
+            services.AddScoped<IAlbumRepository, AlbumRepository>();
+            services.AddScoped<IArtistRepository, ArtistRepository>();
+            services.AddScoped<IAudioTrackRepository, AudioTrackRepository>();
+            services.AddScoped<ILibraryRepository, LibraryRepository>();
+            services.AddScoped<IPlayListRepository, PlayListRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

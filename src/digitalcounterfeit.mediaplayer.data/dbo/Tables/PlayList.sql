@@ -1,0 +1,5 @@
+﻿CREATE TABLE [dbo].[PlayList] (
+	[Id] UNIQUEIDENTIFIER,
+	[Name] VARCHAR(255)
+)
+GO;

@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30320.27
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "digitalcounterfeit.mediaplayer.api", "src\digitalcounterfeit.mediaplayer.api\digitalcounterfeit.mediaplayer.api.csproj", "{9C5A6AFF-DC84-43D4-9217-A29E05012B98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "digitalcounterfeit.mediaplayer.api", "src\digitalcounterfeit.mediaplayer.api\digitalcounterfeit.mediaplayer.api.csproj", "{9C5A6AFF-DC84-43D4-9217-A29E05012B98}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "digitalcounterfeit.mediaplayer.data", "src\digitalcounterfeit.mediaplayer.data\digitalcounterfeit.mediaplayer.data.sqlproj", "{6AC239F8-DAD4-48AA-BB24-30DC78F47606}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,12 @@ Global
 		{9C5A6AFF-DC84-43D4-9217-A29E05012B98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C5A6AFF-DC84-43D4-9217-A29E05012B98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C5A6AFF-DC84-43D4-9217-A29E05012B98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AC239F8-DAD4-48AA-BB24-30DC78F47606}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AC239F8-DAD4-48AA-BB24-30DC78F47606}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AC239F8-DAD4-48AA-BB24-30DC78F47606}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{6AC239F8-DAD4-48AA-BB24-30DC78F47606}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AC239F8-DAD4-48AA-BB24-30DC78F47606}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AC239F8-DAD4-48AA-BB24-30DC78F47606}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

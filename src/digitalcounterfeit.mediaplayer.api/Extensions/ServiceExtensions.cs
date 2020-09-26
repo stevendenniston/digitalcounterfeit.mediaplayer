@@ -38,12 +38,12 @@ namespace digitalcounterfeit.mediaplayer.api.Extensions
 
         public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
+            services.AddAuthentication("token")
+                .AddJwtBearer("token", options =>
                 {
-                    options.Authority = configuration.GetValue<string>("AuthenticationAuthority");
+                    options.Authority = configuration.GetValue<string>("AuthenticationAuthority");                    
                     options.Audience = configuration.GetValue<string>("AuthenticationAudience");
-                    options.RequireHttpsMetadata = true;                    
+                    options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
                 });
         }
     }

@@ -1,0 +1,5 @@
+﻿CREATE TABLE [dbo].[AlbumTrack] (
+	[AlbumId] UNIQUEIDENTIFIER,
+	[TrackId] UNIQUEIDENTIFIER
+)
+GO;

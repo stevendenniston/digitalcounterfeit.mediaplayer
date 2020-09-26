@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[Artist] (
+	[Id] UNIQUEIDENTIFIER,
+	[LibraryId] UNIQUEIDENTIFIER,
+	[Name] VARCHAR(255)
+)
+GO;
