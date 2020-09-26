@@ -68,6 +68,8 @@
     <Build Include="dbo\Tables\PlayListTrack.sql" />
     <Build Include="dbo\Tables\AlbumTrack.sql" />
     <Build Include="dbo\Tables\Library.sql" />
-    <Build Include="dbo\Tables\LibraryArtist.sql" />
+    <Build Include="dbo\Stored Procedures\Library_Upsert.sql" />
+    <Build Include="dbo\Stored Procedures\Library_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\Library_DeleteById.sql" />
   </ItemGroup>
 </Project>
