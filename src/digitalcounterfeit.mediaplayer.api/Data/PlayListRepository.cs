@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Data
 {
-    public class PlayListRepository : IPlayListRepository
+    public class PlaylistRepository : IPlaylistRepository
     {
         private readonly string _connectionString;
 
-        public PlayListRepository(IConfiguration configuration)
+        public PlaylistRepository(IConfiguration configuration)
         {
             _connectionString = configuration.GetValue<string>("ConnectionString");
         }
@@ -25,7 +25,7 @@ namespace digitalcounterfeit.mediaplayer.api.Data
             {
                 await connection
                     .ExecuteAsync(
-                        "[dbo].[PlayList_DeleteById]",
+                        "[dbo].[Playlist_DeleteById]",
                         new
                         {
                             Id = id
@@ -34,39 +34,39 @@ namespace digitalcounterfeit.mediaplayer.api.Data
             }
         }
 
-        public async Task<PlayListModel> GetByIdAsync(Guid id)
+        public async Task<PlaylistModel> GetByIdAsync(Guid id)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 using (var multi = await connection
                                         .QueryMultipleAsync(
-                                            "[dbo].[PlayList_GetById]",
+                                            "[dbo].[Playlist_GetById]",
                                             new { Id = id },
                                             commandType: CommandType.StoredProcedure))
                 {
-                    var playList = (await multi.ReadAsync<PlayListModel>()).FirstOrDefault();
-                    playList.TrackList = await multi.ReadAsync<AudioTrackModel>();
-                    return playList;
+                    var playlist = (await multi.ReadAsync<PlaylistModel>()).FirstOrDefault();
+                    playlist.TrackList = await multi.ReadAsync<AudioTrackModel>();
+                    return playlist;
                 }
             }
         }
 
-        public async Task UpsertAsync(PlayListModel playList)
+        public async Task UpsertAsync(PlaylistModel playlist)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
                 var audioTrackIdList = new DataTable();
                 audioTrackIdList.Columns.Add("Id", typeof(Guid));
-                audioTrackIdList.Rows.Add(playList.TrackList?.Select(track => track.Id));
+                audioTrackIdList.Rows.Add(playlist.TrackList?.Select(track => track.Id));
 
                 await connection
                     .ExecuteAsync(
-                        "[dbo].[PlayList_Upsert]", 
+                        "[dbo].[Playlist_Upsert]", 
                         new 
                         {
-                            Id = playList.Id,
-                            LibraryId = playList.LibraryId,
-                            Name = playList.Name,
+                            Id = playlist.Id,
+                            LibraryId = playlist.LibraryId,
+                            Name = playlist.Name,
                             AudioTrackIdList = audioTrackIdList
                         },
                         commandType: CommandType.StoredProcedure);

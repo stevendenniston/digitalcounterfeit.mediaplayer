@@ -42,7 +42,7 @@ namespace digitalcounterfeit.mediaplayer.api
             services.AddScoped<IArtistRepository, ArtistRepository>();
             services.AddScoped<IAudioTrackRepository, AudioTrackRepository>();
             services.AddScoped<ILibraryRepository, LibraryRepository>();
-            services.AddScoped<IPlayListRepository, PlayListRepository>();
+            services.AddScoped<IPlaylistRepository, PlaylistRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

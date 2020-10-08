@@ -66,8 +66,8 @@
     <Build Include="dbo\Tables\Artist.sql" />
     <Build Include="dbo\Tables\Album.sql" />
     <Build Include="dbo\Tables\AudioTrack.sql" />
-    <Build Include="dbo\Tables\PlayList.sql" />
-    <Build Include="dbo\Tables\PlayListTrack.sql" />
+    <Build Include="dbo\Tables\Playlist.sql" />
+    <Build Include="dbo\Tables\PlaylistTrack.sql" />
     <Build Include="dbo\Tables\AlbumTrack.sql" />
     <Build Include="dbo\Tables\Library.sql" />
     <Build Include="dbo\Stored Procedures\Library_Upsert.sql" />
@@ -82,9 +82,9 @@
     <Build Include="dbo\Stored Procedures\AudioTrack_DeleteById.sql" />
     <Build Include="dbo\Stored Procedures\AudioTrack_GetById.sql" />
     <Build Include="dbo\Stored Procedures\AudioTrack_Upsert.sql" />
-    <Build Include="dbo\Stored Procedures\PlayList_DeleteById.sql" />
-    <Build Include="dbo\Stored Procedures\PlayList_GetById.sql" />
-    <Build Include="dbo\Stored Procedures\PlayList_Upsert.sql" />
+    <Build Include="dbo\Stored Procedures\Playlist_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\Playlist_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\Playlist_Upsert.sql" />
     <Build Include="dbo\Types\Table Types\GuidList_TableType.sql" />
   </ItemGroup>
 </Project>

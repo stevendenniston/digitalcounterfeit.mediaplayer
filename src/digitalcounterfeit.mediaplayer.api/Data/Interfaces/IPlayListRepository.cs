@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Data.Interfaces
 {
-    public interface IPlayListRepository
+    public interface IPlaylistRepository
     {
-        Task<PlayListModel> GetByIdAsync(Guid id);
-        Task UpsertAsync(PlayListModel playList);
+        Task<PlaylistModel> GetByIdAsync(Guid id);
+        Task UpsertAsync(PlaylistModel playlist);
         Task DeleteByIdAsync(Guid id);
     }
 }

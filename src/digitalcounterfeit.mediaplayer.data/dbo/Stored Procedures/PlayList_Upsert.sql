@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[PlayList_Upsert] (
+﻿CREATE PROCEDURE [dbo].[Playlist_Upsert] (
 	@Id UNIQUEIDENTIFIER,
 	@LibraryId UNIQUEIDENTIFIER,
 	@Name VARCHAR(255),
@@ -10,26 +10,26 @@ BEGIN
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 
 	--Needs some transaction love to add a little robustness...
-	IF EXISTS (SELECT 1 FROM [dbo].[PlayList] WHERE [Id] = @Id)
+	IF EXISTS (SELECT 1 FROM [dbo].[Playlist] WHERE [Id] = @Id)
 	BEGIN
-		UPDATE [dbo].[PlayList]
+		UPDATE [dbo].[Playlist]
 		SET [Name] = @Name 
 		WHERE [Id] = @Id
 
-		DELETE FROM [dbo].[PlayListTrack]
-		WHERE [PlayListId] = @Id
+		DELETE FROM [dbo].[PlaylistTrack]
+		WHERE [PlaylistId] = @Id
 
 		INSERT INTO 
-			[dbo].[PlayListTrack]		
+			[dbo].[PlaylistTrack]		
 		SELECT
-			@Id AS [PlayListId],
+			@Id AS [PlaylistId],
 			[Id] AS [AudioTrackId]
 		FROM
 			@AudioTrackIdList
 	END
 	ELSE
 	BEGIN
-		INSERT INTO [dbo].[PlayList](
+		INSERT INTO [dbo].[Playlist](
 			[Id],
 			[LibraryId],
 			[Name]
@@ -41,9 +41,9 @@ BEGIN
 		)
 
 		INSERT INTO 
-			[dbo].[PlayListTrack]		
+			[dbo].[PlaylistTrack]		
 		SELECT
-			@Id AS [PlayListId],
+			@Id AS [PlaylistId],
 			[Id] AS [AudioTrackId]
 		FROM
 			@AudioTrackIdList

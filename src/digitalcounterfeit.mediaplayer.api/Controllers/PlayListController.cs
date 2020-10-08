@@ -9,45 +9,45 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
 {
     [ApiController]
     [Route("api/play-list")]
-    public class PlayListController : ControllerBase
+    public class PlaylistController : ControllerBase
     {
-        private readonly IPlayListRepository _playListRepository;
+        private readonly IPlaylistRepository _playlistRepository;
 
-        public PlayListController(IPlayListRepository playListRepository)
+        public PlaylistController(IPlaylistRepository playlistRepository)
         {
-            _playListRepository = playListRepository;
+            _playlistRepository = playlistRepository;
         }
 
         [HttpGet("{id:guid}")]
-        public async Task<ActionResult<PlayListModel>> GetByIdAsync(Guid id)
+        public async Task<ActionResult<PlaylistModel>> GetByIdAsync(Guid id)
         {
-            var playList = await _playListRepository.GetByIdAsync(id);
+            var playlist = await _playlistRepository.GetByIdAsync(id);
 
-            if (playList == null)
+            if (playlist == null)
                 return NotFound();
 
-            return Ok(playList);
+            return Ok(playlist);
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpsertAsync(PlayListModel playList)
+        public async Task<IActionResult> UpsertAsync(PlaylistModel playlist)
         {
-            await _playListRepository.UpsertAsync(playList);
+            await _playlistRepository.UpsertAsync(playlist);
 
             return NoContent();
         }
 
         [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<PlayListModel> playListPatch)
+        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<PlaylistModel> playlistPatch)
         {
-            var playList = await _playListRepository.GetByIdAsync(id);
+            var playlist = await _playlistRepository.GetByIdAsync(id);
 
-            if (playList == null)
+            if (playlist == null)
                 return NotFound();
 
-            playListPatch.ApplyTo(playList);
+            playlistPatch.ApplyTo(playlist);
 
-            await _playListRepository.UpsertAsync(playList);
+            await _playlistRepository.UpsertAsync(playlist);
 
             return NoContent();
         }
@@ -55,7 +55,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteByIdAsync(Guid id)
         {
-            await _playListRepository.DeleteByIdAsync(id);
+            await _playlistRepository.DeleteByIdAsync(id);
 
             return NoContent();
         }

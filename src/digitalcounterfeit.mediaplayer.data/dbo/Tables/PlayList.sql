@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[PlayList] (
+﻿CREATE TABLE [dbo].[Playlist] (
 	[Id] UNIQUEIDENTIFIER,
 	[LibraryId] UNIQUEIDENTIFIER,
 	[Name] VARCHAR(255)

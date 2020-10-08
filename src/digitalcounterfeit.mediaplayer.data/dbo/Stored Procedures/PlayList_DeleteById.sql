@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[PlayList_DeleteById] (
+﻿CREATE PROCEDURE [dbo].[Playlist_DeleteById] (
 	@Id UNIQUEIDENTIFIER
 )
 AS
@@ -7,10 +7,10 @@ BEGIN
 	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 
 	--Needs some transaction love to add a little robustness...
-	DELETE FROM [dbo].[PlayList]
+	DELETE FROM [dbo].[Playlist]
 	WHERE [Id] = @Id
 
-	DELETE FROM [dbo].[PlayListTrack]
-	WHERE [PlayListId] = @Id
+	DELETE FROM [dbo].[PlaylistTrack]
+	WHERE [PlaylistId] = @Id
 
 END

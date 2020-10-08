@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[PlayList_GetById] (
+﻿CREATE PROCEDURE [dbo].[Playlist_GetById] (
 	@Id UNIQUEIDENTIFIER
 )
 AS
@@ -11,7 +11,7 @@ BEGIN
 		[LibraryId],
 		[Name]
 	FROM
-		[dbo].[PlayList]
+		[dbo].[Playlist]
 	WHERE
 		[Id] = @Id
 
@@ -28,11 +28,11 @@ BEGIN
 		[Album].[ArtistId],
 		[Album].[Name]
 	FROM
-		[dbo].[PlayListTrack]
+		[dbo].[PlaylistTrack]
 	LEFT JOIN
 		[dbo].[AudioTrack]
 	ON
-		[AudioTrack].[Id] = [PlayListTrack].[AudioTrackId]
+		[AudioTrack].[Id] = [PlaylistTrack].[AudioTrackId]
 	LEFT JOIN
 		[dbo].[Artist]
 	ON
@@ -42,5 +42,5 @@ BEGIN
 	ON
 		[Album].[Id] = [AudioTrack].[AlbumId]
 	WHERE
-		[PlayListTrack].[PlayListId] = @Id
+		[PlaylistTrack].[PlaylistId] = @Id
 END
