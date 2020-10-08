@@ -1,27 +1,69 @@
-﻿using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
+﻿using Dapper;
+using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.api.Models;
+using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Data;
+using System.Data.SqlClient;
 using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Data
 {
     public class AlbumRepository : IAlbumRepository
     {
-        public Task DeleteByIdAsync(Guid id)
+        private readonly string _connectionString;
+
+        public AlbumRepository(IConfiguration configuration)
         {
-            throw new NotImplementedException();
+            _connectionString = configuration.GetValue<string>("ConnectionString");
         }
 
-        public Task<AlbumModel> GetByIdAsync(Guid id)
+        public async Task DeleteByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection
+                    .ExecuteAsync(
+                        "[dbo].[Album_DeleteById]",
+                        new
+                        {
+                            Id = id
+                        },
+                        commandType: CommandType.StoredProcedure);
+            }
         }
 
-        public Task UpsertAsync(AlbumModel album)
+        public async Task<AlbumModel> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return await connection
+                    .QueryFirstOrDefaultAsync<AlbumModel>(
+                        "[dbo].[Album_GetById]",
+                        new
+                        {
+                            Id = id
+                        },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpsertAsync(AlbumModel album)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection
+                    .ExecuteAsync(
+                        "[dbo].[Album_Upsert]",
+                        new
+                        {
+                            Id = album.Id,
+                            LibraryId = album.LibraryId,
+                            ArtistId = album.ArtistId,
+                            Name = album.Name
+                        },
+                        commandType: CommandType.StoredProcedure);
+            }
         }
     }
 }

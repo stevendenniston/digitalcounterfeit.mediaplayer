@@ -59,6 +59,8 @@
     <Folder Include="dbo" />
     <Folder Include="dbo\Tables" />
     <Folder Include="dbo\Stored Procedures" />
+    <Folder Include="dbo\Types" />
+    <Folder Include="dbo\Types\Table Types" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Artist.sql" />
@@ -71,5 +73,18 @@
     <Build Include="dbo\Stored Procedures\Library_Upsert.sql" />
     <Build Include="dbo\Stored Procedures\Library_GetById.sql" />
     <Build Include="dbo\Stored Procedures\Library_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\Artist_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\Artist_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\Artist_Upsert.sql" />
+    <Build Include="dbo\Stored Procedures\Album_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\Album_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\Album_Upsert.sql" />
+    <Build Include="dbo\Stored Procedures\AudioTrack_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\AudioTrack_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\AudioTrack_Upsert.sql" />
+    <Build Include="dbo\Stored Procedures\PlayList_DeleteById.sql" />
+    <Build Include="dbo\Stored Procedures\PlayList_GetById.sql" />
+    <Build Include="dbo\Stored Procedures\PlayList_Upsert.sql" />
+    <Build Include="dbo\Types\Table Types\GuidList_TableType.sql" />
   </ItemGroup>
 </Project>

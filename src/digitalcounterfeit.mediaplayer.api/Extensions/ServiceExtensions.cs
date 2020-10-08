@@ -14,6 +14,7 @@ namespace digitalcounterfeit.mediaplayer.api.Extensions
             {
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
+
                 options.ReturnHttpNotAcceptable = true;
             })
             .AddNewtonsoftJson(options =>
@@ -41,7 +42,7 @@ namespace digitalcounterfeit.mediaplayer.api.Extensions
             services.AddAuthentication("token")
                 .AddJwtBearer("token", options =>
                 {
-                    options.Authority = configuration.GetValue<string>("AuthenticationAuthority");                    
+                    options.Authority = configuration.GetValue<string>("AuthenticationAuthority");
                     options.Audience = configuration.GetValue<string>("AuthenticationAudience");
                     options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
                 });
