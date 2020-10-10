@@ -75,7 +75,7 @@ export class PlayerComponent {
         .set("Authorization", `Bearer ${token}`)
         .set("Content-Type", "text/plain; charset=utf-8");
       this.httpClient
-        .get(`${AppSettings.mediaPlayerApiUrl}/audio/track/${file.id}/uri`, { headers, responseType: "text" })
+        .get(`${AppSettings.mediaPlayerApiUrl}/audio-track/${file.id}/stream-uri`, { headers, responseType: "text" })
         .subscribe(url => {
           this.playStream(url);
       });
