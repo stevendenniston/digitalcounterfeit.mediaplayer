@@ -11,6 +11,7 @@ import { SigninCallbackComponent } from "./components/signin-callback/signin-cal
 import { SignoutCallbackComponent } from "./components/signout-callback/signout-callback.component";
 import { HttpClientModule } from "@angular/common/http";
 import { AppSettings } from "./app-settings.service";
+import { ArtistComponent } from './components/artist/artist.component';
 
 export function initializeApp(appsettings: AppSettings): any {
   return () => appsettings.load();
@@ -21,7 +22,8 @@ export function initializeApp(appsettings: AppSettings): any {
     AppComponent,
     PlayerComponent,
     SigninCallbackComponent,
-    SignoutCallbackComponent
+    SignoutCallbackComponent,
+    ArtistComponent
   ],
   imports: [
     BrowserModule,
