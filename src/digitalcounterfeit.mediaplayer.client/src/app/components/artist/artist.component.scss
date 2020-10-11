@@ -1,8 +1,12 @@
 .content{
-    padding: 8px;
-    overflow-y: auto;    
+    display: flex;
+    flex-wrap: wrap;     
+    margin: 8px;
 }
 
-.content > mat-card{
-    width: 200px;
+mat-card{
+    width: 170px;
+    height: 140px;
+    margin: 4px;
+    padding: 8px;    
 }
