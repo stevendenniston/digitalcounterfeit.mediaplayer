@@ -1,12 +1,13 @@
-.content{
+.content{    
     display: flex;
-    flex-wrap: wrap;     
-    margin: 8px;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin: 8px;    
 }
 
 mat-card{
-    width: 170px;
+    width: 155px;
     height: 140px;
     margin: 4px;
-    padding: 8px;    
+    padding: 8px;        
 }
