@@ -9,9 +9,10 @@ import { MaterialModule } from "./material.module";
 import { PlayerComponent } from "./components/player/player.component";
 import { SigninCallbackComponent } from "./components/signin-callback/signin-callback.component";
 import { SignoutCallbackComponent } from "./components/signout-callback/signout-callback.component";
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { AppSettings } from "./app-settings.service";
-import { ArtistComponent } from './components/artist/artist.component';
+import { ArtistComponent } from "./components/artist/artist.component";
+import { HttpInterceptorService } from "./services/http-interceptor.service";
 
 export function initializeApp(appsettings: AppSettings): any {
   return () => appsettings.load();
@@ -34,7 +35,8 @@ export function initializeApp(appsettings: AppSettings): any {
   ],
   providers: [
     AppSettings,
-    {provide: APP_INITIALIZER, useFactory: initializeApp, deps: [AppSettings], multi: true}
+    {provide: APP_INITIALIZER, useFactory: initializeApp, deps: [AppSettings], multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: HttpInterceptorService, multi: true}
   ],
   bootstrap: [AppComponent]
 })

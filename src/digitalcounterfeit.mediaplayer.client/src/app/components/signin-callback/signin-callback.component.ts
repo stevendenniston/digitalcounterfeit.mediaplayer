@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { AuthService } from "src/app/services/auth.service";
 import { Router } from "@angular/router";
-import { CompileShallowModuleMetadata } from "@angular/compiler";
 
 @Component({
   selector: "app-signin-callback",
@@ -13,7 +12,6 @@ export class SigninCallbackComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.completeLogin().then(user => {
-      console.log(user);
       this.router.navigate(["/"], {replaceUrl: true});
     });
   }

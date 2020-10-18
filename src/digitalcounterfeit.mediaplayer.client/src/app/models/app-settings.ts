@@ -2,7 +2,6 @@ export interface IAppSettings {
     env: {
         name: string;
     };
-    fileId: string;
     mediaPlayerApiUrl: string;
     idpSettings: {
         authority: string;

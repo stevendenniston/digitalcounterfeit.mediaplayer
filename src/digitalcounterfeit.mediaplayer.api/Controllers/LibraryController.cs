@@ -1,4 +1,5 @@
 ﻿using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
+using digitalcounterfeit.mediaplayer.api.Extensions;
 using digitalcounterfeit.mediaplayer.api.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,22 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
                 return NotFound();
 
             return Ok(library);
+        }
+
+        [HttpGet("")]
+        public async Task<ActionResult<LibraryModel>> GetByUserIdAsync()
+        {
+            if (Guid.TryParse(User.GetUserSubjectId(), out var userId))
+            {
+                var library = await _libraryRepository.GetByUserIdAsync(userId);
+
+                if (library == null)
+                    return NotFound();
+
+                return Ok(library);
+            }
+
+            return StatusCode(418);
         }
 
         [HttpPut]

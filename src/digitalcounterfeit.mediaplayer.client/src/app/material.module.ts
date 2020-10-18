@@ -7,7 +7,7 @@ import { MatSliderModule } from "@angular/material/slider";
 import { MatIconModule } from "@angular/material/icon";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatCardModule } from "@angular/material/card";
-import { MatGridListModule } from '@angular/material/grid-list';
+import { MatGridListModule } from "@angular/material/grid-list";
 
 const modules = [
   FlexLayoutModule,

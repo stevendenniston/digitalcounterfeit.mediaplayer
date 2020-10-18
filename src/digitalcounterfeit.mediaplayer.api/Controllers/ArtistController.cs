@@ -3,11 +3,12 @@ using digitalcounterfeit.mediaplayer.api.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Controllers
 {
-    [ApiController]
+    [ApiController]    
     [Route("api/artist")]
     public class ArtistController : ControllerBase
     {
@@ -28,6 +29,25 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
 
             return Ok(artist);
         }
+
+        [HttpGet("/api/library/{libraryId:guid}/artist-list")]
+        public async Task<ActionResult<IEnumerable<ArtistModel>>> GetLibraryArtistListAsync(Guid libraryId)
+        {
+            await Task.Yield();
+
+            var artistList = new[]
+            {
+                new ArtistModel
+                {
+                    Id = Guid.NewGuid(),
+                    LibraryId = libraryId,
+                    Name = "Nothing Personal"
+                }
+            };
+
+            return Ok(artistList);
+        }
+
 
         [HttpPut]
         public async Task<IActionResult> UpsertAsync(ArtistModel artist)

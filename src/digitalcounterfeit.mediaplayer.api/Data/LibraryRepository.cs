@@ -48,6 +48,21 @@ namespace digitalcounterfeit.mediaplayer.api.Data
             }
         }
 
+        public async Task<LibraryModel> GetByUserIdAsync(Guid userId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return await connection
+                    .QueryFirstOrDefaultAsync<LibraryModel>(
+                        "[dbo].[Library_GetByUserId]", 
+                        new 
+                        {
+                            UserId = userId
+                        }, 
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task UpsertAsync(LibraryModel library)
         {
             using (var connection = new SqlConnection(_connectionString))

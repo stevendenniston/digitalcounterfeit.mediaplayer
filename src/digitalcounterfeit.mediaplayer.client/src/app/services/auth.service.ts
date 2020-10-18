@@ -3,9 +3,7 @@ import { UserManager, User, SignoutResponse } from "oidc-client";
 import { Subject } from "rxjs";
 import { AppSettings } from "../app-settings.service";
 
-@Injectable({
-  providedIn: "root"
-})
+@Injectable({ providedIn: "root"})
 export class AuthService {
   private userManager: UserManager;
   private user: User;

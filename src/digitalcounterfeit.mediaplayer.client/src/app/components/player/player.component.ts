@@ -1,6 +1,5 @@
 import { Component } from "@angular/core";
 import { AudioService } from "../../services/audio.service";
-import { CloudService } from "../../services/cloud.service";
 import { StreamState } from "../../interfaces/stream-state";
 import { AuthService } from "src/app/services/auth.service";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
@@ -19,11 +18,8 @@ export class PlayerComponent {
 
   constructor(
     private audioService: AudioService,
-    private cloudService: CloudService,
-    private authService: AuthService,
     private httpClient: HttpClient
   ) {
-    this.cloudService.getFiles().subscribe(files => this.files = files);
     this.audioService.getState().subscribe(state => this.state = state);
   }
 
@@ -70,15 +66,11 @@ export class PlayerComponent {
   openFile(file, index): void {
     this.currentFile = { file, index };
     this.audioService.stop();
-    this.authService.getAccessToken().then(async token => {
-      const headers = new HttpHeaders()
-        .set("Authorization", `Bearer ${token}`)
-        .set("Content-Type", "text/plain; charset=utf-8");
-      this.httpClient
-        .get(`${AppSettings.mediaPlayerApiUrl}/audio-track/${file.id}/stream-uri`, { headers, responseType: "text" })
-        .subscribe(url => {
-          this.playStream(url);
+    const headers = new HttpHeaders().set("Content-Type", "text/plain; charset=utf-8");
+    this.httpClient
+      .get(`${AppSettings.mediaPlayerApiUrl}/audio-track/${file.id}/stream-uri`, { headers, responseType: "text" })
+      .subscribe(url => {
+        this.playStream(url);
       });
-    });
   }
 }

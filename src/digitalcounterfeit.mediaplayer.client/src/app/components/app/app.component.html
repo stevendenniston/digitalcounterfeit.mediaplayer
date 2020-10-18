@@ -1,11 +1,11 @@
-<div class="content">  
+<div class="content">
   <mat-toolbar color="primary" class="header">
     <span>Audio Player</span>
     <button mat-button (click)="login()" *ngIf="!isLoggedIn">Login</button>
     <button mat-button (click)="logout()" *ngIf="isLoggedIn">Logout</button>
-  </mat-toolbar>    
-  <div class="main">
+  </mat-toolbar>
+  <div class="main">    
     <router-outlet></router-outlet>    
   </div>
-  <app-player class=footer></app-player>  
+  <app-player></app-player>
 </div>
