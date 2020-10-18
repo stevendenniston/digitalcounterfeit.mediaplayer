@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Controllers
 {
-    [ApiController]    
+    [ApiController]
     [Route("api/artist")]
     public class ArtistController : ControllerBase
     {
@@ -33,17 +33,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         [HttpGet("/api/library/{libraryId:guid}/artist-list")]
         public async Task<ActionResult<IEnumerable<ArtistModel>>> GetLibraryArtistListAsync(Guid libraryId)
         {
-            await Task.Yield();
-
-            var artistList = new[]
-            {
-                new ArtistModel
-                {
-                    Id = Guid.NewGuid(),
-                    LibraryId = libraryId,
-                    Name = "Nothing Personal"
-                }
-            };
+            var artistList = await _artistRepository.GetLibraryArtistListAsync(libraryId);
 
             return Ok(artistList);
         }

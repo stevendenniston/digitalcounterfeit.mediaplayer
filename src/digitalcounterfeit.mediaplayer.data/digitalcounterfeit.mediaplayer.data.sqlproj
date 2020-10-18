@@ -87,5 +87,6 @@
     <Build Include="dbo\Stored Procedures\Playlist_Upsert.sql" />
     <Build Include="dbo\Types\Table Types\GuidList_TableType.sql" />
     <Build Include="dbo\Stored Procedures\Library_GetByUserId.sql" />
+    <Build Include="dbo\Stored Procedures\Artist_GetListByLibraryId.sql" />
   </ItemGroup>
 </Project>
