@@ -21,8 +21,8 @@ export class ArtistComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.artists = this.artistService.artists;
-    this.library = this.libraryService.library;
+    this.artists = this.artistService.Artists;
+    this.library = this.libraryService.Library;
 
     this.library.subscribe(library => {
       if (library.id) {
