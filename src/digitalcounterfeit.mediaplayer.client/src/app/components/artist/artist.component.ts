@@ -22,12 +22,7 @@ export class ArtistComponent implements OnInit {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const artistId = params.get("artistId");
-      this.artistService.GetArtist(artistId)
-        .subscribe(artist => {
-          this.artist = artist;
-        }, error => {
-          console.log(error);
-        });
+      this.artist = this.artistService.GetArtist(artistId);        
       this.artistService.GetAlbumList(artistId)
         .subscribe(albumList => {
           this.albumList = albumList;

@@ -8,36 +8,36 @@ import { Artist } from "../models/artist";
 @Injectable({ providedIn: "root" })
 export class ArtistService {
 
-  private artists: BehaviorSubject<Artist[]>;  
+  private artistList: BehaviorSubject<Artist[]>;  
 
   private dataStore: {
-    artists: Artist[]    
+    artistList: Artist[]    
   };
 
   constructor(private http: HttpClient) {
     this.dataStore = { 
-      artists: []      
+      artistList: []      
     };
-    this.artists = new BehaviorSubject<Artist[]>([]);    
+    this.artistList = new BehaviorSubject<Artist[]>([]);    
   }
 
-  get Artists(): Observable<Artist[]>{
-    return this.artists.asObservable();
+  get ArtistList(): Observable<Artist[]>{
+    return this.artistList.asObservable();
   }  
 
   GetLibraryArtistList(libraryId: string): Subscription {
     return this.http
       .get<Artist[]>(`${AppSettings.mediaPlayerApiUrl}/library/${libraryId}/artist-list`)
-      .subscribe(data => {
-        this.dataStore.artists = data;
-        this.artists.next(Object.assign([], this.dataStore.artists));
+      .subscribe(artistList => {
+        this.dataStore.artistList = artistList;
+        this.artistList.next(Object.assign([], this.dataStore.artistList));
       }, error => {
         console.log(error);
       });
   }
 
-  GetArtist(artistId: string): Observable<Artist> {
-    return this.http.get<Artist>(`${AppSettings.mediaPlayerApiUrl}/artist/${artistId}`);      
+  GetArtist(artistId: string): Artist {
+    return this.dataStore.artistList.find(artist => artist.id.localeCompare(artistId, undefined, { sensitivity: "accent"}) === 0);
   }
 
   GetAlbumList(artistId: string): Observable<Album[]> {
