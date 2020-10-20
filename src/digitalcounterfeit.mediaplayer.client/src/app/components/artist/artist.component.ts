@@ -1,9 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { Observable } from "rxjs";
+import { ActivatedRoute } from '@angular/router';
+import { Album } from 'src/app/models/album';
 import { Artist } from "src/app/models/artist";
-import { Library } from "src/app/models/library";
 import { ArtistService } from "src/app/services/artist.service";
-import { LibraryService } from "src/app/services/library.service";
 
 @Component({
   selector: "app-artist",
@@ -12,24 +11,29 @@ import { LibraryService } from "src/app/services/library.service";
 })
 export class ArtistComponent implements OnInit {
 
-  artists: Observable<Artist[]>;
-  library: Observable<Library>;
+  artist: Artist = new Artist;
+  albumList: Album[];
 
   constructor(
     private artistService: ArtistService,
-    private libraryService: LibraryService
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit(): void {
-    this.artists = this.artistService.Artists;
-    this.library = this.libraryService.Library;
-
-    this.library.subscribe(library => {
-      if (library.id) {
-        this.artistService.GetLibraryArtistList(library.id);
-      }
+    this.route.paramMap.subscribe(params => {
+      const artistId = params.get("artistId");
+      this.artistService.GetArtist(artistId)
+        .subscribe(artist => {
+          this.artist = artist;
+        }, error => {
+          console.log(error);
+        });
+      this.artistService.GetAlbumList(artistId)
+        .subscribe(albumList => {
+          this.albumList = albumList;
+        }, error => {
+          console.log(error);
+        });
     });
-
-    this.libraryService.GetLibrary();
   }
 }

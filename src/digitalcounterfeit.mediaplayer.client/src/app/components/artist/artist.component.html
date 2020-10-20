@@ -1,7 +1,5 @@
-<div class="content" >
-    <div *ngFor="let artist of artists | async">
-        <mat-card>            
-            <h3>{{artist.name}}</h3>
-        </mat-card>
-    </div>
+<h1>{{artist.name}}</h1>
+<h2>Albums:</h2>
+<div *ngFor="let album of albumList">   
+    <h3>{{album.name}}</h3>
 </div>

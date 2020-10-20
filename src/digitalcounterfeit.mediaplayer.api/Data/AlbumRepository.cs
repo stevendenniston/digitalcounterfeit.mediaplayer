@@ -3,6 +3,7 @@ using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.api.Models;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
@@ -29,6 +30,21 @@ namespace digitalcounterfeit.mediaplayer.api.Data
                         {
                             Id = id
                         },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<AlbumModel>> GetArtistAlbumListAsync(Guid artistId)
+        {
+            using(var connection = new SqlConnection(_connectionString))
+            {
+                return await connection
+                    .QueryAsync<AlbumModel>(
+                        "[dbo].[Album_GetListByArtistId]", 
+                        new 
+                        {
+                            ArtistId = artistId
+                        }, 
                         commandType: CommandType.StoredProcedure);
             }
         }
