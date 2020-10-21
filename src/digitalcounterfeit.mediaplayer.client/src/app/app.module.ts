@@ -13,7 +13,8 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { AppSettings } from "./app-settings.service";
 import { ArtistComponent } from "./components/artist/artist.component";
 import { HttpInterceptorService } from "./services/http-interceptor.service";
-import { ArtistListComponent } from './components/artist-list/artist-list.component';
+import { ArtistListComponent } from "./components/artist-list/artist-list.component";
+import { AlbumComponent } from "./components/album/album.component";
 
 export function initializeApp(appsettings: AppSettings): any {
   return () => appsettings.load();
@@ -26,7 +27,8 @@ export function initializeApp(appsettings: AppSettings): any {
     ArtistListComponent,
     PlayerComponent,
     SigninCallbackComponent,
-    SignoutCallbackComponent
+    SignoutCallbackComponent,
+    AlbumComponent
   ],
   imports: [
     AppRoutingModule,

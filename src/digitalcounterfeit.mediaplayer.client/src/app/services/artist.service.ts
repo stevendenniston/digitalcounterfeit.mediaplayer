@@ -2,28 +2,29 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, Observable, Subscription } from "rxjs";
 import { AppSettings } from "../app-settings.service";
-import { Album } from '../models/album';
 import { Artist } from "../models/artist";
 
 @Injectable({ providedIn: "root" })
 export class ArtistService {
 
-  private artistList: BehaviorSubject<Artist[]>;  
+  private artistList: BehaviorSubject<Artist[]>;
 
   private dataStore: {
     artistList: Artist[]    
   };
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient
+  ) {
     this.dataStore = { 
-      artistList: []      
+      artistList: []
     };
     this.artistList = new BehaviorSubject<Artist[]>([]);    
   }
 
   get ArtistList(): Observable<Artist[]>{
     return this.artistList.asObservable();
-  }  
+  }
 
   GetLibraryArtistList(libraryId: string): Subscription {
     return this.http
@@ -36,11 +37,7 @@ export class ArtistService {
       });
   }
 
-  GetArtist(artistId: string): Artist {
-    return this.dataStore.artistList.find(artist => artist.id.localeCompare(artistId, undefined, { sensitivity: "accent"}) === 0);
-  }
-
-  GetAlbumList(artistId: string): Observable<Album[]> {
-    return this.http.get<Album[]>(`${AppSettings.mediaPlayerApiUrl}/artist/${artistId}/album-list`);
-  }
+  GetArtist(artistId: string): Artist {    
+      return this.dataStore.artistList.find(artist => artist.id.localeCompare(artistId, undefined, { sensitivity: "accent"}) === 0);    
+  }  
 }

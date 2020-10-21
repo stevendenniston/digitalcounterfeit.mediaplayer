@@ -1,8 +1,10 @@
 ﻿using Dapper;
 using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.api.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
@@ -30,6 +32,27 @@ namespace digitalcounterfeit.mediaplayer.api.Data
                         {
                             Id = id
                         },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<AudioTrackModel>> GetAlbumAudioTrackListAsync(Guid albumId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return await connection
+                    .QueryAsync<AudioTrackModel, ArtistModel, AlbumModel, AudioTrackModel>(
+                        "[dbo].[AudioTrack_GetListByAlbumId]",
+                        (audioTrack, artist, album) =>
+                        {
+                            audioTrack.Artist = artist;
+                            audioTrack.Album = album;
+                            return audioTrack;
+                        },
+                        new 
+                        {
+                            AlbumId = albumId
+                        }, 
                         commandType: CommandType.StoredProcedure);
             }
         }

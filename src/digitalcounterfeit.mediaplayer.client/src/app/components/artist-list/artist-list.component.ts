@@ -1,22 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { Observable } from 'rxjs/internal/Observable';
-import { Artist } from 'src/app/models/artist';
-import { Library } from 'src/app/models/library';
-import { ArtistService } from 'src/app/services/artist.service';
-import { LibraryService } from 'src/app/services/library.service';
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import { Subscription } from "rxjs";
+import { Observable } from "rxjs/internal/Observable";
+import { Artist } from "src/app/models/artist";
+import { Library } from "src/app/models/library";
+import { ArtistService } from "src/app/services/artist.service";
+import { LibraryService } from "src/app/services/library.service";
 
 @Component({
-  selector: 'app-artist-list',
-  templateUrl: './artist-list.component.html',
-  styleUrls: ['./artist-list.component.scss']
+  selector: "app-artist-list",
+  templateUrl: "./artist-list.component.html",
+  styleUrls: ["./artist-list.component.scss"]
 })
-export class ArtistListComponent implements OnInit {
+export class ArtistListComponent implements OnInit, OnDestroy {
 
   private librarySubscription: Subscription;
 
   artistList: Observable<Artist[]>;
-  library: Observable<Library>;  
+  library: Observable<Library>;
 
   constructor(
     private artistService: ArtistService,
@@ -37,7 +37,7 @@ export class ArtistListComponent implements OnInit {
     this.libraryService.GetLibrary();
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.librarySubscription.unsubscribe();
   }
 }

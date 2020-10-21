@@ -89,5 +89,6 @@
     <Build Include="dbo\Stored Procedures\Library_GetByUserId.sql" />
     <Build Include="dbo\Stored Procedures\Artist_GetListByLibraryId.sql" />
     <Build Include="dbo\Stored Procedures\Album_GetListByArtistId.sql" />
+    <Build Include="dbo\Stored Procedures\AudioTrack_GetListByAlbumId.sql" />
   </ItemGroup>
 </Project>

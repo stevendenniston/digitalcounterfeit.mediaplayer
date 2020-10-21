@@ -46,6 +46,14 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
 
             return Ok(audioTrackUri);
         }
+        
+        [HttpGet("/api/album/{albumId:guid}/audio-track-list")]
+        public async Task<ActionResult<IEnumerable<AudioTrackModel>>> GetAlbumAudioTrackListAsync(Guid albumId)
+        {
+            var audioTrackList = await _audioTrackRepository.GetAlbumAudioTrackListAsync(albumId);
+
+            return Ok(audioTrackList);            
+        }
 
         [HttpPut]
         public async Task<IActionResult> UpsertAsync(AudioTrackModel audioTrack)

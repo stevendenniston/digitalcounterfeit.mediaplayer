@@ -1,5 +1,9 @@
-<h1>{{artist.name}}</h1>
+<h1>{{artist?.name}}</h1>
 <h2>Albums:</h2>
-<div *ngFor="let album of albumList">   
-    <h3>{{album.name}}</h3>
+<div class="content">
+    <div *ngFor="let album of albumList">        
+        <mat-card [routerLink]="['/album', album?.id]">
+            <h3>{{album?.name}}</h3>
+        </mat-card>
+    </div>
 </div>
