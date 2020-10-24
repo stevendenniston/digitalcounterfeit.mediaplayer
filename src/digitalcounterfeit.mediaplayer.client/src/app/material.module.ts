@@ -8,6 +8,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatCardModule } from "@angular/material/card";
 import { MatGridListModule } from "@angular/material/grid-list";
+import { MatTableModule } from "@angular/material/table";
 
 const modules = [
   FlexLayoutModule,
@@ -17,7 +18,8 @@ const modules = [
   MatIconModule,
   MatToolbarModule,
   MatCardModule,
-  MatGridListModule
+  MatGridListModule,
+  MatTableModule
 ];
 
 @NgModule({

@@ -1,7 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from '@angular/router';
 import { Album } from 'src/app/models/album';
+import { AudioTrack } from 'src/app/models/audio-track';
 import { AlbumService } from 'src/app/services/album.service';
+import { AudioTrackService } from 'src/app/services/audio-track.service';
 
 @Component({
   selector: "app-album",
@@ -11,9 +13,12 @@ import { AlbumService } from 'src/app/services/album.service';
 export class AlbumComponent implements OnInit {
 
   album: Album = new Album();
+  audioTrackList: AudioTrack[] = [];
+  columns: string[] = ['number', 'name']
 
   constructor(
     private albumService: AlbumService,
+    private audioTrackService: AudioTrackService,
     private route: ActivatedRoute) {
   }
 
@@ -26,6 +31,12 @@ export class AlbumComponent implements OnInit {
         }, error => {
           console.log(error);
         });
+      this.audioTrackService.GetAlbumAudioTrackList(albumId)
+        .subscribe(audioTrackList => {
+          this.audioTrackList = audioTrackList;
+        }, error => {
+          console.log(error);
+        })
     });
   }
 }
