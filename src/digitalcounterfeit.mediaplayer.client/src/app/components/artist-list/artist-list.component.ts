@@ -32,8 +32,8 @@ export class ArtistListComponent implements OnInit, OnDestroy {
         if (library.id) {
           this.artistService.GetLibraryArtistList(library.id);
         }
-      });
-
+      });    
+    
     this.libraryService.GetLibrary();
   }
 

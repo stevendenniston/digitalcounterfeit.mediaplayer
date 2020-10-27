@@ -11,7 +11,7 @@ export class LibraryService {
   private dataStore: { library: Library };
 
   constructor(private http: HttpClient) {
-    this.dataStore = { library: new Library() };
+    this.dataStore = { library: null };
     this.library = new BehaviorSubject<Library>(new Library());
   }
 
@@ -19,14 +19,16 @@ export class LibraryService {
     return this.library.asObservable();
   }
 
-  GetLibrary(): Subscription {
-    return this.http
-      .get<Library>(`${AppSettings.mediaPlayerApiUrl}/library`)
-      .subscribe(data => {
-        this.dataStore.library = data;
-        this.library.next(Object.assign({}, this.dataStore).library);
-      }, error => {
-        console.log(error);
-      });
+  GetLibrary(): void {
+    if(!this.dataStore.library) {
+      this.http
+        .get<Library>(`${AppSettings.mediaPlayerApiUrl}/library`)
+        .subscribe(data => {
+          this.dataStore.library = data;
+          this.library.next(Object.assign({}, this.dataStore).library);
+        }, error => {
+          console.log(error);
+        });
+    }
   }
 }

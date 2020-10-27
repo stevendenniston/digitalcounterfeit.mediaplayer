@@ -3,6 +3,9 @@ import { Observable, BehaviorSubject, Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import * as moment from "moment";
 import { StreamState } from "../interfaces/stream-state";
+import { Playlist } from '../models/play-list';
+import { AudioTrack } from '../models/audio-track';
+import { AudioTrackService } from './audio-track.service';
 
 @Injectable({ providedIn: "root" })
 export class AudioService {
@@ -19,7 +22,8 @@ export class AudioService {
 
   private stop$ = new Subject();
   private audioObj = new Audio();
-  private stateChange: BehaviorSubject<StreamState> = new BehaviorSubject(this.state);
+  private stateChange: BehaviorSubject<StreamState>;
+  private playlist: BehaviorSubject<Playlist>;
 
   audioEvents = [
     "ended",
@@ -33,13 +37,29 @@ export class AudioService {
     "loadstart"
   ];
 
-  constructor() { }
+  constructor(private audioTrackService: AudioTrackService) {
+    this.stateChange =  new BehaviorSubject(this.state);
+    this.playlist = new BehaviorSubject(new Playlist());
+  }
+
+  get Playlist(): Observable<Playlist> {
+    return this.playlist.asObservable();
+  }
+
+  LoadPlaylist(playlist: Playlist) : void {
+    this.playlist.next(playlist);
+  }
 
   playStream(url: any): Observable<unknown> {
     return this.streamObservable(url).pipe(takeUntil(this.stop$));
   }
 
-  play(): void {
+  async play(track: AudioTrack): Promise<Observable<unknown>> {
+    const uri = await this.audioTrackService.GetAudioTrackStreamUri(track.id);    
+    return this.streamObservable(uri).pipe(takeUntil(this.stop$));      
+  }
+
+  continue(): void {
     this.audioObj.play();
   }
 
@@ -114,7 +134,7 @@ export class AudioService {
 
       this.audioObj.src = url;
       this.audioObj.load();
-      // this.audioObj.play();
+      this.audioObj.play();
 
       return () => {
         this.audioObj.pause();

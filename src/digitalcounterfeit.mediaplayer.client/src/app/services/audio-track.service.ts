@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AppSettings } from '../app-settings.service';
@@ -13,5 +13,13 @@ export class AudioTrackService {
 
   GetAlbumAudioTrackList(albumId: string): Observable<AudioTrack[]> {
     return this.http.get<AudioTrack[]>(`${AppSettings.mediaPlayerApiUrl}/album/${albumId}/audio-track-list`);
+  }
+
+  async GetAudioTrackStreamUri(audioTrackId: string): Promise<string>{
+    const headers = new HttpHeaders().set("Content-Type", "text/plain; charset=utf-8");
+    return await this.http
+      .get(
+        `${AppSettings.mediaPlayerApiUrl}/audio-track/${audioTrackId}/stream-uri`, 
+        { headers, responseType: "text" }).toPromise();
   }
 }

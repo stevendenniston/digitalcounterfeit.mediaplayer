@@ -1,9 +1,11 @@
 import { Component } from "@angular/core";
 import { AudioService } from "../../services/audio.service";
 import { StreamState } from "../../interfaces/stream-state";
-import { AuthService } from "src/app/services/auth.service";
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { AppSettings } from "src/app/app-settings.service";
+import { Playlist } from 'src/app/models/play-list';
+import { AudioTrack } from 'src/app/models/audio-track';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: "app-player",
@@ -13,38 +15,54 @@ import { AppSettings } from "src/app/app-settings.service";
 export class PlayerComponent {
 
   state: StreamState;
-  currentFile: any = {};
-  files: Array<any> = [];
+  trackList: AudioTrack[];
+  currentTrack: AudioTrack;
+  playlist: Observable<Playlist>;
 
   constructor(
-    private audioService: AudioService,
-    private httpClient: HttpClient
+    private audioService: AudioService    
   ) {
     this.audioService.getState().subscribe(state => this.state = state);
+    this.playlist = this.audioService.Playlist
+    this.playlist.subscribe(playlist => {
+      this.trackList = playlist.trackList;
+    }, error => {
+      console.log(error);
+    });
   }
 
-  playStream(url): void {
-    this.audioService.playStream(url).subscribe(events => {console.log(events); });
-  }
+  
 
   isFirstPlaying(): boolean {
-    return this.currentFile.index === 0;
+    return this.trackList?.findIndex(track => track.id === this.currentTrack?.id) === 0;
   }
 
   isLastPlaying(): boolean {
-    return this.currentFile.index === this.files.length - 1;
+    return this.trackList?.findIndex(track => track.id === this.currentTrack?.id) === this.trackList?.length - 1;
   }
 
   next(): void {
-    const index = this.currentFile.index + 1;
-    const file = this.files[index];
-    this.openFile(file, index);
+    this.audioService.pause();
+    const index = this.trackList?.findIndex(track => track.id === this.currentTrack?.id) + 1;
+    this.currentTrack = this.trackList[index];
+    this.audioService
+      .play(this.currentTrack)
+      .then(events => 
+        events.subscribe(event => 
+          console.log(event)
+        ));
   }
 
   previous(): void {
-    const index = this.currentFile.index - 1;
-    const file = this.files[index];
-    this.openFile(file, index);
+    this.audioService.pause();
+    const index = this.trackList?.findIndex(track => track.id === this.currentTrack?.id) - 1;    
+    this.currentTrack = this.trackList[index];
+    this.audioService
+      .play(this.currentTrack)
+      .then(events => 
+        events.subscribe(event => 
+          console.log(event)
+        ));
   }
 
   onSliderChangeEnd(event): void {
@@ -56,21 +74,25 @@ export class PlayerComponent {
   }
 
   play(): void {
-    this.audioService.play();
+    if (!this.currentTrack){
+      this.currentTrack = this.trackList[0];
+      this.audioService
+      .play(this.currentTrack)
+      .then(events => 
+        events.subscribe(event => 
+          console.log(event)
+        ));
+    } else {
+      this.audioService.continue();
+    }    
   }
 
   stop(): void {
     this.audioService.stop();
   }
 
-  openFile(file, index): void {
-    this.currentFile = { file, index };
-    this.audioService.stop();
-    const headers = new HttpHeaders().set("Content-Type", "text/plain; charset=utf-8");
-    this.httpClient
-      .get(`${AppSettings.mediaPlayerApiUrl}/audio-track/${file.id}/stream-uri`, { headers, responseType: "text" })
-      .subscribe(url => {
-        this.playStream(url);
-      });
+  openFile(track: AudioTrack): void {
+    this.currentTrack = track;
+    this.audioService.stop();    
   }
 }
