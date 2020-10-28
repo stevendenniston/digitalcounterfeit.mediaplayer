@@ -5,16 +5,16 @@
       {{ state?.readableDuration }}
   </mat-toolbar-row>
   <mat-toolbar-row class="media-action-bar">
-    <button mat-button [disabled]="isFirstPlaying()" (click)="previous()">
+    <button mat-button [disabled]="!state?.canPlay || isFirstPlaying()" (click)="previous()">
       <mat-icon mat-list-icon>skip_previous</mat-icon>
     </button>
-    <button mat-button (click)="play()" [disabled]="state?.error" *ngIf="!state?.playing">
+    <button mat-button (click)="play()" [disabled]="state?.error || !state?.canPlay" *ngIf="!state?.isPlaying">
       <mat-icon mat-list-icon>play_circle_filled</mat-icon>
     </button>
-    <button mat-button (click)="pause()" *ngIf="state?.playing">
+    <button mat-button (click)="pause()" *ngIf="state?.isPlaying">
       <mat-icon mat-list-icon>pause</mat-icon>
     </button>
-    <button  mat-button [disabled]="isLastPlaying()" (click)="next()">
+    <button  mat-button [disabled]="!state?.canPlay || isLastPlaying()" (click)="next()">
       <mat-icon mat-list-icon>skip_next</mat-icon>            
     </button>
   </mat-toolbar-row>

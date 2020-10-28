@@ -2,7 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from '@angular/router';
 import { Album } from 'src/app/models/album';
 import { AudioTrack } from 'src/app/models/audio-track';
-import { Playlist } from 'src/app/models/play-list';
 import { AlbumService } from 'src/app/services/album.service';
 import { AudioTrackService } from 'src/app/services/audio-track.service';
 import { AudioService } from 'src/app/services/audio.service';
@@ -36,11 +35,15 @@ export class AlbumComponent implements OnInit {
         });
       this.audioTrackService.GetAlbumAudioTrackList(albumId)
         .subscribe(audioTrackList => {
-          this.audioTrackList = audioTrackList;
-          this.audioService.LoadPlaylist({ id: "", libraryId: "", name: "", trackList: audioTrackList });
+          this.audioTrackList = audioTrackList;          
         }, error => {
           console.log(error);
         })
     });
+  }
+
+  playAlbum(startingTrack: AudioTrack) {
+    this.audioService.loadPlaylist({ id: "", libraryId: "", name: "", trackList: this.audioTrackList });
+    this.audioService.play(startingTrack);
   }
 }

@@ -1,8 +1,6 @@
 import { Component } from "@angular/core";
 import { AudioService } from "../../services/audio.service";
 import { StreamState } from "../../interfaces/stream-state";
-import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { AppSettings } from "src/app/app-settings.service";
 import { Playlist } from 'src/app/models/play-list';
 import { AudioTrack } from 'src/app/models/audio-track';
 import { Observable } from 'rxjs';
@@ -17,21 +15,22 @@ export class PlayerComponent {
   state: StreamState;
   trackList: AudioTrack[];
   currentTrack: AudioTrack;
+
   playlist: Observable<Playlist>;
+  nowPlaying: Observable<AudioTrack>;
+  streamState: Observable<StreamState>;
 
   constructor(
     private audioService: AudioService    
   ) {
-    this.audioService.getState().subscribe(state => this.state = state);
-    this.playlist = this.audioService.Playlist
-    this.playlist.subscribe(playlist => {
-      this.trackList = playlist.trackList;
-    }, error => {
-      console.log(error);
-    });
-  }
+    this.streamState = this.audioService.streamState;
+    this.playlist = this.audioService.playlist;
+    this.nowPlaying = this.audioService.nowPlaying;
 
-  
+    this.playlist.subscribe(playlist => this.trackList = playlist.trackList);
+    this.nowPlaying.subscribe(track => this.currentTrack = track);
+    this.streamState.subscribe(state => this.onStateChange(state))
+  }
 
   isFirstPlaying(): boolean {
     return this.trackList?.findIndex(track => track.id === this.currentTrack?.id) === 0;
@@ -45,24 +44,14 @@ export class PlayerComponent {
     this.audioService.pause();
     const index = this.trackList?.findIndex(track => track.id === this.currentTrack?.id) + 1;
     this.currentTrack = this.trackList[index];
-    this.audioService
-      .play(this.currentTrack)
-      .then(events => 
-        events.subscribe(event => 
-          console.log(event)
-        ));
+    this.audioService.play(this.currentTrack);
   }
 
   previous(): void {
     this.audioService.pause();
     const index = this.trackList?.findIndex(track => track.id === this.currentTrack?.id) - 1;    
     this.currentTrack = this.trackList[index];
-    this.audioService
-      .play(this.currentTrack)
-      .then(events => 
-        events.subscribe(event => 
-          console.log(event)
-        ));
+    this.audioService.play(this.currentTrack);
   }
 
   onSliderChangeEnd(event): void {
@@ -76,23 +65,20 @@ export class PlayerComponent {
   play(): void {
     if (!this.currentTrack){
       this.currentTrack = this.trackList[0];
-      this.audioService
-      .play(this.currentTrack)
-      .then(events => 
-        events.subscribe(event => 
-          console.log(event)
-        ));
+      this.audioService.play(this.currentTrack);
     } else {
       this.audioService.continue();
-    }    
+    }
   }
 
   stop(): void {
     this.audioService.stop();
-  }
+  }  
 
-  openFile(track: AudioTrack): void {
-    this.currentTrack = track;
-    this.audioService.stop();    
+  private onStateChange(state: StreamState): void {        
+    this.state = state;
+    if (state.hasEnded && !this.isLastPlaying()){
+      this.next();
+    }    
   }
 }

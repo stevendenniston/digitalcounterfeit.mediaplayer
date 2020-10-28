@@ -15,11 +15,8 @@ export class AudioTrackService {
     return this.http.get<AudioTrack[]>(`${AppSettings.mediaPlayerApiUrl}/album/${albumId}/audio-track-list`);
   }
 
-  async GetAudioTrackStreamUri(audioTrackId: string): Promise<string>{
+  GetAudioTrackStreamUri(audioTrackId: string): Observable<string>{
     const headers = new HttpHeaders().set("Content-Type", "text/plain; charset=utf-8");
-    return await this.http
-      .get(
-        `${AppSettings.mediaPlayerApiUrl}/audio-track/${audioTrackId}/stream-uri`, 
-        { headers, responseType: "text" }).toPromise();
+    return this.http.get(`${AppSettings.mediaPlayerApiUrl}/audio-track/${audioTrackId}/stream-uri`, { headers, responseType: "text" });
   }
 }

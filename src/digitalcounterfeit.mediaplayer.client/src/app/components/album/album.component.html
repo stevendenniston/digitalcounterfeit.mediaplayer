@@ -9,5 +9,9 @@
         <td mat-cell *matCellDef="let audioTrack"> {{audioTrack.name}} </td>
     </ng-container>
     <tr mat-header-row *matHeaderRowDef="columns"></tr>
-    <tr mat-row *matRowDef="let row; columns: columns;" class="audio-track-row"></tr>
+    <tr mat-row 
+        *matRowDef="let audioTrack; columns: columns;" 
+        class="audio-track-row" 
+        (click)="playAlbum(audioTrack)">
+    </tr>
 </table>

@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Observable, BehaviorSubject, Subject } from "rxjs";
+import { Observable, BehaviorSubject, Subject, Subscription } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import * as moment from "moment";
 import { StreamState } from "../interfaces/stream-state";
@@ -11,19 +11,22 @@ import { AudioTrackService } from './audio-track.service';
 export class AudioService {
 
   private state: StreamState = {
-    playing: false,
+    isPlaying: false,
     readableCurrentTime: "",
     readableDuration: "",
     duration: undefined,
     currentTime: undefined,
-    canplay: false,
-    error: false
+    canPlay: false,
+    error: false,
+    hasEnded: false
   };
 
   private stop$ = new Subject();
   private audioObj = new Audio();
+  private currentStream: Subscription;
   private stateChange: BehaviorSubject<StreamState>;
-  private playlist: BehaviorSubject<Playlist>;
+  private currentPlaylist: BehaviorSubject<Playlist>;
+  private currentAudioTrack: BehaviorSubject<AudioTrack>;
 
   audioEvents = [
     "ended",
@@ -39,73 +42,91 @@ export class AudioService {
 
   constructor(private audioTrackService: AudioTrackService) {
     this.stateChange =  new BehaviorSubject(this.state);
-    this.playlist = new BehaviorSubject(new Playlist());
+    this.currentPlaylist = new BehaviorSubject(new Playlist());
+    this.currentAudioTrack = new BehaviorSubject(new AudioTrack());
   }
 
-  get Playlist(): Observable<Playlist> {
-    return this.playlist.asObservable();
+  get playlist(): Observable<Playlist> {
+    return this.currentPlaylist.asObservable();
   }
 
-  LoadPlaylist(playlist: Playlist) : void {
-    this.playlist.next(playlist);
+  get nowPlaying(): Observable<AudioTrack> {
+    return this.currentAudioTrack.asObservable();
   }
 
-  playStream(url: any): Observable<unknown> {
-    return this.streamObservable(url).pipe(takeUntil(this.stop$));
+  get streamState(): Observable<StreamState> {
+    return this.stateChange.asObservable();
   }
 
-  async play(track: AudioTrack): Promise<Observable<unknown>> {
-    const uri = await this.audioTrackService.GetAudioTrackStreamUri(track.id);    
-    return this.streamObservable(uri).pipe(takeUntil(this.stop$));      
+  
+  loadPlaylist(playlist: Playlist) : void {
+    this.currentPlaylist.next(playlist);
   }
-
+  
+  play(track: AudioTrack): void {
+    this.currentStream?.unsubscribe();
+    this.currentAudioTrack.next(track);
+    this.audioTrackService
+    .GetAudioTrackStreamUri(track.id)
+    .subscribe(uri => {
+      this.currentStream = this.playStream(uri).subscribe();
+    });
+  }
+  
   continue(): void {
     this.audioObj.play();
   }
-
+  
   pause(): void {
     this.audioObj.pause();
   }
-
+  
   stop(): void {
     this.stop$.next();
   }
-
+  
   seekTo(seconds: number): void {
     this.audioObj.currentTime = seconds;
   }
-
+  
   formatTime(time: number, format: string = "mm:ss"): string {
     const momentTime = time * 1000;
     return moment.utc(momentTime).format(format);
   }
 
-  getState(): Observable<StreamState> {
-    return this.stateChange.asObservable();
+  
+  private playStream(url: any): Observable<unknown> {
+    return this.streamObservable(url).pipe(takeUntil(this.stop$));
   }
-
-
-  private updateStateEvents(event: Event): void {
+  
+  private updateStateEvents(event: Event): void {    
     switch (event.type) {
       case "canplay":
         this.state.duration = this.audioObj.duration;
         this.state.readableDuration = this.formatTime(this.state.duration);
-        this.state.canplay = true;
+        this.state.canPlay = true;
+        this.state.hasEnded = false;
         break;
       case "play":
       case "playing":
-        this.state.playing = true;
+        this.state.isPlaying = true;
+        this.state.hasEnded = false;
         break;
       case "pause":
-        this.state.playing = false;
+        this.state.isPlaying = false;
+        this.state.hasEnded = false;
         break;
       case "timeupdate":
         this.state.currentTime = this.audioObj.currentTime;
         this.state.readableCurrentTime = this.formatTime(this.state.currentTime);
+        this.state.hasEnded = false;
         break;
       case "error":
         this.resetState();
         this.state.error = true;
+        break;
+      case "ended":        
+        this.state.hasEnded = true;
         break;
     }
     this.stateChange.next(this.state);
@@ -113,13 +134,14 @@ export class AudioService {
 
   private resetState(): void {
     this.state = {
-      playing: false,
+      isPlaying: false,
       readableCurrentTime: "",
       readableDuration: "",
       duration: undefined,
       currentTime: undefined,
-      canplay: false,
-      error: false
+      canPlay: false,
+      error: false,
+      hasEnded: false
     };
   }
 
@@ -156,5 +178,4 @@ export class AudioService {
       obj.removeEventListener(event, handler);
     });
   }
-
 }

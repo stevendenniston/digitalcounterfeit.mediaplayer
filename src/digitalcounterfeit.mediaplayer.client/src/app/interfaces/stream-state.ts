@@ -1,9 +1,10 @@
 export interface StreamState {
-    playing: boolean;
+    isPlaying: boolean;
     readableCurrentTime: string;
     readableDuration: string;
     duration: number | undefined;
     currentTime: number | undefined;
-    canplay: boolean;
+    canPlay: boolean;
     error: boolean;
+    hasEnded: boolean;
 }
