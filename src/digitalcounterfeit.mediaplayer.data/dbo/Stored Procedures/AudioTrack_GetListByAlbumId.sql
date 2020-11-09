@@ -29,4 +29,6 @@ BEGIN
 		[Album].[Id] = [AudioTrack].[AlbumId]
 	WHERE
 		[AudioTrack].[AlbumId] = @AlbumId
+	ORDER BY
+		[AudioTrack].[Number]
 END
