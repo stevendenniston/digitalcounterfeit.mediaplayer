@@ -42,7 +42,7 @@ export class AudioTrackService {
       formData.append("file", file, file.name);
 
       tagReader(file, {
-        onSuccess: id3 => {
+        onSuccess: id3 => {          
           this.PutAudioTrack(id, id3);
           this.http.put(`${AppSettings.mediaPlayerApiUrl}/audio-track/${id}/file`, formData, {reportProgress: true, observe: "events"})
             .subscribe(event => {          
@@ -56,15 +56,14 @@ export class AudioTrackService {
         }
       });
       
-      status[file.name] = { progress: progress.asObservable() };      
+      status[file.name] = { progress: progress.asObservable() };
     })
 
     return status;
   }
 
   PutAudioTrack(id: string, id3: any): void {
-    
-    const libraryId = this.libraryService.GetLibraryId(); 
+    const libraryId = this.libraryService.GetLibraryId();    
     let artist = this.artistService.GetArtistByName(id3.tags.artist); 
     
     if (!artist) {
