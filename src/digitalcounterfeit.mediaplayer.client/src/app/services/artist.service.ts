@@ -44,4 +44,9 @@ export class ArtistService {
   GetArtistByName(name: string): Artist {
     return this.dataStore.artistList.find(artist => artist.name.localeCompare(name, undefined, { sensitivity: "accent" }) === 0);
   }
+
+  PutArtist(artist: Artist): void {
+    this.dataStore.artistList.push(artist);
+    this.artistList.next(Object.assign([], this.dataStore.artistList));
+  }
 }

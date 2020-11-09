@@ -38,8 +38,7 @@ export class UploadDialogComponent implements OnInit {
       if (!isNaN(parseInt(key))) {
         this.files.add(files[key]);
       }
-    }
-    console.log(files);
+    }    
   }
 
   closeDialog(): void {
@@ -64,10 +63,10 @@ export class UploadDialogComponent implements OnInit {
       () => {}, 
       () => {}, 
       () => {
-      this.canBeClosed = true;
-      this.dialogRef.disableClose = false;
-      this.uploadSuccessful = true;
-      this.uploading = false;
+        this.canBeClosed = true;
+        this.dialogRef.disableClose = false;
+        this.uploadSuccessful = true;
+        this.uploading = false;
     })
   }
 }

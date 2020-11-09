@@ -55,9 +55,7 @@ export class AudioTrackService {
           console.log(error);
         }
       });
-
       
-
       status[file.name] = { progress: progress.asObservable() };      
     })
 
@@ -75,6 +73,7 @@ export class AudioTrackService {
         libraryId: libraryId,
         name: id3.tags.artist
       };
+      this.artistService.PutArtist(artist);
     }
 
     this.albumService
@@ -94,8 +93,6 @@ export class AudioTrackService {
           console.log(error);
         }
       });
-    
-    this.artistService.GetLibraryArtistList(libraryId);
   }
 
   private CreateAudioTrack(id: string, artist: Artist, album: Album, id3: any): void {
@@ -111,6 +108,10 @@ export class AudioTrackService {
     const headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
 
-    this.http.put(`${AppSettings.mediaPlayerApiUrl}/audio-track`, audioTrack, { headers: headers }).subscribe();
+    this.http.put(
+        `${AppSettings.mediaPlayerApiUrl}/audio-track`, 
+        audioTrack, 
+        { headers: headers })
+      .subscribe();
   }
 }
