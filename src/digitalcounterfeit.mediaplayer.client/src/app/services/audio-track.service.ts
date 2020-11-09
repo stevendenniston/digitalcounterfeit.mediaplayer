@@ -8,6 +8,7 @@ import { read as tagReader } from "jsmediatags";
 import { ArtistService } from './artist.service';
 import { AlbumService } from './album.service';
 import { LibraryService } from './library.service';
+import { Artist } from '../models/artist';
 import { Album } from '../models/album';
 
 @Injectable({
@@ -43,22 +44,19 @@ export class AudioTrackService {
       tagReader(file, {
         onSuccess: id3 => {
           this.PutAudioTrack(id, id3);
-          //console.log(id3);
+          this.http.put(`${AppSettings.mediaPlayerApiUrl}/audio-track/${id}/file`, formData, {reportProgress: true, observe: "events"})
+            .subscribe(event => {          
+              if (event instanceof HttpResponse) {
+                progress.complete();
+              }
+            });
         },
         onError: error => {
           console.log(error);
         }
       });
 
-      this.http.put(`${AppSettings.mediaPlayerApiUrl}/audio-track/${id}/file`, formData, {reportProgress: true, observe: "events"})
-        .subscribe(event => {
-          if (event.type === HttpEventType.UploadProgress) {
-            const percentDone = Math.round(100 * event.loaded / event.total)
-            progress.next(percentDone);
-          } else if (event instanceof HttpResponse) {
-            progress.complete();
-          }
-        });
+      
 
       status[file.name] = { progress: progress.asObservable() };      
     })
@@ -67,55 +65,52 @@ export class AudioTrackService {
   }
 
   PutAudioTrack(id: string, id3: any): void {
-    let isNewArtist = false;
-    let isNewAlbum = false;
-    let artist = this.artistService.GetArtistByName(id3.tags.artist);    
     
-    if (!artist) {      
-      isNewArtist = true;
+    const libraryId = this.libraryService.GetLibraryId(); 
+    let artist = this.artistService.GetArtistByName(id3.tags.artist); 
+    
+    if (!artist) {
       artist = {
         id: uuidv4(),
-        libraryId: this.libraryService.GetLibraryId(),
+        libraryId: libraryId,
         name: id3.tags.artist
       };
     }
 
-    const sub = this.albumService.AlbumList.subscribe(albumList => {
-      let album = albumList.find(album => album.artistId.localeCompare(artist.id, undefined, { sensitivity: "accent"}) === 0);
-
-      if (!album) {
-        isNewAlbum = true;
-        album = {
-          id: uuidv4(),
-          artistId: artist.id,
-          libraryId: this.libraryService.GetLibraryId(),
-          name: id3.tags.album
-        };
-      }  
-
-      this.albumService.PutArtistAlbum(album, isNewArtist, isNewAlbum);
-  
-      const audioTrack: AudioTrack = {
-        id: id,
-        artist: artist,
-        album: album,
-        name: id3.tags.title,
-        number: parseInt(id3.tags.track),
-        discNumber: 0
-      };
-
-      console.log(audioTrack);
-      const headers = new HttpHeaders();
-      headers.set("Content-Type", "application/json");      
-      this.http.put(`${AppSettings.mediaPlayerApiUrl}/audio-track`, audioTrack, { headers: headers }).subscribe();
-
-    }, error => {
-      console.log(error);
-    })    
-
-    sub.unsubscribe();
-
-    this.albumService.GetArtistAlbumList(artist.id);
+    this.albumService
+      .GetArtistAlbumByName(artist.id, id3.tags.album)
+      .subscribe(album => {        
+        this.CreateAudioTrack(id, artist, album, id3);
+      }, error => {
+        if (error.status === 404) {
+          const album = {
+            id: uuidv4(),
+            artistId: artist.id,
+            libraryId: this.libraryService.GetLibraryId(),
+            name: id3.tags.album
+          };
+          this.CreateAudioTrack(id, artist, album, id3);
+        } else {
+          console.log(error);
+        }
+      });
+    
+    this.artistService.GetLibraryArtistList(libraryId);
   }
 
+  private CreateAudioTrack(id: string, artist: Artist, album: Album, id3: any): void {
+    const audioTrack: AudioTrack = {
+      id: id,
+      artist: artist,
+      album: album,
+      name: id3.tags.title,
+      number: parseInt(id3.tags.track),
+      discNumber: 0
+    };
+
+    const headers = new HttpHeaders();
+    headers.set("Content-Type", "application/json");
+
+    this.http.put(`${AppSettings.mediaPlayerApiUrl}/audio-track`, audioTrack, { headers: headers }).subscribe();
+  }
 }

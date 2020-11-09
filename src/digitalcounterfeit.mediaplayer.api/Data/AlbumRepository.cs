@@ -49,6 +49,22 @@ namespace digitalcounterfeit.mediaplayer.api.Data
             }
         }
 
+        public async Task<AlbumModel> GetByArtistIdAlbumName(Guid artistId, string name)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                return await connection
+                    .QueryFirstOrDefaultAsync<AlbumModel>(
+                        "[dbo].[Album_GetByArtistIdAlbumName]", 
+                        new 
+                        { 
+                            ArtistId = artistId,
+                            AlbumName = name
+                        }, 
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<AlbumModel> GetByIdAsync(Guid id)
         {
             using (var connection = new SqlConnection(_connectionString))

@@ -38,6 +38,17 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
             return Ok(albumList);
         }
 
+        [HttpGet("/api/artist/{artistId:guid}/album")]
+        public async Task<ActionResult<AlbumModel>> GetByArtistIdAlbumName(Guid artistId, [FromQuery] string name)
+        {
+            var album = await _albumRepository.GetByArtistIdAlbumName(artistId, name);
+
+            if (album == null)
+                return NotFound();
+
+            return Ok(album);
+        }
+
 
         [HttpPut]
         public async Task<IActionResult> UpsertAsync(AlbumModel album)
