@@ -37,7 +37,11 @@ export class ArtistService {
       });
   }
 
-  GetArtist(artistId: string): Artist {    
-      return this.dataStore.artistList.find(artist => artist.id.localeCompare(artistId, undefined, { sensitivity: "accent"}) === 0);    
+  GetArtistById(id: string): Artist {    
+      return this.dataStore.artistList.find(artist => artist.id.localeCompare(id, undefined, { sensitivity: "accent"}) === 0);
   }  
+
+  GetArtistByName(name: string): Artist {
+    return this.dataStore.artistList.find(artist => artist.name.localeCompare(name, undefined, { sensitivity: "accent" }) === 0);
+  }
 }

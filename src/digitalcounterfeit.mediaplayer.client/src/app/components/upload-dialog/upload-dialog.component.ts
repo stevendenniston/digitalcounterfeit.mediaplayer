@@ -39,6 +39,7 @@ export class UploadDialogComponent implements OnInit {
         this.files.add(files[key]);
       }
     }
+    console.log(files);
   }
 
   closeDialog(): void {
@@ -48,7 +49,7 @@ export class UploadDialogComponent implements OnInit {
 
     this.uploading = true;
     this.progress = this.audioTrackService.UploadAudioTrackFiles(this.files);
-    let progressObservables = [];
+    let progressObservables: Observable<number>[] = [];
 
     for (let key in this.progress) {
       progressObservables.push(this.progress[key].progress);
@@ -59,7 +60,10 @@ export class UploadDialogComponent implements OnInit {
     this.dialogRef.disableClose = true;
     this.showCancelButton = false;
 
-    forkJoin(progressObservables).subscribe(end => {
+    forkJoin(progressObservables).subscribe(
+      () => {}, 
+      () => {}, 
+      () => {
       this.canBeClosed = true;
       this.dialogRef.disableClose = false;
       this.uploadSuccessful = true;

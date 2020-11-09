@@ -31,4 +31,8 @@ export class LibraryService {
         });
     }
   }
+
+  GetLibraryId(): string {
+    return this.dataStore.library.id;
+  }
 }

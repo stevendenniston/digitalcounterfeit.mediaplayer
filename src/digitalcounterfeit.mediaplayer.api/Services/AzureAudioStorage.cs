@@ -1,4 +1,5 @@
-﻿using Azure.Storage;
+﻿using Azure;
+using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
@@ -40,15 +41,20 @@ namespace digitalcounterfeit.mediaplayer.api.Services
             }
         }
 
-        public async Task UploadAudioTrackAsync(Stream stream, string blobName, string contentType)
+        public async Task<Response<BlobContentInfo>> UploadAudioTrackAsync(Stream stream, string blobName, string contentType, IProgress<long> progressHandler)
         {
             var key = new StorageSharedKeyCredential(_accountName, _accountKey);
             var container = new BlobContainerClient(new Uri($"https://{_accountName}.blob.core.windows.net/{CONTAINER_NAME}"), key);
             var blob = container.GetBlockBlobClient(blobName);
-
+            
             using (stream)
             {
-                await blob.UploadAsync(stream, new BlobHttpHeaders { ContentType = contentType }, accessTier: AccessTier.Hot);
+                return await blob
+                    .UploadAsync(
+                        stream, 
+                        new BlobHttpHeaders { ContentType = contentType }, 
+                        accessTier: AccessTier.Hot, 
+                        progressHandler: progressHandler);
             }
         }
 

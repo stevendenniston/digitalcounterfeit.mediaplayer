@@ -4,6 +4,7 @@ import { StreamState } from "../../interfaces/stream-state";
 import { Playlist } from 'src/app/models/play-list';
 import { AudioTrack } from 'src/app/models/audio-track';
 import { Observable } from 'rxjs';
+import { LibraryService } from 'src/app/services/library.service';
 
 @Component({
   selector: "app-player",
@@ -21,8 +22,10 @@ export class PlayerComponent {
   streamState: Observable<StreamState>;
 
   constructor(
-    private audioService: AudioService    
+    private audioService: AudioService,
+    private libraryService: LibraryService
   ) {
+    this.libraryService.GetLibrary();
     this.streamState = this.audioService.streamState;
     this.playlist = this.audioService.playlist;
     this.nowPlaying = this.audioService.nowPlaying;

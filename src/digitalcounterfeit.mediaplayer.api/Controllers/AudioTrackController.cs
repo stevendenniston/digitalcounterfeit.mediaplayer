@@ -2,6 +2,7 @@
 using digitalcounterfeit.mediaplayer.api.Extensions;
 using digitalcounterfeit.mediaplayer.api.Models;
 using digitalcounterfeit.mediaplayer.api.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,14 +13,22 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
 {
     [ApiController]
     [Route("api/audio-track")]
-    public class AudioTrackController : ControllerBase
+    public class AudioTrackController : Controller
     {
         private readonly IAzureAudioStorage _azureAudioStorage;
+        private readonly IArtistRepository _artistRepository;
+        private readonly IAlbumRepository _albumRepository;
         private readonly IAudioTrackRepository _audioTrackRepository;
 
-        public AudioTrackController(IAzureAudioStorage azureAudioStorage, IAudioTrackRepository audioTrackRepository)
+        public AudioTrackController(
+            IAzureAudioStorage azureAudioStorage, 
+            IArtistRepository artistRepository, 
+            IAlbumRepository albumRepository, 
+            IAudioTrackRepository audioTrackRepository)
         {
             _azureAudioStorage = azureAudioStorage;
+            _artistRepository = artistRepository;
+            _albumRepository = albumRepository;
             _audioTrackRepository = audioTrackRepository;
         }
 
@@ -58,20 +67,23 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         [HttpPut]
         public async Task<IActionResult> UpsertAsync(AudioTrackModel audioTrack)
         {
+            await _artistRepository.UpsertAsync(audioTrack.Artist);
+            await _albumRepository.UpsertAsync(audioTrack.Album);
             await _audioTrackRepository.UpsertAsync(audioTrack);
 
             return NoContent();
         }
 
         [HttpPut("{id:guid}/file")]
-        public async Task<IActionResult> PutAudioTrackAsync(Guid id)
+        public async Task<IActionResult> PutAudioTrackAsync(Guid id, IFormFile file)
         {
             if (Request.ContentLength <= 0)
                 return BadRequest("Empty request body; Cannot upload an empty audio file...");
 
-            var blobName = $@"{User?.GetUserSubjectId()}/{id}";
+            var blobName = $@"{User?.GetUserSubjectId()}/{id}";                                         
 
-            await _azureAudioStorage.UploadAudioTrackAsync(Request.Body, blobName, Request.ContentType);
+            await _azureAudioStorage.UploadAudioTrackAsync(file.OpenReadStream(), blobName, file.ContentType);
+
             return NoContent();
         }
 

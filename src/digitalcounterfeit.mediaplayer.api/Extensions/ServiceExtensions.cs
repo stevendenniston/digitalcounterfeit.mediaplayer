@@ -34,6 +34,7 @@ namespace digitalcounterfeit.mediaplayer.api.Extensions
                         builder.WithOrigins(configuration.GetValue<string>("CorsOrigin"));
                         builder.WithHeaders("Content-Type");
                         builder.WithHeaders("Authorization");
+                        builder.WithMethods("GET", "PUT", "PATCH", "DELETE");
                     });
             });
         }

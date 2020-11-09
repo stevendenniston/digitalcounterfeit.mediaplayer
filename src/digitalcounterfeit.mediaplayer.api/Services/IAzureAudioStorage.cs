@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure;
+using Azure.Storage.Blobs.Models;
+using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Services
@@ -8,6 +9,6 @@ namespace digitalcounterfeit.mediaplayer.api.Services
     public interface IAzureAudioStorage
     {
         Task<string> GetAudioTrackSasUriAsync(string blobName);
-        Task UploadAudioTrackAsync(Stream stream, string blobName, string contentType);
+        Task<Response<BlobContentInfo>> UploadAudioTrackAsync(Stream stream, string blobName, string contentType, IProgress<long> progressHandler = null);
     }
 }
