@@ -5,6 +5,8 @@ import { Playlist } from 'src/app/models/play-list';
 import { AudioTrack } from 'src/app/models/audio-track';
 import { Observable } from 'rxjs';
 import { LibraryService } from 'src/app/services/library.service';
+import { RepeatType } from 'src/app/models/repeat-type';
+import { repeatWhen } from 'rxjs/operators';
 
 @Component({
   selector: "app-player",
@@ -16,6 +18,7 @@ export class PlayerComponent {
   state: StreamState;
   trackList: AudioTrack[];
   currentTrack: AudioTrack;
+  repeat: RepeatType = RepeatType.all;
 
   playlist: Observable<Playlist>;
   nowPlaying: Observable<AudioTrack>;
@@ -36,23 +39,27 @@ export class PlayerComponent {
   }
 
   isFirstPlaying(): boolean {
-    return this.trackList?.findIndex(track => track.id === this.currentTrack?.id) === 0;
+    return this.repeat === RepeatType.off && this.trackList?.findIndex(track => track.id === this.currentTrack?.id) === 0;
   }
 
   isLastPlaying(): boolean {
-    return this.trackList?.findIndex(track => track.id === this.currentTrack?.id) === this.trackList?.length - 1;
+    return this.repeat === RepeatType.off && this.trackList?.findIndex(track => track.id === this.currentTrack?.id) === this.trackList?.length - 1;
   }
 
   next(): void {
-    this.audioService.pause();
-    const index = this.trackList?.findIndex(track => track.id === this.currentTrack?.id) + 1;
-    this.currentTrack = this.trackList[index];
-    this.audioService.play(this.currentTrack);
+    const index = this.index(1);
+    if (index >= 0){
+      this.audioService.pause();            
+      this.currentTrack = this.trackList[index];
+      this.audioService.play(this.currentTrack);
+    } else {
+      this.audioService.stop();
+    }
   }
 
   previous(): void {
-    this.audioService.pause();
-    const index = this.trackList?.findIndex(track => track.id === this.currentTrack?.id) - 1;    
+    this.audioService.pause();    
+    const index = this.index(-1);
     this.currentTrack = this.trackList[index];
     this.audioService.play(this.currentTrack);
   }
@@ -78,10 +85,23 @@ export class PlayerComponent {
     this.audioService.stop();
   }  
 
-  private onStateChange(state: StreamState): void {        
+  private onStateChange(state: StreamState): void {
     this.state = state;
-    if (state.hasEnded && !this.isLastPlaying()){
+    if (state.hasEnded){
       this.next();
     }    
+  }
+
+  private index(deviation: number): number {
+    const currentIndex = this.trackList?.findIndex(track => track.id === this.currentTrack?.id);
+    if (this.repeat === RepeatType.all) {
+      return currentIndex + deviation < 0 ? this.trackList.length - 1 : currentIndex === this.trackList.length - 1 && deviation > -1 ? 0 : currentIndex + deviation;
+    } else if (this.repeat === RepeatType.current) {
+      return currentIndex;
+    } else if (this.repeat === RepeatType.off && !this.isLastPlaying()) {
+      return currentIndex + deviation;     
+    } else {
+      return -1;
+    }
   }
 }
