@@ -6,7 +6,6 @@ import { AudioTrack } from 'src/app/models/audio-track';
 import { Observable } from 'rxjs';
 import { LibraryService } from 'src/app/services/library.service';
 import { RepeatType } from 'src/app/models/repeat-type';
-import { repeatWhen } from 'rxjs/operators';
 
 @Component({
   selector: "app-player",
@@ -85,6 +84,16 @@ export class PlayerComponent {
     this.audioService.stop();
   }  
 
+  toggleRepeat(): void {    
+    if (this.repeat === RepeatType.all) {
+      this.repeat = RepeatType.current;
+    } else if (this.repeat === RepeatType.current) {
+      this.repeat = RepeatType.off;
+    } else {
+      this.repeat = RepeatType.all;
+    }    
+  }
+
   private onStateChange(state: StreamState): void {
     this.state = state;
     if (state.hasEnded){
@@ -95,10 +104,11 @@ export class PlayerComponent {
   private index(deviation: number): number {
     const currentIndex = this.trackList?.findIndex(track => track.id === this.currentTrack?.id);
     if (this.repeat === RepeatType.all) {
+      // not really a fan of this double ternary but it works, need to clean that up soon...
       return currentIndex + deviation < 0 ? this.trackList.length - 1 : currentIndex === this.trackList.length - 1 && deviation > -1 ? 0 : currentIndex + deviation;
     } else if (this.repeat === RepeatType.current) {
       return currentIndex;
-    } else if (this.repeat === RepeatType.off && !this.isLastPlaying()) {
+    } else if (this.repeat === RepeatType.off && (!this.isLastPlaying() || deviation < 0)) {
       return currentIndex + deviation;     
     } else {
       return -1;

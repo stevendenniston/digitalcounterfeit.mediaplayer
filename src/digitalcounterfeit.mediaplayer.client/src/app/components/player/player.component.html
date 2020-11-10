@@ -14,8 +14,12 @@
     <button mat-button (click)="pause()" *ngIf="state?.isPlaying">
       <mat-icon mat-list-icon>pause</mat-icon>
     </button>
-    <button  mat-button [disabled]="!state?.canPlay || isLastPlaying()" (click)="next()">
-      <mat-icon mat-list-icon>skip_next</mat-icon>            
+    <button mat-button [disabled]="!state?.canPlay || isLastPlaying()" (click)="next()">
+      <mat-icon>skip_next</mat-icon>
+    </button>
+    <button mat-button (click)="toggleRepeat()">
+      <mat-icon mat-list-icon *ngIf="repeat !== 1" [ngStyle]="{'color': repeat === 2 ? 'grey' : 'white'}">repeat</mat-icon>
+      <mat-icon mat-list-icon *ngIf="repeat === 1">repeat_one</mat-icon>
     </button>
   </mat-toolbar-row>
 </mat-toolbar>
