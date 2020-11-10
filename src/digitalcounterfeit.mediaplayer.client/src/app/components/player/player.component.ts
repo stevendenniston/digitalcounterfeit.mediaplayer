@@ -6,6 +6,7 @@ import { AudioTrack } from 'src/app/models/audio-track';
 import { Observable } from 'rxjs';
 import { LibraryService } from 'src/app/services/library.service';
 import { RepeatType } from 'src/app/models/repeat-type';
+import { DeviceDetectorService } from 'ngx-device-detector';
 
 @Component({
   selector: "app-player",
@@ -25,7 +26,8 @@ export class PlayerComponent {
 
   constructor(
     private audioService: AudioService,
-    private libraryService: LibraryService
+    private libraryService: LibraryService,
+    public deviceService: DeviceDetectorService
   ) {
     this.libraryService.GetLibrary();
     this.streamState = this.audioService.streamState;

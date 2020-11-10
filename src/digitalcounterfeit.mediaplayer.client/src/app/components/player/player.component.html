@@ -4,22 +4,29 @@
       <mat-slider class="time-slider" min="0" [max]="state?.duration" step="1" [value]="state?.currentTime" (input)="onSliderChangeEnd($event)" [disabled]="state?.error || currentTrack === undefined"></mat-slider>
       {{ state?.readableDuration }}
   </mat-toolbar-row>
-  <mat-toolbar-row class="media-action-bar">
-    <button mat-button [disabled]="!state?.canPlay || isFirstPlaying()" (click)="previous()">
-      <mat-icon mat-list-icon>skip_previous</mat-icon>
-    </button>
-    <button mat-button (click)="play()" [disabled]="state?.error || !state?.canPlay" *ngIf="!state?.isPlaying">
-      <mat-icon mat-list-icon>play_circle_filled</mat-icon>
-    </button>
-    <button mat-button (click)="pause()" *ngIf="state?.isPlaying">
-      <mat-icon mat-list-icon>pause</mat-icon>
-    </button>
-    <button mat-button [disabled]="!state?.canPlay || isLastPlaying()" (click)="next()">
-      <mat-icon>skip_next</mat-icon>
-    </button>
-    <button mat-button (click)="toggleRepeat()">
-      <mat-icon mat-list-icon *ngIf="repeat !== 1" [ngStyle]="{'color': repeat === 2 ? 'grey' : 'white'}">repeat</mat-icon>
-      <mat-icon mat-list-icon *ngIf="repeat === 1">repeat_one</mat-icon>
-    </button>
+  <mat-toolbar-row class="media-action-bar" fxLayout.xs="column">
+    <p fxFlex="40%" *ngIf="deviceService.isDesktop()">
+      {{currentTrack.name}} <br/>
+      {{currentTrack.artist?.name}} {{currentTrack.artist? '-' : ''}} {{currentTrack.album?.name}}
+    </p>    
+    <div fxFlex="20%">
+      <button mat-button [disabled]="!state?.canPlay || isFirstPlaying()" (click)="previous()">
+        <mat-icon mat-list-icon>skip_previous</mat-icon>
+      </button>
+      <button mat-button (click)="play()" [disabled]="state?.error || !state?.canPlay" *ngIf="!state?.isPlaying">
+        <mat-icon mat-list-icon>play_circle_filled</mat-icon>
+      </button>
+      <button mat-button (click)="pause()" *ngIf="state?.isPlaying">
+        <mat-icon mat-list-icon>pause</mat-icon>
+      </button>
+      <button mat-button [disabled]="!state?.canPlay || isLastPlaying()" (click)="next()">
+        <mat-icon>skip_next</mat-icon>
+      </button>
+      <button mat-button (click)="toggleRepeat()">
+        <mat-icon mat-list-icon *ngIf="repeat !== 1" [ngStyle]="{'color': repeat === 2 ? 'grey' : 'white'}">repeat</mat-icon>
+        <mat-icon mat-list-icon *ngIf="repeat === 1">repeat_one</mat-icon>
+      </button>
+    </div>
+    <div fxFlex="40%" *ngIf="deviceService.isDesktop()"></div>
   </mat-toolbar-row>
 </mat-toolbar>
