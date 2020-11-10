@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Controllers
@@ -35,7 +37,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         {
             var artistList = await _artistRepository.GetLibraryArtistListAsync(libraryId);
 
-            return Ok(artistList);
+            return Ok(artistList.OrderBy(artist => Regex.Replace(artist.Name, @"^(?:the|The)\s*", string.Empty)));
         }
 
 
