@@ -1,4 +1,5 @@
 import { Component, OnInit } from "@angular/core";
+import { DeviceDetectorService } from 'ngx-device-detector';
 import { AuthService } from "../../services/auth.service";
 
 @Component({
@@ -10,11 +11,13 @@ export class AppComponent implements OnInit{
 
   title = "mediaplayer-client";
   isLoggedIn = false;
+  isDesktop = false;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService, private deviceService: DeviceDetectorService) {
   }
 
   ngOnInit(): void {
+    this.isDesktop = this.deviceService.isDesktop();
     this.authService.isLoggedIn().then(isLoggedIn => {
       this.isLoggedIn = isLoggedIn;
     });

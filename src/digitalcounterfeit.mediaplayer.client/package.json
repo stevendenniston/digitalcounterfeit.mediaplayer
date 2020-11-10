@@ -26,6 +26,7 @@
     "@angular/router": "~10.0.9",
     "jsmediatags": "^3.9.3",
     "moment": "^2.27.0",
+    "ngx-device-detector": "^2.0.0",
     "oidc-client": "^1.10.1",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
