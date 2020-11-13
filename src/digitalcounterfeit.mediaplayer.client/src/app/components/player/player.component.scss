@@ -1,13 +1,42 @@
-.time-slider {
-  width: 100%;
-  margin-left: 20px;
-  margin-right: 20px;
+
+.current-track-duration {
+  div {    
+    font-size: 16px;
+    line-height: 48px;
+  }
+  .time-slider {
+    width: 100%;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
 }
 
-.media-action-controls {    
-  .mat-icon {
-    height: 38px;
-    width: 38px;
-    font-size: 38px;
+.current-track-info {
+  div{
+    height: 100%;
+    .artist-album-name{
+      font-size: 16px;
+    }
+  }
+}
+
+.media-action-controls {
+  .mat-button {
+    padding: 0px 0px;
+  }
+  .mat-icon{
+    height:36px !important;
+    width:36px !important;
+    font-size:36px !important;
+  }
+  .play-pause-action {
+    .mat-button{
+      height: 100%;
+      .mat-icon{
+        height:48px !important;
+        width:48px !important;
+        font-size:48px !important;
+      }
+    }
   }
 }

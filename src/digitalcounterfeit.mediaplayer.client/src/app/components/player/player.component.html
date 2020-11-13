@@ -1,39 +1,48 @@
 <mat-toolbar color="primary" fxLayout="column">
   
-  <mat-toolbar-row fxFlex="45px" fxLayout="row">
-      {{ state?.readableCurrentTime }}
+  <mat-toolbar-row class="current-track-duration" fxFlex="36px" fxLayout="row" fxLayoutAlign="center">
+      <div>12:34{{ state?.readableCurrentTime }}</div>
       <mat-slider class="time-slider" min="0" [max]="state?.duration" step="1" [value]="state?.currentTime" (input)="onSliderChangeEnd($event)" [disabled]="state?.error || currentTrack === undefined"></mat-slider>
-      {{ state?.readableDuration }}
+      <div>56:78{{ state?.readableDuration }}</div>
   </mat-toolbar-row>
 
-  <mat-toolbar-row class="media-action-bar" fxFlex="90px" fxLayout="row" fxLayoutAlign="center">
+  <mat-toolbar-row class="media-action-bar" fxFlex="80px" fxLayout="row" fxLayoutAlign="center">
     
-    <div class="current-track-info" fxFlex="100%" >
-      <div *ngIf="deviceService.isDesktop()">
-        <div>{{currentTrack.name}}</div>
-        <div>{{currentTrack.artist?.name}} {{currentTrack.artist? '-' : ''}} {{currentTrack.album?.name}}</div>
+    <div class="current-track-info" fxFlex="100%">
+      <div *ngIf="deviceService.isDesktop()" fxLayout="column" fxLayoutAlign="center">
+        <span class="track-name">fdsafdsafdsa{{currentTrack.name}}</span>
+        <span class="artist-album-name">fdsafdsafdsa{{currentTrack.artist?.name}} {{currentTrack.artist? '-' : ''}} {{currentTrack.album?.name}}</span>
       </div>
     </div>
+
+    <button mat-button *ngIf="!deviceService.isDesktop()" [disabled]="true">
+      <mat-icon class="material-icons-round">shuffle</mat-icon>
+    </button>
     
-    <div class="media-action-controls" fxFlex="200px" fxLayoutAlign="space-around">
+    <div class="media-action-controls" fxFlex="220px" fxLayoutAlign="center">
         <button mat-button [disabled]="!state?.canPlay || isFirstPlaying()" (click)="previous()">
-          <mat-icon mat-list-icon>skip_previous</mat-icon>
+          <mat-icon mat-list-icon class="material-icons-round">skip_previous</mat-icon>
         </button>
-        <button mat-button (click)="play()" [disabled]="state?.error || !state?.canPlay" *ngIf="!state?.isPlaying">
-          <mat-icon mat-list-icon>play_circle_filled</mat-icon>
-        </button>
-        <button mat-button (click)="pause()" *ngIf="state?.isPlaying">
-          <mat-icon mat-list-icon>pause</mat-icon>
-        </button>
+        <div class="play-pause-action">
+          <button mat-button (click)="play()" [disabled]="state?.error || !state?.canPlay" *ngIf="!state?.isPlaying">
+            <mat-icon mat-list-icon class="material-icons-round">play_circle_outline</mat-icon>
+          </button>
+          <button mat-button (click)="pause()" *ngIf="state?.isPlaying">
+            <mat-icon mat-list-icon class="material-icons-round">pause_circle_outline</mat-icon>
+          </button>
+        </div>
         <button mat-button [disabled]="!state?.canPlay || isLastPlaying()" (click)="next()">
-          <mat-icon>skip_next</mat-icon>
+          <mat-icon class="material-icons-round">skip_next</mat-icon>
         </button>      
     </div>
     
     <div class="playback-action-controls" fxFlex="100%" fxLayoutAlign="end" fxLayoutAlign.xs="center">
+      <button mat-button *ngIf="deviceService.isDesktop()" [disabled]="true">
+        <mat-icon class="material-icons-round">shuffle</mat-icon>
+      </button>
       <button mat-button (click)="toggleRepeat()">
-        <mat-icon mat-list-icon *ngIf="repeat !== 1" [ngStyle]="{'color': repeat === 2 ? 'grey' : 'white'}">repeat</mat-icon>
-        <mat-icon mat-list-icon *ngIf="repeat === 1">repeat_one</mat-icon>
+        <mat-icon class="material-icons-round" *ngIf="repeat !== 1" [ngStyle]="{'color': repeat === 2 ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 255, 255, 1)'}">repeat</mat-icon>
+        <mat-icon class="material-icons-round" *ngIf="repeat === 1">repeat_one</mat-icon>
       </button>
     </div>    
 
