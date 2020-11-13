@@ -1,17 +1,17 @@
 <mat-toolbar color="primary" fxLayout="column">
   
   <mat-toolbar-row class="current-track-duration" fxFlex="36px" fxLayout="row" fxLayoutAlign="center">
-      <div>12:34{{ state?.readableCurrentTime }}</div>
+      <div>{{ state?.readableCurrentTime }}</div>
       <mat-slider class="time-slider" min="0" [max]="state?.duration" step="1" [value]="state?.currentTime" (input)="onSliderChangeEnd($event)" [disabled]="state?.error || currentTrack === undefined"></mat-slider>
-      <div>56:78{{ state?.readableDuration }}</div>
+      <div>{{ state?.readableDuration }}</div>
   </mat-toolbar-row>
 
   <mat-toolbar-row class="media-action-bar" fxFlex="80px" fxLayout="row" fxLayoutAlign="center">
     
     <div class="current-track-info" fxFlex="100%">
       <div *ngIf="deviceService.isDesktop()" fxLayout="column" fxLayoutAlign="center">
-        <span class="track-name">fdsafdsafdsa{{currentTrack.name}}</span>
-        <span class="artist-album-name">fdsafdsafdsa{{currentTrack.artist?.name}} {{currentTrack.artist? '-' : ''}} {{currentTrack.album?.name}}</span>
+        <span class="track-name">{{currentTrack.name}}</span>
+        <span class="artist-album-name">{{currentTrack.artist?.name}} {{currentTrack.artist? '-' : ''}} {{currentTrack.album?.name}}</span>
       </div>
     </div>
 
