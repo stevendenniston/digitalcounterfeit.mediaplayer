@@ -41,4 +41,8 @@ export class AlbumService {
   GetArtistAlbumByName(artistId: string, name: string): Observable<Album> {
     return this.http.get<Album>(`${AppSettings.mediaPlayerApiUrl}/artist/${artistId}/album?name=${name}`);
   }
+
+  ClearAlbumList() {
+    this.albumList.next([]);
+  }
 }

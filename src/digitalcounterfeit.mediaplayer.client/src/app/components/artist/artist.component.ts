@@ -26,7 +26,7 @@ export class ArtistComponent implements OnInit, OnDestroy {
   } 
 
   ngOnDestroy(): void {
-    this.albumList = [];
+    this.albumService.ClearAlbumList();
     this.sub.unsubscribe();
   }
 

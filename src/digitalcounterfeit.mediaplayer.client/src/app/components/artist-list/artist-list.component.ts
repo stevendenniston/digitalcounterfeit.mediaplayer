@@ -4,6 +4,7 @@ import { Observable } from "rxjs/internal/Observable";
 import { Artist } from "src/app/models/artist";
 import { Library } from "src/app/models/library";
 import { ArtistService } from "src/app/services/artist.service";
+import { AuthService } from 'src/app/services/auth.service';
 import { LibraryService } from "src/app/services/library.service";
 
 @Component({
@@ -20,10 +21,12 @@ export class ArtistListComponent implements OnInit, OnDestroy {
 
   constructor(
     private artistService: ArtistService,
-    private libraryService: LibraryService
+    private libraryService: LibraryService,
+    private authService: AuthService
   ) { }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const isLoggedIn = await this.authService.isLoggedIn();
     this.artistList = this.artistService.ArtistList;
     this.library = this.libraryService.Library;
 
@@ -34,7 +37,9 @@ export class ArtistListComponent implements OnInit, OnDestroy {
         }
       });    
     
-    this.libraryService.GetLibrary();
+    if (isLoggedIn) {
+      this.libraryService.GetLibrary();
+    }
   }
 
   ngOnDestroy(): void {

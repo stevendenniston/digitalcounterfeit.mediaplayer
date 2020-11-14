@@ -4,7 +4,6 @@ import { StreamState } from "../../interfaces/stream-state";
 import { Playlist } from 'src/app/models/play-list';
 import { AudioTrack } from 'src/app/models/audio-track';
 import { Observable } from 'rxjs';
-import { LibraryService } from 'src/app/services/library.service';
 import { RepeatType } from 'src/app/models/repeat-type';
 import { DeviceDetectorService } from 'ngx-device-detector';
 
@@ -25,11 +24,9 @@ export class PlayerComponent {
   streamState: Observable<StreamState>;
 
   constructor(
-    private audioService: AudioService,
-    private libraryService: LibraryService,
+    private audioService: AudioService,    
     public deviceService: DeviceDetectorService
-  ) {
-    this.libraryService.GetLibrary();
+  ) {    
     this.streamState = this.audioService.streamState;
     this.playlist = this.audioService.playlist;
     this.nowPlaying = this.audioService.nowPlaying;
