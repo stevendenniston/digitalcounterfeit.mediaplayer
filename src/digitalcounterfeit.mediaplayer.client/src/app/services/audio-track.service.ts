@@ -1,6 +1,6 @@
 import { HttpClient, HttpEventType, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { forkJoin, from, Observable, Subject } from 'rxjs';
 import { AppSettings } from '../app-settings.service';
 import { AudioTrack } from '../models/audio-track';
 import { v4 as uuidv4 } from "uuid";
@@ -33,31 +33,43 @@ export class AudioTrackService {
 
   UploadAudioTrackFiles(files: Set<File>): { [key: string]: { progress: Observable<number> } } {
     const status: { [key: string]: { progress: Observable<number> } } = {};
+    const fileInfo: { id: string, id3: Observable<any>, file: File, progress: Observable<number>}[] = [];
     
+    const id3Tags: Observable<any>[] = [];
+   
+    // read id3 tags
     files.forEach(file => {
-      const formData: FormData = new FormData();
-      const progress = new Subject<number>();
-      const id = uuidv4();
-
-      formData.append("file", file, file.name);
-
-      tagReader(file, {
-        onSuccess: id3 => {          
-          this.PutAudioTrack(id, id3);
-          this.http.put(`${AppSettings.mediaPlayerApiUrl}/audio-track/${id}/file`, formData, {reportProgress: true, observe: "events"})
-            .subscribe(event => {          
-              if (event instanceof HttpResponse) {
-                progress.complete();
-              }
-            });
-        },
-        onError: error => {
-          console.log(error);
-        }
-      });
-      
-      status[file.name] = { progress: progress.asObservable() };
+      id3Tags.push(this.ReadId3Tags(file));      
     })
+
+    forkJoin(id3Tags)
+      .subscribe(tags => {
+        
+        tags.forEach(id3 => {
+          const id = uuidv4();
+          const progress = new Observable<number>();
+          fileInfo.push({id: id, id3: id3.tag, file: id3.file, progress: progress});
+        })
+
+        const artistGrouping = this.GroupBy(fileInfo, (info: any) => info.id3.tags.artist);
+
+        console.log(artistGrouping);
+
+      }, error => {
+        console.log(error);
+      })    
+    
+    // upload each file
+    
+    // this.PutAudioTrack(id, id3);
+    // const formData: FormData = new FormData();
+    // formData.append("file", file, file.name);
+    // this.http.put(`${AppSettings.mediaPlayerApiUrl}/audio-track/${id}/file`, formData, {reportProgress: true, observe: "events"})
+    //   .subscribe(event => {          
+    //     if (event instanceof HttpResponse) {
+    //       progress.complete();
+    //     }
+    //   });
 
     return status;
   }
@@ -113,4 +125,32 @@ export class AudioTrackService {
         { headers: headers })
       .subscribe();
   }
+
+  private ReadId3Tags(file: File): Observable<{tag: any, file: File}> {        
+    return from(new Promise<any>((resolve, reject) => {
+      tagReader(file, {
+        onSuccess: (id3: any) => {
+          resolve({tag: id3, file: file});
+       },
+       onError: (error: any) => {
+         reject(error);
+       }
+     })
+    }));
+  }
+
+  private GroupBy(list: any[], keyGetter: any): Map<any, any> {
+    const map = new Map();
+    list.forEach((item: any) => {
+         const key = keyGetter(item);
+         const collection = map.get(key);
+         if (!collection) {
+             map.set(key, [item]);
+         } else {
+             collection.push(item);
+         }
+    });
+    return map;
+  }; 
+  
 }
