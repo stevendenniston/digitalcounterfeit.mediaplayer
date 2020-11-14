@@ -10,5 +10,7 @@ export interface IAppSettings {
         scope: string;
         response_type: string;
         post_logout_redirect_uri: string;
+        automaticSilentRenew: boolean;
+        silent_redirect_uri: string;
     };
 }

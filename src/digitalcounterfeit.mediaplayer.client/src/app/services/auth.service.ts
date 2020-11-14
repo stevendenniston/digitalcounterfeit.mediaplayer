@@ -11,7 +11,7 @@ export class AuthService {
 
   loginChanged = this.loginChangedSubject.asObservable();
 
-  constructor() {
+  constructor() {    
     this.userManager = new UserManager(AppSettings.idpSettings);    
    }
 
@@ -36,14 +36,12 @@ export class AuthService {
   async completeLogin(): Promise<User> {
     const user = await this.userManager.signinRedirectCallback();
     this.user = user;
-    this.loginChangedSubject.next(!!user && !user.expired);
-    this.userManager.startSilentRenew();
+    this.loginChangedSubject.next(!!user && !user.expired);    
     return user;
   }
 
   completeLogout(): Promise<SignoutResponse> {
-    this.user = null;
-    this.userManager.stopSilentRenew();
+    this.user = null;    
     return this.userManager.signoutRedirectCallback();
   }
 
