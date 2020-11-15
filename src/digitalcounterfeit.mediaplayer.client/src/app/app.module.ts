@@ -17,6 +17,7 @@ import { ArtistListComponent } from "./components/artist-list/artist-list.compon
 import { AlbumComponent } from "./components/album/album.component";
 import { UploadComponent } from "./components/upload/upload.component";
 import { UploadDialogComponent } from "./components/upload-dialog/upload-dialog.component";
+import { MenuComponent } from './components/menu/menu.component';
 
 export function initializeApp(appsettings: AppSettings): any {
   return () => appsettings.load();
@@ -32,7 +33,8 @@ export function initializeApp(appsettings: AppSettings): any {
     SignoutCallbackComponent,
     AlbumComponent,
     UploadComponent,
-    UploadDialogComponent
+    UploadDialogComponent,    
+    MenuComponent
   ],
   imports: [
     AppRoutingModule,

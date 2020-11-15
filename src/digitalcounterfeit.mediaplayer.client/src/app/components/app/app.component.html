@@ -1,12 +1,7 @@
 <div class="content">
-  <mat-toolbar color="primary" class="header">
-    <span>Audio Player</span>
-    <button mat-button (click)="login()" *ngIf="!isLoggedIn">Login</button>
-    <button mat-button (click)="logout()" *ngIf="isLoggedIn">Logout</button>
-  </mat-toolbar>
-  <div class="main">    
+  <app-menu></app-menu>
+  <div class="main"> 
     <router-outlet></router-outlet>    
   </div>
-  <app-upload *ngIf="isLoggedIn && isDesktop"></app-upload>
   <app-player></app-player>
 </div>
