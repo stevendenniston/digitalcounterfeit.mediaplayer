@@ -4,7 +4,7 @@ import { Observable } from "rxjs/internal/Observable";
 import { Artist } from "src/app/models/artist";
 import { Library } from "src/app/models/library";
 import { ArtistService } from "src/app/services/artist.service";
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthService } from "src/app/services/auth.service";
 import { LibraryService } from "src/app/services/library.service";
 
 @Component({
@@ -35,8 +35,8 @@ export class ArtistListComponent implements OnInit, OnDestroy {
         if (library.id) {
           this.artistService.GetLibraryArtistList(library.id);
         }
-      });    
-    
+      });
+
     if (isLoggedIn) {
       this.libraryService.GetLibrary();
     }

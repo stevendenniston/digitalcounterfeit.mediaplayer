@@ -1,16 +1,16 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-import { forkJoin, Observable } from 'rxjs';
-import { AudioTrackService } from 'src/app/services/audio-track.service';
+import { Component, OnInit, ViewChild } from "@angular/core";
+import { MatDialogRef } from "@angular/material/dialog";
+import { forkJoin, Observable } from "rxjs";
+import { AudioTrackService } from "src/app/services/audio-track.service";
 
 @Component({
-  selector: 'app-upload-dialog',
-  templateUrl: './upload-dialog.component.html',
-  styleUrls: ['./upload-dialog.component.scss']
+  selector: "app-upload-dialog",
+  templateUrl: "./upload-dialog.component.html",
+  styleUrls: ["./upload-dialog.component.scss"]
 })
 export class UploadDialogComponent implements OnInit {
 
-  @ViewChild("file", { static: false }) file
+  @ViewChild("file", { static: false }) file;
 
   public files: Set<File> = new Set();
 
@@ -22,7 +22,7 @@ export class UploadDialogComponent implements OnInit {
   uploadSuccessful = false;
 
   constructor(
-    public dialogRef: MatDialogRef<UploadDialogComponent>, 
+    public dialogRef: MatDialogRef<UploadDialogComponent>,
     private audioTrackService: AudioTrackService) { }
 
   ngOnInit(): void {
@@ -34,11 +34,11 @@ export class UploadDialogComponent implements OnInit {
 
   onFilesAdded(): void {
     const files: { [key: string]: File } = this.file.nativeElement.files;
-    for (let key in files) {
-      if (!isNaN(parseInt(key))) {
+    for (const key in files) {
+      if (!isNaN(parseInt(key, 10))) {
         this.files.add(files[key]);
       }
-    }    
+    }
   }
 
   closeDialog(): void {
@@ -46,27 +46,36 @@ export class UploadDialogComponent implements OnInit {
       return this.dialogRef.close();
     }
 
-    this.uploading = true;
-    this.progress = this.audioTrackService.UploadAudioTrackFiles(this.files);
-    let progressObservables = [];
+    this.audioTrackService.UploadStatus
+        .subscribe(status => {
+          if (status){
+            const progressObservables = [];
 
-    for (let key in this.progress) {
-      progressObservables.push(this.progress[key].progress);
-    }
+            for (const key of Object.keys(status)) {
+              progressObservables.push(status[key].progress);
+            }
 
-    this.primaryButtonText = "Finish";
-    this.canBeClosed = false;
-    this.dialogRef.disableClose = true;
-    this.showCancelButton = false;    
+            this.primaryButtonText = "Finish";
+            this.canBeClosed = false;
+            this.dialogRef.disableClose = true;
+            this.showCancelButton = false;
+            this.uploading = true;
 
-    forkJoin(progressObservables).subscribe(
-      event => {
-        console.log(event)
-        console.log("complete")
-        this.canBeClosed = true;
-        this.dialogRef.disableClose = false;
-        this.uploadSuccessful = true;
-        this.uploading = false;
-      })
+            forkJoin(progressObservables)
+              .subscribe(event => {
+                console.log(event);
+              }, error => {
+                console.log(error);
+              }, () => {
+                console.log("complete");
+                this.canBeClosed = true;
+                this.dialogRef.disableClose = false;
+                this.uploadSuccessful = true;
+                this.uploading = false;
+              });
+          }
+        });
+
+    this.audioTrackService.UploadAudioTrackFiles(this.files);
   }
 }

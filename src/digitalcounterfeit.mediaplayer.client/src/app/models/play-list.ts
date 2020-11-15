@@ -1,4 +1,4 @@
-import { AudioTrack } from './audio-track';
+import { AudioTrack } from "./audio-track";
 
 export class Playlist {
     id: string;

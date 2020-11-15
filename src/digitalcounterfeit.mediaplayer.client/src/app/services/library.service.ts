@@ -20,7 +20,7 @@ export class LibraryService {
   }
 
   GetLibrary(): void {
-    if(!this.dataStore.library) {
+    if (!this.dataStore.library) {
       this.http
         .get<Library>(`${AppSettings.mediaPlayerApiUrl}/library`)
         .subscribe(data => {

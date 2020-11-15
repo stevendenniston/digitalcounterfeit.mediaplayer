@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
-import { Subscription } from 'rxjs';
+import { Subscription } from "rxjs";
 import { Album } from "src/app/models/album";
 import { Artist } from "src/app/models/artist";
 import { AlbumService } from "src/app/services/album.service";
@@ -14,7 +14,7 @@ import { ArtistService } from "src/app/services/artist.service";
 export class ArtistComponent implements OnInit, OnDestroy {
 
   artist: Artist = new Artist();
-  albumList: Album[]; 
+  albumList: Album[];
   sub: Subscription;
 
   constructor(
@@ -23,7 +23,7 @@ export class ArtistComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {
     this.albumList = [];
-  } 
+  }
 
   ngOnDestroy(): void {
     this.albumService.ClearAlbumList();

@@ -10,7 +10,7 @@ import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatCardModule } from "@angular/material/card";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatTableModule } from "@angular/material/table";
-import { MatProgressBarModule } from "@angular/material/progress-bar"
+import { MatProgressBarModule } from "@angular/material/progress-bar";
 
 const modules = [
   FlexLayoutModule,

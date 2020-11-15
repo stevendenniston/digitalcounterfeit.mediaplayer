@@ -1,5 +1,5 @@
-import { Album } from './album';
-import { Artist } from './artist';
+import { Album } from "./album";
+import { Artist } from "./artist";
 
 export class AudioTrack {
     id: string;

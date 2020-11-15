@@ -3,9 +3,9 @@ import { Observable, BehaviorSubject, Subject, Subscription } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 import * as moment from "moment";
 import { StreamState } from "../interfaces/stream-state";
-import { Playlist } from '../models/play-list';
-import { AudioTrack } from '../models/audio-track';
-import { AudioTrackService } from './audio-track.service';
+import { Playlist } from "../models/play-list";
+import { AudioTrack } from "../models/audio-track";
+import { AudioTrackService } from "./audio-track.service";
 
 @Injectable({ providedIn: "root" })
 export class AudioService {
@@ -58,11 +58,11 @@ export class AudioService {
     return this.stateChange.asObservable();
   }
 
-  
-  loadPlaylist(playlist: Playlist) : void {
+
+  loadPlaylist(playlist: Playlist): void {
     this.currentPlaylist.next(playlist);
   }
-  
+
   play(track: AudioTrack): void {
     this.currentStream?.unsubscribe();
     this.currentAudioTrack.next(track);
@@ -72,34 +72,34 @@ export class AudioService {
       this.currentStream = this.playStream(uri).subscribe();
     });
   }
-  
+
   continue(): void {
     this.audioObj.play();
   }
-  
+
   pause(): void {
     this.audioObj.pause();
   }
-  
+
   stop(): void {
     this.stop$.next();
   }
-  
+
   seekTo(seconds: number): void {
     this.audioObj.currentTime = seconds;
   }
-  
+
   formatTime(time: number, format: string = "mm:ss"): string {
     const momentTime = time * 1000;
     return moment.utc(momentTime).format(format);
   }
 
-  
+
   private playStream(url: any): Observable<unknown> {
     return this.streamObservable(url).pipe(takeUntil(this.stop$));
   }
-  
-  private updateStateEvents(event: Event): void {    
+
+  private updateStateEvents(event: Event): void {
     switch (event.type) {
       case "canplay":
         this.state.duration = this.audioObj.duration;
@@ -125,7 +125,7 @@ export class AudioService {
         this.resetState();
         this.state.error = true;
         break;
-      case "ended":        
+      case "ended":
         this.state.hasEnded = true;
         break;
     }

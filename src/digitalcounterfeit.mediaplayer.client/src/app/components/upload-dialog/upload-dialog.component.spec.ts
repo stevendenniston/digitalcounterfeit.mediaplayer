@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from "@angular/core/testing";
 
-import { UploadDialogComponent } from './upload-dialog.component';
+import { UploadDialogComponent } from "./upload-dialog.component";
 
-describe('UploadDialogComponent', () => {
+describe("UploadDialogComponent", () => {
   let component: UploadDialogComponent;
   let fixture: ComponentFixture<UploadDialogComponent>;
 
@@ -19,7 +19,7 @@ describe('UploadDialogComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it("should create", () => {
     expect(component).toBeTruthy();
   });
 });

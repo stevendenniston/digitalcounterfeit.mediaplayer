@@ -15,8 +15,8 @@ import { ArtistComponent } from "./components/artist/artist.component";
 import { HttpInterceptorService } from "./services/http-interceptor.service";
 import { ArtistListComponent } from "./components/artist-list/artist-list.component";
 import { AlbumComponent } from "./components/album/album.component";
-import { UploadComponent } from './components/upload/upload.component';
-import { UploadDialogComponent } from './components/upload-dialog/upload-dialog.component';
+import { UploadComponent } from "./components/upload/upload.component";
+import { UploadDialogComponent } from "./components/upload-dialog/upload-dialog.component";
 
 export function initializeApp(appsettings: AppSettings): any {
   return () => appsettings.load();
