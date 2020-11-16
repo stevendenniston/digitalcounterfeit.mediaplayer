@@ -3,11 +3,11 @@
     <span>Audio Player</span>    
     
     <div fxFlex="100%" fxLayout="row" fxLayoutAlign="end">
-        <app-upload *ngIf="isLoggedIn && isDesktop"></app-upload>    
-        <button mat-button (click)="login()" *ngIf="!isLoggedIn">
+        <app-upload *ngIf="isLoggedIn && isDesktop"></app-upload> 
+        <button mat-button *ngIf="!isLoggedIn" (click)="login()">
             <mat-icon class="material-icons-round">account_circle</mat-icon>      
         </button>
-        <button mat-button (click)="logout()" *ngIf="isLoggedIn">      
+        <button mat-button *ngIf="isLoggedIn" (click)="logout()">
             <mat-icon class="material-icons-round">face</mat-icon>
         </button>
     </div>
