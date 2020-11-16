@@ -4,3 +4,6 @@ table {
 tr.audio-track-row:hover{
     background: lightslategray;
 }
+tr.audio-track-row.selected{
+    background: lightslategray;
+}

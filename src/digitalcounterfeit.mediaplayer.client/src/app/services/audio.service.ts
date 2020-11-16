@@ -88,12 +88,12 @@ export class AudioService {
   seekTo(seconds: number): void {
     this.audioObj.currentTime = seconds;
   }
+  
 
-  formatTime(time: number, format: string = "mm:ss"): string {
+  private formatTime(time: number, format: string = "mm:ss"): string {
     const momentTime = time * 1000;
     return moment.utc(momentTime).format(format);
   }
-
 
   private playStream(url: any): Observable<unknown> {
     return this.streamObservable(url).pipe(takeUntil(this.stop$));
