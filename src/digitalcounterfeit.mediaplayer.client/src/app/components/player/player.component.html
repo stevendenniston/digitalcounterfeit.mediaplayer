@@ -8,16 +8,18 @@
 
   <mat-toolbar-row class="media-action-bar" fxFlex="80px" fxLayout="row" fxLayoutAlign="center">
     
-    <div class="current-track-info" fxFlex="100%">
-      <div *ngIf="deviceService.isDesktop()" fxLayout="column" fxLayoutAlign="center">
+    <div class="current-track-info" *ngIf="deviceService.isDesktop()" fxFlex="100%">
+      <div fxLayout="column" fxLayoutAlign="center">
         <span class="track-name">{{currentTrack.name}}</span>
         <span class="artist-album-name">{{currentTrack.artist?.name}} {{currentTrack.artist? '-' : ''}} {{currentTrack.album?.name}}</span>
       </div>
     </div>
 
-    <button mat-button *ngIf="!deviceService.isDesktop()" [disabled]="true">
-      <mat-icon class="material-icons-round">shuffle</mat-icon>
-    </button>
+    <div *ngIf="!deviceService.isDesktop()" fxFlex="100%" fxLayoutAlign="start">
+      <button mat-button [disabled]="true">
+        <mat-icon class="material-icons-round">shuffle</mat-icon>
+      </button>
+    </div>
     
     <div class="media-action-controls" fxFlex="220px" fxLayoutAlign="center">
         <button mat-button [disabled]="!state?.canPlay || isFirstPlaying()" (click)="previous()">
@@ -36,7 +38,7 @@
         </button>      
     </div>
     
-    <div class="playback-action-controls" fxFlex="100%" fxLayoutAlign="end" fxLayoutAlign.xs="center">
+    <div class="playback-action-controls" fxFlex="100%" fxLayoutAlign="end">
       <button mat-button *ngIf="deviceService.isDesktop()" [disabled]="true">
         <mat-icon class="material-icons-round">shuffle</mat-icon>
       </button>
