@@ -41,8 +41,7 @@ export class AlbumComponent implements OnInit, OnDestroy {
     });
 
     this.nowPlayingSub = this.audioService.nowPlaying
-      .subscribe(currentTrack => {      
-        console.log(currentTrack);
+      .subscribe(currentTrack => {              
         this.currentPlaying = currentTrack;
       });
   }
