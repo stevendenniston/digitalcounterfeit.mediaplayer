@@ -1,6 +1,6 @@
 <div class="content" >
-    <div *ngFor="let artist of artistList | async">
-        <mat-card [routerLink]="['/artist', artist.id]">   
+    <div class="artist-list">
+        <mat-card [routerLink]="['/artist', artist.id]" *ngFor="let artist of artistList | async">
             <mat-card-content>
                 <h4>{{artist.name}}</h4>
             </mat-card-content>
