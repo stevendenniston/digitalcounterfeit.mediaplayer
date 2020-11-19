@@ -186,7 +186,8 @@ export class AudioService {
         .connect(this.twelvekHzFilterNode)
         .connect(this.gainNode)
         .connect(this.audioContext.destination);
-
+      
+      this.audioContext.resume();
       this.audioElement.play();
 
       return () => {
