@@ -21,12 +21,20 @@ export class AudioService {
     hasEnded: false
   };
 
-  private stop$ = new Subject();
-  private audioObj = new Audio();
+  private stop$ = new Subject();  
   private currentStream: Subscription;
   private stateChange: BehaviorSubject<StreamState>;
   private currentPlaylist: BehaviorSubject<Playlist>;
   private currentAudioTrack: BehaviorSubject<AudioTrack>;
+
+  private audioContext: AudioContext;
+  private audioElement: HTMLMediaElement;
+  private gainNode: GainNode;
+  private seventyHzFilterNode: BiquadFilterNode;
+  private twoFiftyHzFilterNode: BiquadFilterNode;
+  private nineTenHzFilterNode: BiquadFilterNode;
+  private threeFivekHzFilterNode: BiquadFilterNode;
+  private twelvekHzFilterNode: BiquadFilterNode;
 
   audioEvents = [
     "ended",
@@ -44,6 +52,15 @@ export class AudioService {
     this.stateChange =  new BehaviorSubject(this.state);
     this.currentPlaylist = new BehaviorSubject(new Playlist());
     this.currentAudioTrack = new BehaviorSubject(new AudioTrack());
+
+    this.audioContext = new AudioContext();    
+    this.gainNode = new GainNode(this.audioContext, {gain: 0.75});
+
+    this.seventyHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "lowshelf", Q: 1, detune: 0, gain: 8, frequency: 70});
+    this.twoFiftyHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 1.5, detune: 0, gain: 6.75, frequency: 250});
+    this.nineTenHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 1.5, detune: 0, gain: 7.25, frequency: 910});
+    this.threeFivekHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 1.5, detune: 0, gain: 6, frequency: 3500});
+    this.twelvekHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "highshelf", Q: 1, detune: 0, gain: 6.75, frequency: 12000});
   }
 
   get playlist(): Observable<Playlist> {
@@ -56,7 +73,7 @@ export class AudioService {
 
   get streamState(): Observable<StreamState> {
     return this.stateChange.asObservable();
-  }
+  } 
 
 
   loadPlaylist(playlist: Playlist): void {
@@ -66,6 +83,7 @@ export class AudioService {
   play(track: AudioTrack): void {
     this.currentStream?.unsubscribe();
     this.currentAudioTrack.next(track);
+    this.stop();
     this.audioTrackService
     .GetAudioTrackStreamUri(track.id)
     .subscribe(uri => {
@@ -74,11 +92,11 @@ export class AudioService {
   }
 
   continue(): void {
-    this.audioObj.play();
+    this.audioElement.play();
   }
 
   pause(): void {
-    this.audioObj.pause();
+    this.audioElement.pause();
   }
 
   stop(): void {
@@ -86,7 +104,7 @@ export class AudioService {
   }
 
   seekTo(seconds: number): void {
-    this.audioObj.currentTime = seconds;
+    this.audioElement.currentTime = seconds;
   }
   
 
@@ -102,7 +120,7 @@ export class AudioService {
   private updateStateEvents(event: Event): void {
     switch (event.type) {
       case "canplay":
-        this.state.duration = this.audioObj.duration;
+        this.state.duration = this.audioElement.duration;
         this.state.readableDuration = this.formatTime(this.state.duration);
         this.state.canPlay = true;
         this.state.hasEnded = false;
@@ -117,7 +135,7 @@ export class AudioService {
         this.state.hasEnded = false;
         break;
       case "timeupdate":
-        this.state.currentTime = this.audioObj.currentTime;
+        this.state.currentTime = this.audioElement.currentTime;
         this.state.readableCurrentTime = this.formatTime(this.state.currentTime);
         this.state.hasEnded = false;
         break;
@@ -132,7 +150,7 @@ export class AudioService {
     this.stateChange.next(this.state);
   }
 
-  private resetState(): void {
+  private resetState(): void {    
     this.state = {
       isPlaying: false,
       readableCurrentTime: "",
@@ -146,23 +164,37 @@ export class AudioService {
   }
 
   private streamObservable(url): Observable<unknown> {
-    return new Observable(observer => {
+    return new Observable(subscriber => {
       const handler = (event: Event) => {
         this.updateStateEvents(event);
-        observer.next();
+        subscriber.next();
       };
+      
+      this.audioElement = new Audio(url);
+      this.audioElement.crossOrigin = "";      
+      this.audioElement.load();
 
-      this.addEvents(this.audioObj, this.audioEvents, handler);
+      this.addEvents(this.audioElement, this.audioEvents, handler);
 
-      this.audioObj.src = url;
-      this.audioObj.load();
-      this.audioObj.play();
+      const track = this.audioContext.createMediaElementSource(this.audioElement)
+
+      track
+        .connect(this.seventyHzFilterNode)
+        .connect(this.twoFiftyHzFilterNode)
+        .connect(this.nineTenHzFilterNode)
+        .connect(this.threeFivekHzFilterNode)
+        .connect(this.twelvekHzFilterNode)
+        .connect(this.gainNode)
+        .connect(this.audioContext.destination);
+
+      this.audioElement.play();
 
       return () => {
-        this.audioObj.pause();
-        this.audioObj.currentTime = 0;
-        this.removeEvents(this.audioObj, this.audioEvents, handler);
+        this.audioElement.pause();
+        this.audioElement.currentTime = 0;
+        this.removeEvents(this.audioElement, this.audioEvents, handler);
         this.resetState();
+        track.disconnect();        
       };
     });
   }
