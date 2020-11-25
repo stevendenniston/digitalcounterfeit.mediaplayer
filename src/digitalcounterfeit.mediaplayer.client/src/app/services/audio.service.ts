@@ -178,14 +178,13 @@ export class AudioService {
 
       const track = this.audioContext.createMediaElementSource(this.audioElement)
 
-      track
-        .connect(this.gainNode)
-        .connect(this.fourteenkHzFilterNode)
-        .connect(this.fourkHzFilterNode)
-        .connect(this.sixtyHzFilterNode)
-        .connect(this.nineTenHzFilterNode)
-        .connect(this.fourTenHzFilterNode)
-        .connect(this.audioContext.destination);
+      track.connect(this.fourteenkHzFilterNode);
+      this.fourteenkHzFilterNode.connect(this.fourkHzFilterNode);
+      this.fourkHzFilterNode.connect(this.nineTenHzFilterNode);
+      this.nineTenHzFilterNode.connect(this.fourTenHzFilterNode);
+      this.fourTenHzFilterNode.connect(this.sixtyHzFilterNode);
+      this.sixtyHzFilterNode.connect(this.gainNode)
+      this.gainNode.connect(this.audioContext.destination);
       
       this.audioContext.resume();
       this.audioElement.play();
