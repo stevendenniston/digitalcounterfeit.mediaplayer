@@ -57,9 +57,9 @@ export class AudioService {
     this.gainNode = new GainNode(this.audioContext, {gain: 1});
 
     this.sixtyHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "lowshelf", Q: 1, detune: 0, gain: 2.5, frequency: 60});
-    this.fourTenHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 4, detune: 0, gain: 1.25, frequency: 410});
-    this.nineTenHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 4, detune: 0, gain: 1.5, frequency: 910});
-    this.fourkHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 4, detune: 0, gain: 0.25, frequency: 4000});
+    this.fourTenHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 10, detune: 0, gain: 1.25, frequency: 410});
+    this.nineTenHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 10, detune: 0, gain: 1.5, frequency: 910});
+    this.fourkHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 10, detune: 0, gain: 0.25, frequency: 4000});
     this.fourteenkHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "highshelf", Q: 1, detune: 0, gain: 1, frequency: 14000});
   }
 
