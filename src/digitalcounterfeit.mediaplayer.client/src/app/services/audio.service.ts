@@ -30,11 +30,11 @@ export class AudioService {
   private audioContext: AudioContext;
   private audioElement: HTMLMediaElement;
   private gainNode: GainNode;
-  private seventyHzFilterNode: BiquadFilterNode;
-  private twoFiftyHzFilterNode: BiquadFilterNode;
+  private sixtyHzFilterNode: BiquadFilterNode;
+  private fourTenHzFilterNode: BiquadFilterNode;
   private nineTenHzFilterNode: BiquadFilterNode;
-  private threeFivekHzFilterNode: BiquadFilterNode;
-  private twelvekHzFilterNode: BiquadFilterNode;
+  private fourkHzFilterNode: BiquadFilterNode;
+  private fourteenkHzFilterNode: BiquadFilterNode;
 
   audioEvents = [
     "ended",
@@ -56,11 +56,11 @@ export class AudioService {
     this.audioContext = new AudioContext();    
     this.gainNode = new GainNode(this.audioContext, {gain: 1});
 
-    this.seventyHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "lowshelf", Q: 1, detune: 0, gain: 5, frequency: 70});
-    this.twoFiftyHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 1.5, detune: 0, gain: 3.75, frequency: 250});
-    this.nineTenHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 1.5, detune: 0, gain: 4.25, frequency: 910});
-    this.threeFivekHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 1.5, detune: 0, gain: 3, frequency: 3500});
-    this.twelvekHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "highshelf", Q: 1, detune: 0, gain: 3.75, frequency: 12000});
+    this.sixtyHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "lowshelf", Q: 1, detune: 0, gain: 2.5, frequency: 60});
+    this.fourTenHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 4, detune: 0, gain: 1.25, frequency: 410});
+    this.nineTenHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 4, detune: 0, gain: 1.5, frequency: 910});
+    this.fourkHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "peaking", Q: 4, detune: 0, gain: 0.25, frequency: 4000});
+    this.fourteenkHzFilterNode = new BiquadFilterNode(this.audioContext, {type: "highshelf", Q: 1, detune: 0, gain: 1, frequency: 14000});
   }
 
   get playlist(): Observable<Playlist> {
@@ -179,12 +179,12 @@ export class AudioService {
       const track = this.audioContext.createMediaElementSource(this.audioElement)
 
       track
-        .connect(this.seventyHzFilterNode)
-        .connect(this.twoFiftyHzFilterNode)
-        .connect(this.nineTenHzFilterNode)
-        .connect(this.threeFivekHzFilterNode)
-        .connect(this.twelvekHzFilterNode)
         .connect(this.gainNode)
+        .connect(this.fourteenkHzFilterNode)
+        .connect(this.fourkHzFilterNode)
+        .connect(this.sixtyHzFilterNode)
+        .connect(this.nineTenHzFilterNode)
+        .connect(this.fourTenHzFilterNode)
         .connect(this.audioContext.destination);
       
       this.audioContext.resume();
