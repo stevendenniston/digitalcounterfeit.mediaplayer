@@ -63,11 +63,10 @@ export class UploadDialogComponent implements OnInit {
 
             forkJoin(progressObservables)
               .subscribe(event => {
-                console.log(event);
+                // console.log(event);
               }, error => {
                 console.log(error);
-              }, () => {
-                console.log("complete");
+              }, () => {                
                 this.canBeClosed = true;
                 this.dialogRef.disableClose = false;
                 this.uploadSuccessful = true;

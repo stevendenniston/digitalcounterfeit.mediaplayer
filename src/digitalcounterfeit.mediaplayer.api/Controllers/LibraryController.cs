@@ -33,7 +33,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         [HttpGet("")]
         public async Task<ActionResult<LibraryModel>> GetByUserIdAsync()
         {
-            if (Guid.TryParse(User.GetUserSubjectId(), out var userId))
+            if (Guid.TryParse(User?.GetUserSubjectId(), out var userId))
             {
                 var library = await _libraryRepository.GetByUserIdAsync(userId);
 
@@ -49,9 +49,16 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         [HttpPut]
         public async Task<IActionResult> UpsertAsync(LibraryModel library)
         {
-            await _libraryRepository.UpsertAsync(library);
+            if (Guid.TryParse(User?.GetUserSubjectId(), out var userId))
+            {
+                library.UserId = userId;
 
-            return NoContent();
+                await _libraryRepository.UpsertAsync(library);
+
+                return NoContent();
+            }
+
+            return StatusCode(418);
         }
 
         [HttpPatch("{id:guid}")]

@@ -47,10 +47,19 @@ export class AuthService {
 
   getAccessToken(): Promise<string> {
     return this.userManager.getUser().then(user => {
-      if (!!user && !user.expired){
+      if (!!user && !user.expired) {
         return user.access_token;
+      } else {
+        return null;
       }
-      else {
+    });
+  }
+
+  getUsername(): Promise<string> {
+    return this.userManager.getUser().then(user => {
+      if (!!user && !user.expired) {
+        return user.profile.name
+      } else {
         return null;
       }
     });
