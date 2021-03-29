@@ -24,7 +24,6 @@ namespace digitalcounterfeit.mediaplayer.api
         public IConfiguration Configuration { get; }
         public string Version { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureCors(Configuration, _corsPolicy);
@@ -44,8 +43,7 @@ namespace digitalcounterfeit.mediaplayer.api
             services.AddScoped<ILibraryRepository, LibraryRepository>();
             services.AddScoped<IPlaylistRepository, PlaylistRepository>();
         }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
         public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
         {
             if (environment.IsDevelopment())
