@@ -1,5 +1,8 @@
 ﻿using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
+using digitalcounterfeit.mediaplayer.api.Extensions;
 using digitalcounterfeit.mediaplayer.api.Models;
+using digitalcounterfeit.mediaplayer.api.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -13,10 +16,12 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
     public class AlbumController : ControllerBase
     {
         private readonly IAlbumRepository _albumRepository;
+        private readonly IAzureImageStorage _imageStorage;
 
-        public AlbumController(IAlbumRepository albumRepository)
+        public AlbumController(IAlbumRepository albumRepository, IAzureImageStorage imageStorage)
         {
             _albumRepository = albumRepository;
+            _imageStorage = imageStorage;
         }
 
         [HttpGet("{id:guid}")]
@@ -49,6 +54,18 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
             return Ok(album);
         }
 
+
+        [HttpPut("/api/artist/{artistId:guid}/album/{albumId:guid}/image")]
+        public async Task<IActionResult> UpsertAlbumImage(Guid artistId, Guid albumId, IFormFile file)
+        {
+            if (Request.ContentLength <= 0)
+                return BadRequest("Empty request body; Cannot upload an empty image file...");
+            
+            var blobName = $@"{User?.GetUserSubjectId()}/{artistId}/{albumId}";
+            await _imageStorage.UploadImageAsync(file.OpenReadStream(), blobName, file.ContentType);
+
+            return NoContent();
+        }
 
         [HttpPut]
         public async Task<IActionResult> UpsertAsync(AlbumModel album)

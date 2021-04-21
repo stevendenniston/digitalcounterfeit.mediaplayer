@@ -1,7 +1,7 @@
 ﻿using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.api.Extensions;
 using digitalcounterfeit.mediaplayer.api.Models;
-using digitalcounterfeit.mediaplayer.api.Services;
+using digitalcounterfeit.mediaplayer.api.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;

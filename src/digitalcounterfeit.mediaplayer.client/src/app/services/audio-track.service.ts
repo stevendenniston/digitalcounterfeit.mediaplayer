@@ -11,6 +11,7 @@ import { LibraryService } from "./library.service";
 import { Artist } from "../models/artist";
 import { Album } from "../models/album";
 import { htmlAstToRender3Ast } from "@angular/compiler/src/render3/r3_template_transform";
+import { ImgSrcDirective } from "@angular/flex-layout";
 
 @Injectable({
   providedIn: "root"
@@ -42,7 +43,7 @@ export class AudioTrackService {
 
   UploadAudioTrackFiles(files: Set<File>): void {
     const status: { [key: string]: { progress: Observable<number> } } = {};
-    const fileInfo: { id: string, id3: Observable<any>, data: File, progress: Subject<number>}[] = [];
+    const fileInfo: { id: string, id3: Observable<any>, data: File, image: any, progress: Subject<number>}[] = [];
 
     const id3Tags: Observable<any>[] = [];
 
@@ -56,8 +57,8 @@ export class AudioTrackService {
         tags.forEach(id3 => {
           const id = uuidv4();
           const progress = new Subject<number>();
-          fileInfo.push({id, id3: id3.tags, data: id3.file, progress});
-          status[id3.file.name] = { progress };
+          fileInfo.push({id, id3: id3.tags, data: id3.file, image: id3.tags.tags.picture, progress});
+          status[id3.file.name] = { progress };          
         });
 
         const artistAlbumGrouping = this.GetArtistAlbumGrouping(fileInfo);
@@ -68,8 +69,23 @@ export class AudioTrackService {
               albumInfo.forEach((trackInfo, albumName) => {
                 this.UpsertAlbum(artist.id, albumName)
                   .subscribe(album => {
-                    trackInfo.forEach(track => {
+                    trackInfo.forEach(track => {                      
                       this.CreateAudioTrack(track.id, artist, album, track.id3).subscribe();
+
+                      if (track.image) {
+                        const { data, format } = track.image;
+                        let base64String = "";
+                        for (let i = 0; i < data.length; i++) {
+                          base64String += String.fromCharCode(data[i]);
+                        }
+                        let temp = `data:${format};base64,${window.btoa(base64String)}`;
+                        const file = this.DataURIToBlob(temp);
+    
+                        const imageFormData: FormData = new FormData();
+                        imageFormData.append("file", file, "image.jpg");
+                        this.http.put(`${AppSettings.mediaPlayerApiUrl}/artist/${album.artistId}/album/${album.id}/image`, imageFormData)
+                          .subscribe();
+                      }
                     });
                   });
               });
@@ -85,7 +101,7 @@ export class AudioTrackService {
                 file.progress.next(1);
                 file.progress.complete();
               }
-            });
+            });          
         });
 
         this.uploadStatus.next(status);
@@ -168,7 +184,7 @@ export class AudioTrackService {
     return artistAlbumGrouping;
   }
 
-  // may use this else where (elsewhere? i guess...), how are common angular utils handled?
+  // may use these else where (elsewhere? i guess...), how are common angular utils handled?
   private GroupBy(list: any[], keyGetter: any): Map<any, any> {
     const map = new Map();
     list.forEach((item: any) => {
@@ -181,5 +197,17 @@ export class AudioTrackService {
          }
     });
     return map;
+  }
+
+  private DataURIToBlob(dataURI: string) {
+    const splitDataURI = dataURI.split(',')
+    const byteString = splitDataURI[0].indexOf('base64') >= 0 ? atob(splitDataURI[1]) : decodeURI(splitDataURI[1])
+    const mimeString = splitDataURI[0].split(':')[1].split(';')[0]
+
+    const ia = new Uint8Array(byteString.length)
+    for (let i = 0; i < byteString.length; i++)
+        ia[i] = byteString.charCodeAt(i)
+
+    return new Blob([ia], { type: mimeString })
   }
 }

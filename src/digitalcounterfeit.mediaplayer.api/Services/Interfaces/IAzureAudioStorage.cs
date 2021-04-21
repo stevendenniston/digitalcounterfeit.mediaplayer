@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace digitalcounterfeit.mediaplayer.api.Services
+namespace digitalcounterfeit.mediaplayer.api.Services.Interfaces
 {
     public interface IAzureAudioStorage
     {

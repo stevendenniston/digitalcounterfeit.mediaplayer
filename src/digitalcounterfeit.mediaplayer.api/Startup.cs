@@ -2,6 +2,7 @@ using digitalcounterfeit.mediaplayer.api.Data;
 using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.api.Extensions;
 using digitalcounterfeit.mediaplayer.api.Services;
+using digitalcounterfeit.mediaplayer.api.Services.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +37,7 @@ namespace digitalcounterfeit.mediaplayer.api
             });
 
             services.AddScoped<IAzureAudioStorage, AzureAudioStorage>();
+            services.AddScoped<IAzureImageStorage, AzureImageStorage>();
 
             services.AddScoped<IAlbumRepository, AlbumRepository>();
             services.AddScoped<IArtistRepository, ArtistRepository>();
