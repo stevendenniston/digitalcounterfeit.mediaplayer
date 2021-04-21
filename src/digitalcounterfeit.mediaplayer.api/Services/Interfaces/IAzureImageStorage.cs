@@ -8,6 +8,7 @@ namespace digitalcounterfeit.mediaplayer.api.Services.Interfaces
     {
         Task UploadImageAsync(Stream stream, string blobName, string contentType);
         Task<FileStreamResult> DownloadImageAsync(string blobName);
+        Task<string> GetImageSasUriAsync(string blobName);
         Task DeleteImageAsync(string blobName);
     }
 }

@@ -56,6 +56,11 @@ export class AlbumService {
       album.name.localeCompare(name, undefined, { sensitivity: "accent" }) === 0);
   }
 
+  GetAlbumImageUri(artistId: string, albumId: string): Observable<string>{
+    const headers = new HttpHeaders().set("Content-Type", "text/plain; charset=utf-8");
+    return this.http.get(`${AppSettings.mediaPlayerApiUrl}/artist/${artistId}/album/${albumId}/image-uri`, { headers, responseType: "text" });
+  }
+
   PutAlbum(albumInfo: Album): Observable<Album> {
     if (!this.dataStore.albumList.some(album => album.id.localeCompare(albumInfo.id, undefined, { sensitivity: "accent" }) === 0)) {
       this.dataStore.albumList.push(albumInfo);

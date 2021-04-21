@@ -54,6 +54,18 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
             return Ok(album);
         }
 
+        [HttpGet("/api/artist/{artistId:guid}/album/{albumId:guid}/image-uri")]
+        public async Task<ActionResult<IEnumerable<string>>> GetAudioTrackSasUriAsync(Guid artistId, Guid albumId)
+        {
+            var blobName = $@"{User?.GetUserSubjectId()}/{artistId}/{albumId}";
+            var audioTrackUri = await _imageStorage.GetImageSasUriAsync(blobName);
+
+            if (string.IsNullOrWhiteSpace(audioTrackUri))
+                return NotFound();
+
+            return Ok(audioTrackUri);
+        }
+
 
         [HttpPut("/api/artist/{artistId:guid}/album/{albumId:guid}/image")]
         public async Task<IActionResult> UpsertAlbumImage(Guid artistId, Guid albumId, IFormFile file)

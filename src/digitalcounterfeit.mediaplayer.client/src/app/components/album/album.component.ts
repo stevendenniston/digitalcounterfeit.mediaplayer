@@ -18,6 +18,7 @@ export class AlbumComponent implements OnInit, OnDestroy {
   audioTrackList: AudioTrack[] = [];
   columns: string[] = ["number", "name"];
   currentPlaying: AudioTrack;
+  imageUri: string;
 
   private nowPlayingSub: Subscription;
 
@@ -38,6 +39,13 @@ export class AlbumComponent implements OnInit, OnDestroy {
         }, error => {
           console.log(error);
         });
+
+        if (this.album) {
+          this.albumService.GetAlbumImageUri(this.album.artistId, this.album.id)
+            .subscribe(imageUri => {
+              this.imageUri = imageUri;
+            });
+        }
     });
 
     this.nowPlayingSub = this.audioService.nowPlaying
