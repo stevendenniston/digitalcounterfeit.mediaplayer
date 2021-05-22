@@ -56,17 +56,20 @@ namespace digitalcounterfeit.mediaplayer.api.Services
             return null;
         }
 
-        public Task<string> GetImageSasUriAsync(string blobName)
+        public async Task<string> GetImageSasUriAsync(string blobName)
         {
             if (_uriCache.TryGetValue<string>(blobName, out var cachedUri))
             {
-                return Task.FromResult(cachedUri);
+                return cachedUri;
             }
             else
             {
-                var (sasUri, expiresOn) = GenerateSasUri(blobName);
-                _uriCache.Set(blobName, sasUri, expiresOn);
-                return Task.FromResult(sasUri);
+                var (sasUri, expiresOn) = await GenerateSasUriAsync(blobName);
+
+                if (sasUri != default)
+                    _uriCache.Set(blobName, sasUri, expiresOn);
+
+                return sasUri;
             }
         }
 
@@ -81,30 +84,35 @@ namespace digitalcounterfeit.mediaplayer.api.Services
         }
 
 
-        private (string, DateTimeOffset) GenerateSasUri(string blobName)
+        private async Task<(string, DateTimeOffset)> GenerateSasUriAsync(string blobName)
         {
             var expiresOn = DateTimeOffset.UtcNow.AddHours(1);
             var key = new StorageSharedKeyCredential(_accountName, _accountKey);
             var container = new BlobContainerClient(new Uri($"https://{_accountName}.blob.core.windows.net/{CONTAINER_NAME}"), key);
             var blob = container.GetBlockBlobClient(blobName);
 
-            var sasBuilder = new BlobSasBuilder()
+            if (await blob.ExistsAsync())
             {
-                BlobName = blobName,
-                BlobContainerName = container.Name,
-                Resource = "b",
-                StartsOn = DateTimeOffset.UtcNow,
-                ExpiresOn = expiresOn
-            };
+                var sasBuilder = new BlobSasBuilder()
+                {
+                    BlobName = blobName,
+                    BlobContainerName = container.Name,
+                    Resource = "b",
+                    StartsOn = DateTimeOffset.UtcNow,
+                    ExpiresOn = expiresOn
+                };
 
-            sasBuilder.SetPermissions(BlobContainerSasPermissions.Read);
+                sasBuilder.SetPermissions(BlobContainerSasPermissions.Read);
 
-            var builder = new UriBuilder(blob.Uri)
-            {
-                Query = sasBuilder.ToSasQueryParameters(key).ToString()
-            };
+                var builder = new UriBuilder(blob.Uri)
+                {
+                    Query = sasBuilder.ToSasQueryParameters(key).ToString()
+                };
 
-            return (builder.ToString(), expiresOn);
+                return (builder.ToString(), expiresOn);
+            }
+
+            return (default, default);
         }
     }
 }

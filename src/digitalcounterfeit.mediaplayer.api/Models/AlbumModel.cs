@@ -8,5 +8,6 @@ namespace digitalcounterfeit.mediaplayer.api.Models
         public Guid LibraryId { get; set; }
         public Guid ArtistId { get; set; }
         public string Name { get; set; }
+        public string ImageUri { get; set; }
     }
 }

@@ -3,7 +3,8 @@
 <div class="content">
     <div *ngFor="let album of albumList">        
         <mat-card [routerLink]="['/album', album?.id]">
-            <mat-card-content>
+            <mat-card-content>                
+                <img src="{{album.imageUri}}" *ngIf="album.imageUri">                
                 <h4>{{album.name}}</h4>
             </mat-card-content>
         </mat-card>

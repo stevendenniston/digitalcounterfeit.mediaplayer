@@ -127,6 +127,7 @@ export class AudioTrackService {
 
   private UpsertAlbum(artistId: string, name: string): Observable<Album> {
     const libraryId = this.libraryService.GetLibraryId();
+    const imageUri = undefined;
     let album = this.albumService.GetArtistAlbumByName(artistId, name);
 
     if (!album) {
@@ -134,7 +135,8 @@ export class AudioTrackService {
         id: uuidv4(),
         libraryId,
         artistId,
-        name
+        name,
+        imageUri
       };
     }
 

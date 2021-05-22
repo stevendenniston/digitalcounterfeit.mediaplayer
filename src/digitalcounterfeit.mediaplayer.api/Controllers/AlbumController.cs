@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Controllers
@@ -40,11 +41,17 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         {
             var albumList = await _albumRepository.GetArtistAlbumListAsync(artistId);
 
+            if (albumList.Any())
+            {
+                foreach (var album in albumList)
+                    album.ImageUri = await _imageStorage.GetImageSasUriAsync($@"{User?.GetUserSubjectId()}/{album.ArtistId}/{album.Id}");
+            }
+
             return Ok(albumList);
         }
 
         [HttpGet("/api/artist/{artistId:guid}/album")]
-        public async Task<ActionResult<AlbumModel>> GetByArtistIdAlbumName(Guid artistId, [FromQuery] string name)
+        public async Task<ActionResult<AlbumModel>> GetByArtistIdAlbumNameAsync(Guid artistId, [FromQuery] string name)
         {
             var album = await _albumRepository.GetByArtistIdAlbumName(artistId, name);
 
@@ -55,7 +62,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         }
 
         [HttpGet("/api/artist/{artistId:guid}/album/{albumId:guid}/image-uri")]
-        public async Task<ActionResult<IEnumerable<string>>> GetAudioTrackSasUriAsync(Guid artistId, Guid albumId)
+        public async Task<ActionResult<IEnumerable<string>>> GetAlbumImageSasUriAsync(Guid artistId, Guid albumId)
         {
             var blobName = $@"{User?.GetUserSubjectId()}/{artistId}/{albumId}";
             var audioTrackUri = await _imageStorage.GetImageSasUriAsync(blobName);
@@ -68,7 +75,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
 
 
         [HttpPut("/api/artist/{artistId:guid}/album/{albumId:guid}/image")]
-        public async Task<IActionResult> UpsertAlbumImage(Guid artistId, Guid albumId, IFormFile file)
+        public async Task<IActionResult> UpsertAlbumImageAsync(Guid artistId, Guid albumId, IFormFile file)
         {
             if (Request.ContentLength <= 0)
                 return BadRequest("Empty request body; Cannot upload an empty image file...");

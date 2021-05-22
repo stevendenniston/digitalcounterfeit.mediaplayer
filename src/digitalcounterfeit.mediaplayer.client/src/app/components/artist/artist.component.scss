@@ -5,20 +5,29 @@
     margin: 8px;
 }
 
-.mat-card{
-    width: 156px;
-    height: 148px;
-    margin: 4px;
-    padding: 8px;
-    .mat-card-content {        
-        display: flex;
-        flex-flow: column-reverse;  
+mat-card{
+    width: 180px;
+    height: 168px;
+    padding: 0px;    
+    mat-card-content {
         height: 100%;
-        width: 100%;        
+        width: 100%;
+        border-radius: inherit;        
+        img {
+            border-radius: inherit;
+            width: 100%;
+            height: 100%;
+        }
+        h4{            
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+        }
     }
 }
 
-.mat-card:hover {    
+
+mat-card:hover {    
     -webkit-box-shadow: 3px 3px 5px 6px #ccc;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
     -moz-box-shadow:    3px 3px 5px 6px #ccc;  /* Firefox 3.5 - 3.6 */
     box-shadow:         3px 3px 5px 6px #ccc;  /* Opera 10.5, IE 9, Firefox 4+, Chrome 6+, iOS 5 */

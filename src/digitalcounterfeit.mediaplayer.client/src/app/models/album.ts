@@ -3,4 +3,5 @@ export class Album {
     libraryId: string;
     artistId: string;
     name: string;
+    imageUri: string;
 }
