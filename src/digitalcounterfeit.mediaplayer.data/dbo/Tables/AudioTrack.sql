@@ -2,7 +2,7 @@
 	[Id] UNIQUEIDENTIFIER,
 	[ArtistId] UNIQUEIDENTIFIER,
 	[AlbumId] UNIQUEIDENTIFIER,
-	[Name] VARCHAR(255),
+	[Name] NVARCHAR(255),
 	[Number] INT,
 	[DiscNumber] INT
 )

@@ -10,7 +10,8 @@ BEGIN
 		[Id],
 		[LibraryId],
 		[ArtistId],
-		[Name]
+		[Name],
+		[Year]
 	FROM
 		[Album]
 	WHERE

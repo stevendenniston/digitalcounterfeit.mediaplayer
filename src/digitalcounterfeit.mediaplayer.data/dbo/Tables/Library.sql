@@ -1,6 +1,6 @@
 ﻿CREATE TABLE [dbo].[Library] (
 	[Id] UNIQUEIDENTIFIER,
 	[UserId] UNIQUEIDENTIFIER,
-	[Name] VARCHAR(255)
+	[Name] NVARCHAR(255)
 )
 GO;

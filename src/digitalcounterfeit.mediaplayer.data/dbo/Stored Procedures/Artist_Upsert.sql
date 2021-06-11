@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[Artist_Upsert] (
 	@Id UNIQUEIDENTIFIER,
 	@LibraryId UNIQUEIDENTIFIER,
-	@Name VARCHAR(255)
+	@Name NVARCHAR(255)
 )
 AS
 BEGIN

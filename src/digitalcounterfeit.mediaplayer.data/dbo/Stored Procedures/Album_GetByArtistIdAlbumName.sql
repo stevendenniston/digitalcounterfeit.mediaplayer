@@ -1,6 +1,6 @@
 ﻿CREATE PROCEDURE [dbo].[Album_GetByArtistIdAlbumName] (
 	@ArtistId UNIQUEIDENTIFIER,
-	@AlbumName VARCHAR(255)
+	@AlbumName NVARCHAR(255)
 ) AS
 BEGIN
 	SET NOCOUNT ON;
@@ -10,7 +10,8 @@ BEGIN
 		[Id],
 		[LibraryId],
 		[ArtistId],
-		[Name]
+		[Name],
+		[Year]
 	FROM
 		[dbo].[Album]
 	WHERE

@@ -2,7 +2,8 @@
 	@Id UNIQUEIDENTIFIER,
 	@LibraryId UNIQUEIDENTIFIER,
 	@ArtistId UNIQUEIDENTIFIER,
-	@Name VARCHAR(255)
+	@Name NVARCHAR(255),
+	@Year NCHAR(4)
 )
 AS
 BEGIN
@@ -12,8 +13,11 @@ BEGIN
 	IF EXISTS (SELECT 1 FROM [dbo].[Album] WHERE [Id] = @Id)
 	BEGIN
 		UPDATE [dbo].[Album]
-		SET [Name] = @Name
-		WHERE [Id] = @Id
+		SET 
+			[Name] = @Name,
+			[Year] = @Year
+		WHERE 
+			[Id] = @Id
 	END
 	ELSE
 	BEGIN
@@ -21,13 +25,15 @@ BEGIN
 			[Id],
 			[LibraryId],
 			[ArtistId],
-			[Name]
+			[Name],
+			[Year]
 		)
 		VALUES(
 			@Id,
 			@LibraryId,
 			@ArtistId,
-			@Name
+			@Name,
+			@Year
 		)
 	END
 END

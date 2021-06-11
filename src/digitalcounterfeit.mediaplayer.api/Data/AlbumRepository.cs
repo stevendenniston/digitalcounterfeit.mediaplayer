@@ -92,7 +92,8 @@ namespace digitalcounterfeit.mediaplayer.api.Data
                             Id = album.Id,
                             LibraryId = album.LibraryId,
                             ArtistId = album.ArtistId,
-                            Name = album.Name
+                            Name = album.Name,
+                            Year = album.Year
                         },
                         commandType: CommandType.StoredProcedure);
             }

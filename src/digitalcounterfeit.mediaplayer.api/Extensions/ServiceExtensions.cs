@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 
 namespace digitalcounterfeit.mediaplayer.api.Extensions
@@ -48,6 +49,14 @@ namespace digitalcounterfeit.mediaplayer.api.Extensions
                     options.Audience = configuration.GetValue<string>("AuthenticationAudience");
                     options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
                 });
+        }
+
+        public static void ConfigureSwagger(this IServiceCollection services, string version)
+        {
+            services.AddSwaggerGen(opt =>
+            {
+                opt.SwaggerDoc(name: version, new OpenApiInfo { Title = "DigitalCounterfeit Media Player Api", Version = version });
+            });
         }
     }
 }

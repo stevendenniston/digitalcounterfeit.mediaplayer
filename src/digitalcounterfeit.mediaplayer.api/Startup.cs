@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 namespace digitalcounterfeit.mediaplayer.api
 {
@@ -30,11 +29,7 @@ namespace digitalcounterfeit.mediaplayer.api
             services.ConfigureCors(Configuration, _corsPolicy);
             services.ConfigureAuthentication(Configuration);
             services.ConfigureControllers();
-
-            services.AddSwaggerGen(opt =>
-            {
-                opt.SwaggerDoc(name: Version, new OpenApiInfo { Title = "DigitalCounterfeit Media Player Api", Version = Version });
-            });
+            services.ConfigureSwagger(Version);
 
             services.AddScoped<IAzureAudioStorage, AzureAudioStorage>();
             services.AddScoped<IAzureImageStorage, AzureImageStorage>();
@@ -58,15 +53,8 @@ namespace digitalcounterfeit.mediaplayer.api
             app.UseRouting();
             app.UseAuthorization();
             app.UseAuthentication();
-            app.UseSwagger();
-            app.UseSwaggerUI(config =>
-            {
-                config.SwaggerEndpoint(url: $"/swagger/{Version}/swagger.json", name: $"DigitalCounterfeit Media Player Api {Version}");
-            });
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.ConfigureSwagger(Version);
+            app.ConfigureEndpoints();
         }
     }
 }
