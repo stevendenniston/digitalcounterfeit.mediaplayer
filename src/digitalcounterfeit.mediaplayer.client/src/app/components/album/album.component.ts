@@ -16,7 +16,7 @@ export class AlbumComponent implements OnInit, OnDestroy {
 
   album: Album = new Album();
   audioTrackList: AudioTrack[] = [];
-  columns: string[] = ["number", "name"];
+  columns: string[] = ["number", "name", "duration", "playCount", "favorite"];
   currentPlaying: AudioTrack;
   imageUri: string;
 
