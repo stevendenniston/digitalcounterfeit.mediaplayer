@@ -21,6 +21,7 @@ export class AlbumComponent implements OnInit, OnDestroy {
   imageUri: string;
 
   private nowPlayingSub: Subscription;
+  private albumSub: Subscription;
 
   constructor(
     private albumService: AlbumService,
@@ -32,20 +33,22 @@ export class AlbumComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const albumId = params.get("albumId");
-      this.album = this.albumService.GetAlbumById(albumId);
+
+      this.albumSub =  this.albumService.Album
+        .subscribe(album => {
+          this.album = album;
+          this.imageUri = album.imageUri;
+        }, error => {
+          console.log(error);
+        })
+
+      this.albumService.GetAlbumById(albumId);
       this.audioTrackService.GetAlbumAudioTrackList(albumId)
         .subscribe(audioTrackList => {
           this.audioTrackList = audioTrackList;
         }, error => {
           console.log(error);
-        });
-
-        if (this.album) {
-          this.albumService.GetAlbumImageUri(this.album.artistId, this.album.id)
-            .subscribe(imageUri => {
-              this.imageUri = imageUri;
-            });
-        }
+        });                
     });
 
     this.nowPlayingSub = this.audioService.nowPlaying
@@ -56,6 +59,7 @@ export class AlbumComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.nowPlayingSub.unsubscribe();
+    this.albumSub.unsubscribe();
   }
 
   playAlbum(startingTrack: AudioTrack): void {

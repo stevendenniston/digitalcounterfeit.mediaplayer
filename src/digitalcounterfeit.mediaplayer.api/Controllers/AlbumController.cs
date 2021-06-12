@@ -33,6 +33,8 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
             if (album == null)
                 return NotFound();
 
+            album.ImageUri = await _imageStorage.GetImageSasUriAsync($@"{User?.GetUserSubjectId()}/{album.ArtistId}/{album.Id}");
+
             return Ok(album);
         }
 

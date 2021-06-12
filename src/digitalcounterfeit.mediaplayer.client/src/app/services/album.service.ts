@@ -46,8 +46,19 @@ export class AlbumService {
       });
   }
 
-  GetAlbumById(id: string): Album {
-    return this.dataStore.albumList.find(album => album.id.localeCompare(id, undefined, { sensitivity: "accent" }) === 0);
+  GetAlbumById(id: string): void {
+    const album = this.dataStore.albumList.find(album => album.id.localeCompare(id, undefined, { sensitivity: "accent" }) === 0);
+    if (!album) {
+      this.http.get<Album>(`${AppSettings.mediaPlayerApiUrl}/album/${id}`)
+        .subscribe(album => {
+          this.dataStore.albumList.push(album);
+          this.album.next(album);
+        }, error => {
+          console.log(error);
+        });
+    } else {
+      this.album.next(album);
+    }
   }
 
   GetArtistAlbumByName(artistId: string, name: string): Album {
