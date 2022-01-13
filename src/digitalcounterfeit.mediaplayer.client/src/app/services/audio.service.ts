@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject, Subject, Subscription } from "rxjs";
 import { takeUntil } from "rxjs/operators";
-import * as moment from "moment";
+import moment from "moment";
 import { StreamState } from "../interfaces/stream-state";
 import { Playlist } from "../models/play-list";
 import { AudioTrack } from "../models/audio-track";

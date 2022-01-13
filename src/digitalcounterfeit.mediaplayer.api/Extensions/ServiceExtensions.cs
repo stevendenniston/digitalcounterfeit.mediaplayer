@@ -48,6 +48,7 @@ namespace digitalcounterfeit.mediaplayer.api.Extensions
                     options.Authority = configuration.GetValue<string>("AuthenticationAuthority");
                     options.Audience = configuration.GetValue<string>("AuthenticationAudience");
                     options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
+                    //options.RequireHttpsMetadata = false;
                 });
         }
 

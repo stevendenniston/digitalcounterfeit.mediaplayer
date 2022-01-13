@@ -3,14 +3,10 @@ import { Routes, RouterModule } from "@angular/router";
 import { AlbumComponent } from "./components/album/album.component";
 import { ArtistListComponent } from "./components/artist-list/artist-list.component";
 import { ArtistComponent } from "./components/artist/artist.component";
-import { SigninCallbackComponent } from "./components/signin-callback/signin-callback.component";
-import { SignoutCallbackComponent } from "./components/signout-callback/signout-callback.component";
 
 const routes: Routes = [
   { path: "album/:albumId", component: AlbumComponent },
-  { path: "artist/:artistId", component: ArtistComponent },
-  { path: "signin-callback", component: SigninCallbackComponent},
-  { path: "signout-callback", component: SignoutCallbackComponent},
+  { path: "artist/:artistId", component: ArtistComponent },  
   { path: "", component: ArtistListComponent }
 ];
 

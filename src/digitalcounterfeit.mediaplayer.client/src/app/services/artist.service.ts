@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, from, Observable, Subscription } from "rxjs";
-import { AppSettings } from "../app-settings.service";
+import { environment } from "src/environments/environment";
 import { Artist } from "../models/artist";
 
 @Injectable({ providedIn: "root" })
@@ -28,7 +28,7 @@ export class ArtistService {
 
   GetLibraryArtistList(libraryId: string): Subscription {
     return this.http
-      .get<Artist[]>(`${AppSettings.mediaPlayerApiUrl}/library/${libraryId}/artist-list`)
+      .get<Artist[]>(`${environment.mediaPlayerApiUrl}/library/${libraryId}/artist-list`)
       .subscribe(artistList => {
         this.dataStore.artistList = artistList;
         this.artistList.next(Object.assign([], this.dataStore.artistList));
@@ -55,7 +55,7 @@ export class ArtistService {
     headers.set("Content-Type", "application/json");
 
     return from(new Promise<Artist>((resolve, reject) => {
-      this.http.put<any>(`${AppSettings.mediaPlayerApiUrl}/artist`, artist, {headers})
+      this.http.put<any>(`${environment.mediaPlayerApiUrl}/artist`, artist, {headers})
         .toPromise<Artist>()
         .then(() => resolve(artist), error => reject(error));
     }));

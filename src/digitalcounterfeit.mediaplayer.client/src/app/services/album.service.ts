@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, from, Observable } from "rxjs";
-import { AppSettings } from "../app-settings.service";
+import { environment } from "src/environments/environment";
 import { Album } from "../models/album";
 
 @Injectable({
@@ -32,7 +32,7 @@ export class AlbumService {
   }
 
   GetArtistAlbumList(artistId: string): void {
-    this.http.get<Album[]>(`${AppSettings.mediaPlayerApiUrl}/artist/${artistId}/album-list`)
+    this.http.get<Album[]>(`${environment.mediaPlayerApiUrl}/artist/${artistId}/album-list`)
       .subscribe(albumList => {
         albumList.forEach(albumInfo => {
           if (this.AlbumInList(albumInfo)) {
@@ -49,7 +49,7 @@ export class AlbumService {
   GetAlbumById(id: string): void {
     const album = this.dataStore.albumList.find(album => album.id.localeCompare(id, undefined, { sensitivity: "accent" }) === 0);
     if (!album) {
-      this.http.get<Album>(`${AppSettings.mediaPlayerApiUrl}/album/${id}`)
+      this.http.get<Album>(`${environment.mediaPlayerApiUrl}/album/${id}`)
         .subscribe(album => {
           this.dataStore.albumList.push(album);
           this.album.next(album);
@@ -69,7 +69,7 @@ export class AlbumService {
 
   GetAlbumImageUri(artistId: string, albumId: string): Observable<string>{
     const headers = new HttpHeaders().set("Content-Type", "text/plain; charset=utf-8");
-    return this.http.get(`${AppSettings.mediaPlayerApiUrl}/artist/${artistId}/album/${albumId}/image-uri`, { headers, responseType: "text" });
+    return this.http.get(`${environment.mediaPlayerApiUrl}/artist/${artistId}/album/${albumId}/image-uri`, { headers, responseType: "text" });
   }
 
   PutAlbum(albumInfo: Album): Observable<Album> {
@@ -85,7 +85,7 @@ export class AlbumService {
     headers.set("Content-Type", "application/json");
 
     return from(new Promise<Album>((resolve, reject) => {
-      this.http.put<any>(`${AppSettings.mediaPlayerApiUrl}/album`, albumInfo, { headers })
+      this.http.put<any>(`${environment.mediaPlayerApiUrl}/album`, albumInfo, { headers })
         .toPromise()
         .then(() => resolve(albumInfo), error => reject(error));
     }));

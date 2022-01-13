@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from "@angular/core";
+import { AuthService } from "@auth0/auth0-angular";
+
 import { Subscription } from "rxjs";
 import { Observable } from "rxjs/internal/Observable";
 import { Artist } from "src/app/models/artist";
 import { Library } from "src/app/models/library";
 import { ArtistService } from "src/app/services/artist.service";
-import { AuthService } from "src/app/services/auth.service";
 import { LibraryService } from "src/app/services/library.service";
 
 @Component({
@@ -15,6 +16,7 @@ import { LibraryService } from "src/app/services/library.service";
 export class ArtistListComponent implements OnInit, OnDestroy {
 
   private librarySubscription: Subscription;
+  private isAuthenticatedSubscription: Subscription;
 
   artistList: Observable<Artist[]>;
   library: Observable<Library>;
@@ -26,23 +28,24 @@ export class ArtistListComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit(): Promise<void> {
-    const isLoggedIn = await this.authService.isLoggedIn();
     this.artistList = this.artistService.ArtistList;
     this.library = this.libraryService.Library;
+    
+    this.isAuthenticatedSubscription = this.authService.isAuthenticated$
+      .subscribe(_ => {
+        this.libraryService.GetLibrary();
+      });
 
     this.librarySubscription = this.library
       .subscribe(library => {
         if (library.id) {
           this.artistService.GetLibraryArtistList(library.id);
         }
-      });
-
-    if (isLoggedIn) {
-      this.libraryService.GetLibrary();
-    }
+      });    
   }
 
   ngOnDestroy(): void {
     this.librarySubscription.unsubscribe();
+    this.isAuthenticatedSubscription.unsubscribe();
   }
 }

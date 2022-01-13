@@ -1,18 +1,10 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using digitalcounterfeit.mediaplayer.fileprocessor;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
-using System;
 using System.Reflection;
 
-namespace digitalcounterfeit.mediaplayer.api
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            Log.Logger = new LoggerConfiguration()
+Log.Logger = new LoggerConfiguration()
 #if DEBUG
                 .MinimumLevel.Debug()
 #else
@@ -34,15 +26,12 @@ namespace digitalcounterfeit.mediaplayer.api
                     theme: AnsiConsoleTheme.Code)
                 .CreateLogger();
 
-            CreateHostBuilder(args).Build().Run();
-        }
+IHost host = Host.CreateDefaultBuilder(args)
+    .UseSerilog()
+    .ConfigureServices(services =>
+    {
+        services.AddHostedService<AudioFileProcessor>();
+    })
+    .Build();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .UseSerilog()
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
-}
+await host.RunAsync();
