@@ -1,12 +1,14 @@
-import { default as appSettings } from "../assets/appsettings.deploy.json";
+import { default as appSettings } from "../assets/appsettings.json";
 
 export const environment = {
     production: true,
     name: "production",
     mediaPlayerApiUrl: appSettings.mediaPlayerApiUrl,
     auth: {
-      domain: appSettings.auth.domain,
+      audience: appSettings.auth.audience,
       clientId: appSettings.auth.clientId,
-      redirectUri: window.location.origin
+      domain: appSettings.auth.domain,
+      redirectUri: window.location.origin,
+      scope: appSettings.auth.scope
     }
   };

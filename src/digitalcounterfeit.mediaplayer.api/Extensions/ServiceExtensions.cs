@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using digitalcounterfeit.mediaplayer.api.Security;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
+using System.Security.Claims;
 
 namespace digitalcounterfeit.mediaplayer.api.Extensions
 {
@@ -42,14 +46,29 @@ namespace digitalcounterfeit.mediaplayer.api.Extensions
 
         public static void ConfigureAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddAuthentication("token")
-                .AddJwtBearer("token", options =>
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    options.Authority = configuration.GetValue<string>("AuthenticationAuthority");
+                    options.Authority = configuration.GetValue<string>("AuthenticationDomain");
                     options.Audience = configuration.GetValue<string>("AuthenticationAudience");
-                    options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
-                    //options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        NameClaimType = ClaimTypes.NameIdentifier
+                    };
                 });
+        }
+
+        public static void ConfigureAuthorization(this IServiceCollection services, IConfiguration configuration)
+        {
+            var domain = configuration.GetValue<string>("AuthenticationDomain");
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("read:api", policy => policy.Requirements.Add(new HasScopeRequirement("read:api", domain)));
+                options.AddPolicy("write:api", policy => policy.Requirements.Add(new HasScopeRequirement("write:api", domain)));
+            });
+
+            services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
         }
 
         public static void ConfigureSwagger(this IServiceCollection services, string version)

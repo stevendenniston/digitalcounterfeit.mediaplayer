@@ -36,7 +36,16 @@ import { AuthHttpInterceptor } from "@auth0/auth0-angular";
     MaterialModule,
     AuthModule.forRoot({
       ...environment.auth, 
-      httpInterceptor: { allowedList: [`${environment.mediaPlayerApiUrl}/api/*`]}
+      httpInterceptor: { 
+        allowedList: [
+          { 
+            uri: `${environment.mediaPlayerApiUrl}/*`,
+            tokenOptions: {
+              audience: environment.auth.audience, 
+              scope: environment.auth.scope
+            }
+          }
+        ]}
     })
   ],
   providers: [        
@@ -45,3 +54,4 @@ import { AuthHttpInterceptor } from "@auth0/auth0-angular";
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+

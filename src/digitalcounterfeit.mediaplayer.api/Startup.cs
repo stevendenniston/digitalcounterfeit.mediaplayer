@@ -28,6 +28,7 @@ namespace digitalcounterfeit.mediaplayer.api
         {
             services.ConfigureCors(Configuration, _corsPolicy);
             services.ConfigureAuthentication(Configuration);
+            services.ConfigureAuthorization(Configuration);
             services.ConfigureControllers();
             services.ConfigureSwagger(Version);
 
@@ -51,8 +52,8 @@ namespace digitalcounterfeit.mediaplayer.api
             app.UseCors(_corsPolicy);
             app.ConfigureExceptionHandler();
             app.UseRouting();
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
             app.ConfigureSwagger(Version);
             app.ConfigureEndpoints();
         }
