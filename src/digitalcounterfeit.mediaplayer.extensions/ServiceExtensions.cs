@@ -1,4 +1,4 @@
-﻿using digitalcounterfeit.mediaplayer.api.Security;
+﻿using digitalcounterfeit.mediaplayer.extensions.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -9,7 +9,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Serialization;
 using System.Security.Claims;
 
-namespace digitalcounterfeit.mediaplayer.api.Extensions
+namespace digitalcounterfeit.mediaplayer.extensions
 {
     public static class ServiceExtensions
     {

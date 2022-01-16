@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 
-namespace digitalcounterfeit.mediaplayer.api.Extensions
+namespace digitalcounterfeit.mediaplayer.extensions
 {
     public static class ApplicationBuilderExtensions
     {

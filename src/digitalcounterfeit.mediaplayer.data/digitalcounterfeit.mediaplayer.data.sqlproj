@@ -61,6 +61,10 @@
     <Folder Include="dbo\Stored Procedures" />
     <Folder Include="dbo\Types" />
     <Folder Include="dbo\Types\Table Types" />
+    <Folder Include="map" />
+    <Folder Include="map\Tables" />
+    <Folder Include="map\Stored Procedures" />
+    <Folder Include="security" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="dbo\Tables\Artist.sql" />
@@ -91,5 +95,9 @@
     <Build Include="dbo\Stored Procedures\Album_GetListByArtistId.sql" />
     <Build Include="dbo\Stored Procedures\AudioTrack_GetListByAlbumId.sql" />
     <Build Include="dbo\Stored Procedures\Album_GetByArtistIdAlbumName.sql" />
+    <Build Include="map\Tables\Identity.sql" />
+    <Build Include="security\map.sql" />
+    <Build Include="map\Stored Procedures\Identity_GetBySubjectId.sql" />
+    <Build Include="map\Stored Procedures\Identity_Upsert.sql" />
   </ItemGroup>
 </Project>

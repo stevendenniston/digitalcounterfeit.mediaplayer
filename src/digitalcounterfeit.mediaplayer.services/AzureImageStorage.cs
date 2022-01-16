@@ -3,15 +3,12 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Sas;
-using digitalcounterfeit.mediaplayer.api.Services.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+using digitalcounterfeit.mediaplayer.services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using System.Web.Mvc;
 
-namespace digitalcounterfeit.mediaplayer.api.Services
+namespace digitalcounterfeit.mediaplayer.services
 {
     public class AzureImageStorage : IAzureImageStorage
     {
@@ -32,14 +29,14 @@ namespace digitalcounterfeit.mediaplayer.api.Services
         }
 
         public async Task DeleteImageAsync(string blobName)
-        {            
+        {
             var blob = _container.GetBlobClient(blobName);
 
             await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
         }
 
         public async Task<FileStreamResult> DownloadImageAsync(string blobName)
-        {            
+        {
             var blob = _container.GetBlobClient(blobName);
 
             if (await blob.ExistsAsync())
@@ -74,11 +71,11 @@ namespace digitalcounterfeit.mediaplayer.api.Services
         }
 
         public async Task UploadImageAsync(Stream stream, string blobName, string contentType)
-        {            
+        {
             var blob = _container.GetBlockBlobClient(blobName);
 
             using (stream)
-            {                
+            {
                 await blob.UploadAsync(stream, new BlobHttpHeaders { ContentType = contentType }, accessTier: AccessTier.Hot);
             }
         }
@@ -112,7 +109,7 @@ namespace digitalcounterfeit.mediaplayer.api.Services
                 return (builder.ToString(), expiresOn);
             }
 
-            return (default, default);
+            return (string.Empty, default);
         }
     }
 }

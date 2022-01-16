@@ -8,8 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.10.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
-    <PackageReference Include="taglib-sharp-netstandard2.0" Version="2.1.0" />
+    <PackageReference Include="TagLibSharp" Version="2.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\digitalcounterfeit.mediaplayer.extensions\digitalcounterfeit.mediaplayer.extensions.csproj" />
+    <ProjectReference Include="..\digitalcounterfeit.mediaplayer.models\digitalcounterfeit.mediaplayer.models.csproj" />
+    <ProjectReference Include="..\digitalcounterfeit.mediaplayer.services\digitalcounterfeit.mediaplayer.services.csproj" />
   </ItemGroup>
 </Project>

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 
-namespace digitalcounterfeit.mediaplayer.api.Extensions
+namespace digitalcounterfeit.mediaplayer.extensions
 {
     public static class ExceptionMiddlewareExtensions
     {
@@ -13,7 +13,7 @@ namespace digitalcounterfeit.mediaplayer.api.Extensions
             {
                 appError.Run(async context =>
                 {
-                    context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     context.Response.ContentType = "application/json";
 
                     var contextFeature = context.Features.Get<IExceptionHandlerFeature>();

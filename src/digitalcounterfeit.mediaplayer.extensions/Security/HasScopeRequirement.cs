@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using System;
 
-namespace digitalcounterfeit.mediaplayer.api.Security
+namespace digitalcounterfeit.mediaplayer.extensions.Security
 {
     public class HasScopeRequirement : IAuthorizationRequirement
     {

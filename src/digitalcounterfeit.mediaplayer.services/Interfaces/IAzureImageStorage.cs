@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.Web.Mvc;
 
-namespace digitalcounterfeit.mediaplayer.api.Services.Interfaces
+namespace digitalcounterfeit.mediaplayer.services.Interfaces
 {
     public interface IAzureImageStorage
     {

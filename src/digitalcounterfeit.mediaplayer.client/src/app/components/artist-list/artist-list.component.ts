@@ -32,8 +32,9 @@ export class ArtistListComponent implements OnInit, OnDestroy {
     this.library = this.libraryService.Library;
     
     this.isAuthenticatedSubscription = this.authService.isAuthenticated$
-      .subscribe(_ => {
-        this.libraryService.GetLibrary();
+      .subscribe(isAuthenticated => {
+        if (isAuthenticated)
+          this.libraryService.GetLibrary();        
       });
 
     this.librarySubscription = this.library

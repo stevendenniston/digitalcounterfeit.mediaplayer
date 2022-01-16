@@ -4,14 +4,11 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure.Storage.Sas;
-using digitalcounterfeit.mediaplayer.api.Services.Interfaces;
+using digitalcounterfeit.mediaplayer.services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 
-namespace digitalcounterfeit.mediaplayer.api.Services
+namespace digitalcounterfeit.mediaplayer.services
 {
     public class AzureAudioStorage : IAzureAudioStorage
     {
@@ -47,14 +44,14 @@ namespace digitalcounterfeit.mediaplayer.api.Services
             var key = new StorageSharedKeyCredential(_accountName, _accountKey);
             var container = new BlobContainerClient(new Uri($"https://{_accountName}.blob.core.windows.net/{CONTAINER_NAME}"), key);
             var blob = container.GetBlockBlobClient(blobName);
-            
+
             using (stream)
             {
                 return await blob
                     .UploadAsync(
-                        stream, 
-                        new BlobHttpHeaders { ContentType = contentType }, 
-                        accessTier: AccessTier.Hot, 
+                        stream,
+                        new BlobHttpHeaders { ContentType = contentType },
+                        accessTier: AccessTier.Hot,
                         progressHandler: progressHandler);
             }
         }

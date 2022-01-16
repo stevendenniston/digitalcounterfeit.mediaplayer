@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
-using digitalcounterfeit.mediaplayer.api.Models;
+using digitalcounterfeit.mediaplayer.models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Data;

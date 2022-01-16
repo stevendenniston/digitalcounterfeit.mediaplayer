@@ -1,6 +1,6 @@
 ﻿using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
-using digitalcounterfeit.mediaplayer.api.Extensions;
-using digitalcounterfeit.mediaplayer.api.Models;
+using digitalcounterfeit.mediaplayer.extensions;
+using digitalcounterfeit.mediaplayer.models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,10 +12,12 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
     [Route("api/library")]
     public class LibraryController : ControllerBase
     {
+        private readonly IIdentityRepository _identityRepository;
         private readonly ILibraryRepository _libraryRepository;
 
-        public LibraryController(ILibraryRepository libraryRepository)
+        public LibraryController(ILibraryRepository libraryRepository, IIdentityRepository identityRepository)
         {
+            _identityRepository = identityRepository;
             _libraryRepository = libraryRepository;
         }
 
@@ -31,27 +33,45 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         }
 
         [HttpGet("")]
-        public async Task<ActionResult<LibraryModel>> GetByUserIdAsync()
+        public async Task<ActionResult<LibraryModel>> GetByUserSubjectIdAsync()
         {
-            if (Guid.TryParse(User?.GetUserSubjectId(), out var userId))
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
+            
+            if (identity == null)
             {
-                var library = await _libraryRepository.GetByUserIdAsync(userId);
-
-                if (library == null)
-                    return NotFound();
-
-                return Ok(library);
+                identity = new IdentityModel { Id = Guid.NewGuid(), SubjectId = subjectId};
+                await _identityRepository.UpsertAsync(identity);
             }
+            
+            var library = await _libraryRepository.GetByUserIdAsync(identity.Id);
 
-            return StatusCode(418);
+            if (library == null)
+                return NotFound();
+
+            return Ok(library);
+        }
+
+        [HttpGet("user/{userId:guid}")]
+        public async Task<ActionResult<LibraryModel>> GetByUserId(Guid userId)
+        {
+            var library = await _libraryRepository.GetByUserIdAsync(userId);
+
+            if (library == null)
+                return NotFound();
+
+            return Ok(library);
         }
 
         [HttpPut]
         public async Task<IActionResult> UpsertAsync(LibraryModel library)
         {
-            if (Guid.TryParse(User?.GetUserSubjectId(), out var userId))
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
+
+            if (identity != null)
             {
-                library.UserId = userId;
+                library.UserId = identity.Id;
 
                 await _libraryRepository.UpsertAsync(library);
 

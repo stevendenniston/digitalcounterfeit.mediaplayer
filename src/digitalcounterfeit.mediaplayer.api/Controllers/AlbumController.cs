@@ -1,7 +1,7 @@
 ﻿using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
-using digitalcounterfeit.mediaplayer.api.Extensions;
-using digitalcounterfeit.mediaplayer.api.Models;
-using digitalcounterfeit.mediaplayer.api.Services.Interfaces;
+using digitalcounterfeit.mediaplayer.extensions;
+using digitalcounterfeit.mediaplayer.models;
+using digitalcounterfeit.mediaplayer.services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -18,38 +18,50 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
     {
         private readonly IAlbumRepository _albumRepository;
         private readonly IAzureImageStorage _imageStorage;
+        private readonly IIdentityRepository _identityRepository;
 
-        public AlbumController(IAlbumRepository albumRepository, IAzureImageStorage imageStorage)
+        public AlbumController(IAlbumRepository albumRepository, IAzureImageStorage imageStorage, IIdentityRepository identityRepository)
         {
             _albumRepository = albumRepository;
             _imageStorage = imageStorage;
+            _identityRepository = identityRepository;
         }
 
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<AlbumModel>> GetByIdAsync(Guid id)
         {
-            var album = await _albumRepository.GetByIdAsync(id);
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-            if (album == null)
-                return NotFound();
+            if (identity != null)
+            {
+                var album = await _albumRepository.GetByIdAsync(id);
 
-            album.ImageUri = await _imageStorage.GetImageSasUriAsync($@"{User?.GetUserSubjectId()}/{album.ArtistId}/{album.Id}");
+                if (album == null)
+                    return NotFound();
 
-            return Ok(album);
+                album.ImageUri = await _imageStorage.GetImageSasUriAsync($@"{identity.Id}/{album.ArtistId}/{album.Id}");
+
+                return Ok(album);
+            }
+
+            return StatusCode(418);
         }
 
         [HttpGet("/api/artist/{artistId:guid}/album-list")]
         public async Task<ActionResult<IEnumerable<AlbumModel>>> GetArtistAlbumListAsync(Guid artistId)
         {
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
             var albumList = await _albumRepository.GetArtistAlbumListAsync(artistId);
 
-            if (albumList.Any())
+            if (identity != null && albumList.Any())
             {
                 foreach (var album in albumList)
-                    album.ImageUri = await _imageStorage.GetImageSasUriAsync($@"{User?.GetUserSubjectId()}/{album.ArtistId}/{album.Id}");
+                    album.ImageUri = await _imageStorage.GetImageSasUriAsync($@"{identity.Id}/{album.ArtistId}/{album.Id}");
             }
 
-            return Ok(albumList);
+            return Ok(albumList);            
         }
 
         [HttpGet("/api/artist/{artistId:guid}/album")]
@@ -66,26 +78,42 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         [HttpGet("/api/artist/{artistId:guid}/album/{albumId:guid}/image-uri")]
         public async Task<ActionResult<IEnumerable<string>>> GetAlbumImageSasUriAsync(Guid artistId, Guid albumId)
         {
-            var blobName = $@"{User?.GetUserSubjectId()}/{artistId}/{albumId}";
-            var audioTrackUri = await _imageStorage.GetImageSasUriAsync(blobName);
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-            if (string.IsNullOrWhiteSpace(audioTrackUri))
-                return NotFound();
+            if (identity != null)
+            {
+                var blobName = $@"{identity.Id}/{artistId}/{albumId}";
+                var audioTrackUri = await _imageStorage.GetImageSasUriAsync(blobName);
 
-            return Ok(audioTrackUri);
+                if (string.IsNullOrWhiteSpace(audioTrackUri))
+                    return NotFound();
+
+                return Ok(audioTrackUri);
+            }
+
+            return StatusCode(418);            
         }
 
 
         [HttpPut("/api/artist/{artistId:guid}/album/{albumId:guid}/image")]
         public async Task<IActionResult> UpsertAlbumImageAsync(Guid artistId, Guid albumId, IFormFile file)
         {
-            if (Request.ContentLength <= 0)
-                return BadRequest("Empty request body; Cannot upload an empty image file...");
-            
-            var blobName = $@"{User?.GetUserSubjectId()}/{artistId}/{albumId}";
-            await _imageStorage.UploadImageAsync(file.OpenReadStream(), blobName, file.ContentType);
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-            return NoContent();
+            if (identity != null)
+            {
+                if (Request.ContentLength <= 0)
+                    return BadRequest("Empty request body; Cannot upload an empty image file...");
+
+                var blobName = $@"{identity.Id}/{artistId}/{albumId}";
+                await _imageStorage.UploadImageAsync(file.OpenReadStream(), blobName, file.ContentType);
+
+                return NoContent();
+            }
+
+            return StatusCode(418);            
         }
 
         [HttpPut]

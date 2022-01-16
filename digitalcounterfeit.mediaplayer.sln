@@ -7,7 +7,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "digitalcounterfeit.mediapla
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "digitalcounterfeit.mediaplayer.data", "src\digitalcounterfeit.mediaplayer.data\digitalcounterfeit.mediaplayer.data.sqlproj", "{6AC239F8-DAD4-48AA-BB24-30DC78F47606}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "digitalcounterfeit.mediaplayer.fileprocessor", "src\digitalcounterfeit.mediaplayer.fileprocessor\digitalcounterfeit.mediaplayer.fileprocessor.csproj", "{B3C3A92A-8791-4B84-9C9B-927D50FDF89F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "digitalcounterfeit.mediaplayer.fileprocessor", "src\digitalcounterfeit.mediaplayer.fileprocessor\digitalcounterfeit.mediaplayer.fileprocessor.csproj", "{B3C3A92A-8791-4B84-9C9B-927D50FDF89F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{92A666F1-F2CF-4803-845C-3307BA34E7BA}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "digitalcounterfeit.mediaplayer.models", "src\digitalcounterfeit.mediaplayer.models\digitalcounterfeit.mediaplayer.models.csproj", "{64C6A57B-59DF-4562-9596-C871F0DF7F7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "digitalcounterfeit.mediaplayer.services", "src\digitalcounterfeit.mediaplayer.services\digitalcounterfeit.mediaplayer.services.csproj", "{C7C55339-EABC-439C-A436-59A6A46461E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "digitalcounterfeit.mediaplayer.extensions", "src\digitalcounterfeit.mediaplayer.extensions\digitalcounterfeit.mediaplayer.extensions.csproj", "{D70EB8DA-A5A1-43F3-933B-9DEACE70CBA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +40,18 @@ Global
 		{B3C3A92A-8791-4B84-9C9B-927D50FDF89F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3C3A92A-8791-4B84-9C9B-927D50FDF89F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3C3A92A-8791-4B84-9C9B-927D50FDF89F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64C6A57B-59DF-4562-9596-C871F0DF7F7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64C6A57B-59DF-4562-9596-C871F0DF7F7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64C6A57B-59DF-4562-9596-C871F0DF7F7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64C6A57B-59DF-4562-9596-C871F0DF7F7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C7C55339-EABC-439C-A436-59A6A46461E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C7C55339-EABC-439C-A436-59A6A46461E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C7C55339-EABC-439C-A436-59A6A46461E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C7C55339-EABC-439C-A436-59A6A46461E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D70EB8DA-A5A1-43F3-933B-9DEACE70CBA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D70EB8DA-A5A1-43F3-933B-9DEACE70CBA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D70EB8DA-A5A1-43F3-933B-9DEACE70CBA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D70EB8DA-A5A1-43F3-933B-9DEACE70CBA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

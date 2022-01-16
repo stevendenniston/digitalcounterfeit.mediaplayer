@@ -1,4 +1,4 @@
-﻿using digitalcounterfeit.mediaplayer.api.Models;
+﻿using digitalcounterfeit.mediaplayer.models;
 using System;
 using System.Threading.Tasks;
 

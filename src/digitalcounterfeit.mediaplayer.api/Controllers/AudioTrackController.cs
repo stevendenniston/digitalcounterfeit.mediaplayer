@@ -1,12 +1,14 @@
 ﻿using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
-using digitalcounterfeit.mediaplayer.api.Extensions;
-using digitalcounterfeit.mediaplayer.api.Models;
-using digitalcounterfeit.mediaplayer.api.Services.Interfaces;
+using digitalcounterfeit.mediaplayer.extensions;
+using digitalcounterfeit.mediaplayer.models;
+using digitalcounterfeit.mediaplayer.services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Controllers
@@ -15,21 +17,27 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
     [Route("api/audio-track")]
     public class AudioTrackController : Controller
     {
+        private readonly IConfiguration _configuration;
         private readonly IAzureAudioStorage _azureAudioStorage;
         private readonly IArtistRepository _artistRepository;
         private readonly IAlbumRepository _albumRepository;
         private readonly IAudioTrackRepository _audioTrackRepository;
+        private readonly IIdentityRepository _identityRepository;
 
         public AudioTrackController(
+            IConfiguration configuration,
             IAzureAudioStorage azureAudioStorage, 
             IArtistRepository artistRepository, 
             IAlbumRepository albumRepository, 
-            IAudioTrackRepository audioTrackRepository)
+            IAudioTrackRepository audioTrackRepository,
+            IIdentityRepository identityRepository)
         {
+            _configuration = configuration;
             _azureAudioStorage = azureAudioStorage;
             _artistRepository = artistRepository;
             _albumRepository = albumRepository;
             _audioTrackRepository = audioTrackRepository;
+            _identityRepository = identityRepository;
         }
 
 
@@ -47,13 +55,21 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         [HttpGet("{id:guid}/stream-uri")]
         public async Task<ActionResult<IEnumerable<string>>> GetAudioTrackSasUriAsync(Guid id)
         {
-            var blobName = $@"{User?.GetUserSubjectId()}/{id}";
-            var audioTrackUri = await _azureAudioStorage.GetAudioTrackSasUriAsync(blobName);
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-            if (string.IsNullOrWhiteSpace(audioTrackUri))
-                return NotFound();
+            if (identity != null)
+            {
+                var blobName = $@"{identity.Id}/{id}";
+                var audioTrackUri = await _azureAudioStorage.GetAudioTrackSasUriAsync(blobName);
 
-            return Ok(audioTrackUri);
+                if (string.IsNullOrWhiteSpace(audioTrackUri))
+                    return NotFound();
+
+                return Ok(audioTrackUri);
+            }
+
+            return StatusCode(418);
         }
         
         [HttpGet("/api/album/{albumId:guid}/audio-track-list")]
@@ -74,17 +90,31 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
             return NoContent();
         }
 
-        [HttpPut("{id:guid}/file")]
-        public async Task<IActionResult> PutAudioTrackAsync(Guid id, IFormFile file)
+        [HttpPost("file")]
+        public async Task<IActionResult> PutAudioTrackAsync(IFormFile file)
         {
-            if (Request.ContentLength <= 0)
-                return BadRequest("Empty request body; Cannot upload an empty audio file...");
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-            var blobName = $@"{User?.GetUserSubjectId()}/{id}";                                         
+            if (identity != null)
+            {
+                if (Request.ContentLength <= 0)
+                    return BadRequest("Empty request body; Cannot upload an empty audio file...");
 
-            await _azureAudioStorage.UploadAudioTrackAsync(file.OpenReadStream(), blobName, file.ContentType);
+                var directoryPath = Path.Combine(_configuration.GetValue<string>("AudioFileLocation"), $"{identity.Id}");
 
-            return NoContent();
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+
+                using (var fileStream = new FileStream(Path.Combine(directoryPath, file.FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                {
+                    await file.OpenReadStream().CopyToAsync(fileStream);
+                }                
+
+                return NoContent();
+            }
+
+            return StatusCode(418);
         }
 
         [HttpPatch("{id:guid}")]

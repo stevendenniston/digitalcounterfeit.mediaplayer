@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace digitalcounterfeit.mediaplayer.api.Models
+namespace digitalcounterfeit.mediaplayer.models
 {
     public class AudioTrackModel
     {

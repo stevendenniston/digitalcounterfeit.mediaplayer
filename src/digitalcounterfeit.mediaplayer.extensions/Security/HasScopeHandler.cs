@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace digitalcounterfeit.mediaplayer.api.Security
+namespace digitalcounterfeit.mediaplayer.extensions.Security
 {
     public class HasScopeHandler : AuthorizationHandler<HasScopeRequirement>
     {
