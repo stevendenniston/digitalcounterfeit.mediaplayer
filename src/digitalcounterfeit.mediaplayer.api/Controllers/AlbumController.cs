@@ -57,11 +57,20 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
 
             if (identity != null && albumList.Any())
             {
-                foreach (var album in albumList.ToArray())
-                    album.ImageUri = await _imageStorage.GetImageSasUriAsync($@"{identity.Id}/{album.ArtistId}/{album.Id}");
+                return Ok(albumList
+                    .Select(async album =>
+                        new AlbumModel
+                        {
+                            ArtistId = album.ArtistId,
+                            Id = album.Id,
+                            ImageUri = await _imageStorage.GetImageSasUriAsync($@"{identity.Id}/{album.ArtistId}/{album.Id}"),
+                            LibraryId = album.LibraryId,
+                            Name = album.Name,
+                            Year = album.Year
+                        }));
             }
 
-            return Ok(albumList);            
+            return Ok(new AlbumModel[] { });
         }
 
         [HttpGet("/api/artist/{artistId:guid}/album")]
