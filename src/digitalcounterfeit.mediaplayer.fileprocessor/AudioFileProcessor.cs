@@ -53,12 +53,12 @@ namespace digitalcounterfeit.mediaplayer.fileprocessor
                 if (Guid.TryParse(directoryInfo.Name, out var userId))
                 {
                     var files = directoryInfo.GetFiles();
-                        var library = await _mediaPlayerApi.GetLibraryByUserIdAsync(userId);
+                    var library = await _mediaPlayerApi.GetLibraryByUserIdAsync(userId);
 
-                        if (files.Any() && library != null)
-                        {
-                            await ProcessFiles(files, userId, library);                    
-                        }
+                    if (files.Any() && library != null)
+                    {
+                        await ProcessFiles(files, userId, library);                    
+                    }
                 }
 
                 if (directories.Any())
