@@ -57,7 +57,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
 
             if (identity != null && albumList.Any())
             {
-                foreach (var album in albumList.ToList())
+                foreach (var album in albumList.ToArray())
                     album.ImageUri = await _imageStorage.GetImageSasUriAsync($@"{identity.Id}/{album.ArtistId}/{album.Id}");
             }
 
