@@ -58,7 +58,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
 
             if (identity != null && albumList.Any())
             {
-                foreach (var album in albumList.ToArray())
+                foreach (var album in albumList)
                     result.Add(
                         new AlbumModel 
                         {
