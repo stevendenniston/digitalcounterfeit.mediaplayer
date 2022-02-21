@@ -85,8 +85,7 @@ namespace digitalcounterfeit.mediaplayer.services
         {
             var expiresOn = DateTimeOffset.UtcNow.AddHours(1);
             var key = new StorageSharedKeyCredential(_accountName, _accountKey);
-            var container = new BlobContainerClient(new Uri($"https://{_accountName}.blob.core.windows.net/{CONTAINER_NAME}"), key);
-            container.Create();
+            var container = new BlobContainerClient(new Uri($"https://{_accountName}.blob.core.windows.net/{CONTAINER_NAME}"), key);            
             var blob = container.GetBlockBlobClient(blobName);
 
             if (await blob.ExistsAsync())
