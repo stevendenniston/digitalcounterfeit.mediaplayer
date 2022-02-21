@@ -6,6 +6,7 @@ using Azure.Storage.Sas;
 using digitalcounterfeit.mediaplayer.services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Web.Mvc;
 
 namespace digitalcounterfeit.mediaplayer.services
@@ -18,14 +19,16 @@ namespace digitalcounterfeit.mediaplayer.services
         private readonly StorageSharedKeyCredential _credential;
         private readonly BlobContainerClient _container;
         private MemoryCache _uriCache;
+        private readonly ILogger<AzureImageStorage> _logger;
 
-        public AzureImageStorage(IConfiguration configuration)
+        public AzureImageStorage(ILogger<AzureImageStorage> logger, IConfiguration configuration)
         {
             _accountName = configuration.GetValue<string>("AzureBlobAccountName");
             _accountKey = configuration.GetValue<string>("AzureBlobAccountKey");
             _credential = new StorageSharedKeyCredential(_accountName, _accountKey);
             _container = new BlobContainerClient(new Uri($"https://{_accountName}.blob.core.windows.net/{CONTAINER_NAME}"), _credential);
             _uriCache = new MemoryCache(new MemoryCacheOptions());
+            _logger = logger;
         }
 
         public async Task DeleteImageAsync(string blobName)
@@ -88,25 +91,29 @@ namespace digitalcounterfeit.mediaplayer.services
             var container = new BlobContainerClient(new Uri($"https://{_accountName}.blob.core.windows.net/{CONTAINER_NAME}"), key);            
             var blob = container.GetBlockBlobClient(blobName);
 
-            if (await blob.ExistsAsync())
+            try
             {
-                var sasBuilder = new BlobSasBuilder()
+                if (await blob.ExistsAsync())
                 {
-                    BlobName = blobName,
-                    BlobContainerName = container.Name,
-                    Resource = "b",
-                    StartsOn = DateTimeOffset.UtcNow,
-                    ExpiresOn = expiresOn
-                };
+                    var sasBuilder = new BlobSasBuilder(BlobContainerSasPermissions.Read, expiresOn)
+                    {
+                        BlobName = blobName,
+                        BlobContainerName = container.Name,
+                        Resource = "b",
+                        StartsOn = DateTimeOffset.UtcNow
+                    };                    
 
-                sasBuilder.SetPermissions(BlobContainerSasPermissions.Read);
+                    var builder = new UriBuilder(blob.Uri)
+                    {
+                        Query = sasBuilder.ToSasQueryParameters(key).ToString()
+                    };
 
-                var builder = new UriBuilder(blob.Uri)
-                {
-                    Query = sasBuilder.ToSasQueryParameters(key).ToString()
-                };
-
-                return (builder.ToString(), expiresOn);
+                    return (builder.ToString(), expiresOn);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting SAS Uri for image.");
             }
 
             return (string.Empty, default);
