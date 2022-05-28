@@ -109,7 +109,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
                 using (var fileStream = new FileStream(Path.Combine(directoryPath, file.FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite))
                 {
                     await file.OpenReadStream().CopyToAsync(fileStream);
-                }                
+                }
 
                 return NoContent();
             }

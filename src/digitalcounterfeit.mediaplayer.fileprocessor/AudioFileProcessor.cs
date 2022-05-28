@@ -87,67 +87,77 @@ namespace digitalcounterfeit.mediaplayer.fileprocessor
 
             foreach (var file in files)
             {
-                //do the stuff for the things
-                var id3 = File.Create(file.FullName);
-
-                //artist data
-                var artist = artistList.FirstOrDefault(artist => artist.Name.Equals(id3.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
-
-                if (artist == null)
+                try
                 {
-                    artist = new ArtistModel { Id = Guid.NewGuid(), LibraryId = library.Id, Name = id3.Tag.FirstAlbumArtist };
-                    await _mediaPlayerApi.UpsertArtistAsync(artist);
-                    artistList.Add(artist);
-                }
+                    //do the stuff for the things
+                    var id3 = File.Create(file.FullName);
 
-                //album data
-                var albumList = artistAlbumList.FirstOrDefault(map => map.Key == artist.Id).Value;
+                    //artist data
+                    var artist = artistList.FirstOrDefault(artist => artist.Name.Equals(id3.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
 
-                if (albumList == null)
-                {
-                    albumList = (await _mediaPlayerApi.GetArtistAlbumListAsync(artist.Id)).ToList();
-                    artistAlbumList.Add(artist.Id, albumList);
-                }
+                    if (artist == null)
+                    {
+                        artist = new ArtistModel { Id = Guid.NewGuid(), LibraryId = library.Id, Name = id3.Tag.FirstAlbumArtist };
+                        await _mediaPlayerApi.UpsertArtistAsync(artist);
+                        artistList.Add(artist);
+                    }
+
+                    //album data
+                    var albumList = artistAlbumList.FirstOrDefault(map => map.Key == artist.Id).Value;
+
+                    if (albumList == null)
+                    {
+                        albumList = (await _mediaPlayerApi.GetArtistAlbumListAsync(artist.Id)).ToList();
+                        artistAlbumList.Add(artist.Id, albumList);
+                    }
                     
-                var album = albumList.FirstOrDefault(album => album.Name.Equals(id3.Tag.Album, StringComparison.OrdinalIgnoreCase));
+                    var album = albumList.FirstOrDefault(album => album.Name.Equals(id3.Tag.Album, StringComparison.OrdinalIgnoreCase));
 
-                if (album == null)
-                {
-                    album = new AlbumModel { Id = Guid.NewGuid(), ArtistId = artist.Id, LibraryId = library.Id, Name = id3.Tag.Album, Year = $"{id3.Tag.Year}", ImageUri = string.Empty };
-                    await _mediaPlayerApi.UpsertAlbumAsync(album);
-                    albumList.Add(album);
+                    if (album == null)
+                    {
+                        album = new AlbumModel { Id = Guid.NewGuid(), ArtistId = artist.Id, LibraryId = library.Id, Name = id3.Tag.Album, Year = $"{id3.Tag.Year}", ImageUri = string.Empty };
+                        await _mediaPlayerApi.UpsertAlbumAsync(album);
+                        albumList.Add(album);
+                    }
+
+                    //audio track data
+                    var audioTrackList = albumAudioTrackList.FirstOrDefault(map => map.Key == album.Id).Value;
+
+                    if (audioTrackList == null)
+                    {
+                        audioTrackList = (await _mediaPlayerApi.GetAlbumAudioTrackList(album.Id)).ToList();
+                        albumAudioTrackList.Add(album.Id, audioTrackList);
+                    }
+
+                    var audioTrack = audioTrackList.FirstOrDefault(audioTrack => audioTrack.Name.Equals(id3.Tag.Title, StringComparison.OrdinalIgnoreCase));
+
+                    if (audioTrack == null)
+                    {
+                        audioTrack = new AudioTrackModel { Id = Guid.NewGuid(), Album = album, Artist = artist, Name = id3.Tag.Title, Number = (int) id3.Tag.Track, DiscNumber = (int) id3.Tag.Disc};
+                        await _mediaPlayerApi.UpsertAudioTrackAsync(audioTrack);
+                        audioTrackList.Add(audioTrack);
+                    }
+
+                    //audio track azure album image file
+                    var albumCover = id3.Tag.Pictures.FirstOrDefault(picture => picture.Type == PictureType.FrontCover);
+                    if (albumCover != null)
+                    {
+                        var albumBlobName = $@"{userId}/{artist.Id}/{album.Id}";
+                        var byteVector = albumCover.Data;
+
+                        using var stream = new MemoryStream(byteVector.Data);
+
+                        await _azureImageStorage.UploadImageAsync(stream, albumBlobName, albumCover.MimeType);
+                    }
+
+                    //audio track azure blob file
+                    var audioBlobName = $@"{userId}/{audioTrack.Id}";
+                    await _azureAudioStorage.UploadAudioTrackAsync(file.OpenRead(), audioBlobName, id3.MimeType);
                 }
-
-                //audio track data
-                var audioTrackList = albumAudioTrackList.FirstOrDefault(map => map.Key == album.Id).Value;
-
-                if (audioTrackList == null)
+                catch(Exception ex)
                 {
-                    audioTrackList = (await _mediaPlayerApi.GetAlbumAudioTrackList(album.Id)).ToList();
-                    albumAudioTrackList.Add(album.Id, audioTrackList);
+                    _logger.LogError(ex, $"Error importing audio file for User {userId}");
                 }
-
-                var audioTrack = audioTrackList.FirstOrDefault(audioTrack => audioTrack.Name.Equals(id3.Tag.Title, StringComparison.OrdinalIgnoreCase));
-
-                if (audioTrack == null)
-                {
-                    audioTrack = new AudioTrackModel { Id = Guid.NewGuid(), Album = album, Artist = artist, Name = id3.Tag.Title, Number = (int) id3.Tag.Track, DiscNumber = (int) id3.Tag.Disc};
-                    await _mediaPlayerApi.UpsertAudioTrackAsync(audioTrack);
-                    audioTrackList.Add(audioTrack);
-                }
-
-                //audio track azure album image file
-                var albumCover = id3.Tag.Pictures.FirstOrDefault(picture => picture.Type == PictureType.FrontCover);
-                if (albumCover != null)
-                {
-                    var albumBlobName = $@"{userId}/{artist.Id}/{album.Id}";
-                    var byteVector = albumCover.Data;
-                    await _azureImageStorage.UploadImageAsync(new MemoryStream(byteVector.Data), albumBlobName, albumCover.MimeType);
-                }
-
-                //audio track azure blob file
-                var audioBlobName = $@"{userId}/{audioTrack.Id}";
-                await _azureAudioStorage.UploadAudioTrackAsync(file.OpenRead(), audioBlobName, id3.MimeType);                
             }
         }
     }

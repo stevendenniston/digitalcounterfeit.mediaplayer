@@ -56,11 +56,11 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
             var albumList = await _albumRepository.GetArtistAlbumListAsync(artistId);
             var result = new List<AlbumModel>();
 
-            if (identity != null && albumList.Any())
+            if (albumList.Any())
             {
                 foreach (var album in albumList)
                 {
-                    var imageUrl = await _imageStorage.GetImageSasUriAsync($@"{identity.Id}/{album.ArtistId}/{album.Id}");
+                    var imageUrl = identity != null ? await _imageStorage.GetImageSasUriAsync($@"{identity.Id}/{album.ArtistId}/{album.Id}") : string.Empty;
 
                     result.Add(
                         new AlbumModel 
@@ -122,7 +122,10 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
                     return BadRequest("Empty request body; Cannot upload an empty image file...");
 
                 var blobName = $@"{identity.Id}/{artistId}/{albumId}";
-                await _imageStorage.UploadImageAsync(file.OpenReadStream(), blobName, file.ContentType);
+
+                using var stream = file.OpenReadStream();
+
+                await _imageStorage.UploadImageAsync(stream, blobName, file.ContentType);
 
                 return NoContent();
             }

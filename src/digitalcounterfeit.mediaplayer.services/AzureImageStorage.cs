@@ -18,7 +18,7 @@ namespace digitalcounterfeit.mediaplayer.services
         private readonly string _accountKey;
         private readonly StorageSharedKeyCredential _credential;
         private readonly BlobContainerClient _container;
-        private MemoryCache _uriCache;
+        private readonly MemoryCache _uriCache;
         private readonly ILogger<AzureImageStorage> _logger;
 
         public AzureImageStorage(ILogger<AzureImageStorage> logger, IConfiguration configuration)
@@ -76,20 +76,15 @@ namespace digitalcounterfeit.mediaplayer.services
         public async Task UploadImageAsync(Stream stream, string blobName, string contentType)
         {
             var blob = _container.GetBlockBlobClient(blobName);
-
-            using (stream)
-            {
-                await blob.UploadAsync(stream, new BlobHttpHeaders { ContentType = contentType }, accessTier: AccessTier.Hot);
-            }
+                       
+            await blob.UploadAsync(stream, new BlobHttpHeaders { ContentType = contentType }, accessTier: AccessTier.Hot);            
         }
 
 
         private async Task<(string, DateTimeOffset)> GenerateSasUriAsync(string blobName)
         {
-            var expiresOn = DateTimeOffset.UtcNow.AddHours(1);
-            var key = new StorageSharedKeyCredential(_accountName, _accountKey);
-            var container = new BlobContainerClient(new Uri($"https://{_accountName}.blob.core.windows.net/{CONTAINER_NAME}"), key);            
-            var blob = container.GetBlockBlobClient(blobName);
+            var expiresOn = DateTimeOffset.UtcNow.AddHours(1);            
+            var blob = _container.GetBlockBlobClient(blobName);
 
             try
             {
@@ -98,14 +93,14 @@ namespace digitalcounterfeit.mediaplayer.services
                     var sasBuilder = new BlobSasBuilder(BlobContainerSasPermissions.Read, expiresOn)
                     {
                         BlobName = blobName,
-                        BlobContainerName = container.Name,
+                        BlobContainerName = _container.Name,
                         Resource = "b",
                         StartsOn = DateTimeOffset.UtcNow
-                    };                    
+                    };
 
                     var builder = new UriBuilder(blob.Uri)
                     {
-                        Query = sasBuilder.ToSasQueryParameters(key).ToString()
+                        Query = sasBuilder.ToSasQueryParameters(_credential).ToString()
                     };
 
                     return (builder.ToString(), expiresOn);
