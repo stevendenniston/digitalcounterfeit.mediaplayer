@@ -32,8 +32,8 @@ namespace digitalcounterfeit.mediaplayer.api
             services.ConfigureControllers();
             services.ConfigureSwagger(Version);
 
-            services.AddScoped<IAzureAudioStorage, AzureAudioStorage>();
-            services.AddScoped<IAzureImageStorage, AzureImageStorage>();
+            services.AddSingleton<IAzureAudioStorage, AzureAudioStorage>();
+            services.AddSingleton<IAzureImageStorage, AzureImageStorage>();
 
             services.AddScoped<IAlbumRepository, AlbumRepository>();
             services.AddScoped<IArtistRepository, ArtistRepository>();

@@ -67,7 +67,7 @@ namespace digitalcounterfeit.mediaplayer.fileprocessor
                     {
                         //recursion: see recursion                    
                         await DoTheThingForTheStuff(directory.FullName);
-                        directory.Delete(true);
+                        //directory.Delete(true);
                     }
                 }
 
@@ -90,7 +90,7 @@ namespace digitalcounterfeit.mediaplayer.fileprocessor
                 try
                 {
                     //do the stuff for the things
-                    var id3 = File.Create(file.FullName);
+                    var id3 = File.Create(file.FullName, "audio/mp3", ReadStyle.Average);
 
                     //artist data
                     var artist = artistList.FirstOrDefault(artist => artist.Name.Equals(id3.Tag.FirstAlbumArtist, StringComparison.OrdinalIgnoreCase));
@@ -152,11 +152,17 @@ namespace digitalcounterfeit.mediaplayer.fileprocessor
 
                     //audio track azure blob file
                     var audioBlobName = $@"{userId}/{audioTrack.Id}";
-                    await _azureAudioStorage.UploadAudioTrackAsync(file.OpenRead(), audioBlobName, id3.MimeType);
+                    using (var fileStream = file.OpenRead())
+                    {
+                        await _azureAudioStorage.UploadAudioTrackAsync(fileStream, audioBlobName, id3.MimeType);
+                    }
+
+                    file.Delete();
                 }
                 catch(Exception ex)
                 {
                     _logger.LogError(ex, $"Error importing audio file for User {userId}");
+                    file.Delete();
                 }
             }
         }

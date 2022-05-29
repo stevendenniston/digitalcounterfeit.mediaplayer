@@ -6,6 +6,7 @@ namespace digitalcounterfeit.mediaplayer.services.Interfaces
     public interface IAzureAudioStorage
     {
         Task<string> GetAudioTrackSasUriAsync(string blobName);
-        Task<Response<BlobContentInfo>> UploadAudioTrackAsync(Stream stream, string blobName, string contentType, IProgress<long>? progressHandler = null);
+        Task<Response<BlobContentInfo>> UploadAudioTrackAsync(Stream stream, string blobName, string contentType);
+        Task DeleteAudioTrackAsync(string blobName);
     }
 }

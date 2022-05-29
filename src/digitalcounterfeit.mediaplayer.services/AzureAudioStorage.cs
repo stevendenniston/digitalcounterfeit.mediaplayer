@@ -7,23 +7,36 @@ using Azure.Storage.Sas;
 using digitalcounterfeit.mediaplayer.services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace digitalcounterfeit.mediaplayer.services
 {
     public class AzureAudioStorage : IAzureAudioStorage
     {
         private const string CONTAINER_NAME = "audio";
-        private readonly string _accountName;
-        private readonly string _accountKey;
-        private MemoryCache _uriCache;
+        private readonly StorageSharedKeyCredential _credential;
+        private readonly BlobContainerClient _container;
+        private readonly MemoryCache _uriCache;
+        private readonly ILogger<AzureAudioStorage> _logger;
 
-        public AzureAudioStorage(IConfiguration configuration)
+
+        public AzureAudioStorage(ILogger<AzureAudioStorage> logger, IConfiguration configuration)
         {
-            _accountName = configuration.GetValue<string>("AzureBlobAccountName");
-            _accountKey = configuration.GetValue<string>("AzureBlobAccountKey");
+            var accountName = configuration.GetValue<string>("AzureBlobAccountName");
+            var accountKey = configuration.GetValue<string>("AzureBlobAccountKey");
+            _credential = new StorageSharedKeyCredential(accountName, accountKey);
+            _container = new BlobContainerClient(new Uri($"https://{accountName}.blob.core.windows.net/{CONTAINER_NAME}"), _credential);
             _uriCache = new MemoryCache(new MemoryCacheOptions());
+            _logger = logger;
         }
 
+
+        public async Task DeleteAudioTrackAsync(string blobName)
+        {
+            var blob = _container.GetBlobClient(blobName);
+
+            await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
+        }
 
         public Task<string> GetAudioTrackSasUriAsync(string blobName)
         {
@@ -39,35 +52,27 @@ namespace digitalcounterfeit.mediaplayer.services
             }
         }
 
-        public async Task<Response<BlobContentInfo>> UploadAudioTrackAsync(Stream stream, string blobName, string contentType, IProgress<long> progressHandler)
-        {
-            var key = new StorageSharedKeyCredential(_accountName, _accountKey);
-            var container = new BlobContainerClient(new Uri($"https://{_accountName}.blob.core.windows.net/{CONTAINER_NAME}"), key);
-            var blob = container.GetBlockBlobClient(blobName);
-
-            using (stream)
-            {
-                return await blob
-                    .UploadAsync(
-                        stream,
-                        new BlobHttpHeaders { ContentType = contentType },
-                        accessTier: AccessTier.Hot,
-                        progressHandler: progressHandler);
-            }
+        public async Task<Response<BlobContentInfo>> UploadAudioTrackAsync(Stream stream, string blobName, string contentType)
+        {            
+            var blob = _container.GetBlockBlobClient(blobName);
+            
+            return await blob
+                .UploadAsync(
+                    stream,
+                    new BlobHttpHeaders { ContentType = contentType },
+                    accessTier: AccessTier.Hot);
         }
 
 
         private (string, DateTimeOffset) GenerateSasUri(string blobName)
         {
-            var expiresOn = DateTimeOffset.UtcNow.AddHours(1);
-            var key = new StorageSharedKeyCredential(_accountName, _accountKey);
-            var container = new BlobContainerClient(new Uri($"https://{_accountName}.blob.core.windows.net/{CONTAINER_NAME}"), key);
-            var blob = container.GetBlockBlobClient(blobName);
+            var expiresOn = DateTimeOffset.UtcNow.AddHours(1);            
+            var blob = _container.GetBlockBlobClient(blobName);
 
             var sasBuilder = new BlobSasBuilder()
             {
                 BlobName = blobName,
-                BlobContainerName = container.Name,
+                BlobContainerName = _container.Name,
                 Resource = "b",
                 StartsOn = DateTimeOffset.UtcNow,
                 ExpiresOn = expiresOn
@@ -77,7 +82,7 @@ namespace digitalcounterfeit.mediaplayer.services
 
             var builder = new UriBuilder(blob.Uri)
             {
-                Query = sasBuilder.ToSasQueryParameters(key).ToString()
+                Query = sasBuilder.ToSasQueryParameters(_credential).ToString()
             };
 
             return (builder.ToString(), expiresOn);
