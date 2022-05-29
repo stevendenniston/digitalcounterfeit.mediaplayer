@@ -69,7 +69,7 @@ namespace digitalcounterfeit.mediaplayer.services
 
         private (string, DateTimeOffset) GenerateSasUri(string blobName)
         {
-            var expiresOn = DateTimeOffset.UtcNow.AddHours(1);            
+            var expiresOn = DateTimeOffset.UtcNow.AddHours(24);            
             var blob = _container.GetBlockBlobClient(blobName);
 
             var sasBuilder = new BlobSasBuilder()

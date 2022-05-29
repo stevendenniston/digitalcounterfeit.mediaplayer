@@ -63,7 +63,7 @@ namespace digitalcounterfeit.mediaplayer.services
 
         private async Task<(string, DateTimeOffset)> GenerateSasUriAsync(string blobName)
         {
-            var expiresOn = DateTimeOffset.UtcNow.AddHours(1);            
+            var expiresOn = DateTimeOffset.UtcNow.AddHours(24);            
             var blob = _container.GetBlockBlobClient(blobName);
 
             try
@@ -75,8 +75,10 @@ namespace digitalcounterfeit.mediaplayer.services
                         BlobName = blobName,
                         BlobContainerName = _container.Name,
                         Resource = "b",
-                        StartsOn = DateTimeOffset.UtcNow
+                        StartsOn = DateTimeOffset.UtcNow                        
                     };
+
+                    sasBuilder.SetPermissions(BlobSasPermissions.Read);
 
                     var builder = new UriBuilder(blob.Uri)
                     {
