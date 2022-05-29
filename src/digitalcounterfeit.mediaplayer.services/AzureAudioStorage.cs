@@ -47,7 +47,10 @@ namespace digitalcounterfeit.mediaplayer.services
             else
             {
                 var (sasUri, expiresOn) = GenerateSasUri(blobName);
-                _uriCache.Set(blobName, sasUri, expiresOn);
+
+                if (!string.IsNullOrWhiteSpace(sasUri))
+                    _uriCache.Set(blobName, sasUri, expiresOn);
+
                 return Task.FromResult(sasUri);
             }
         }

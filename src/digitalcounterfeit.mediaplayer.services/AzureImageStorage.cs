@@ -46,7 +46,7 @@ namespace digitalcounterfeit.mediaplayer.services
             {
                 var (sasUri, expiresOn) = await GenerateSasUriAsync(blobName);
 
-                if (sasUri != default)
+                if (!string.IsNullOrWhiteSpace(sasUri))
                     _uriCache.Set(blobName, sasUri, expiresOn);
 
                 return sasUri;
