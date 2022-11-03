@@ -45,7 +45,10 @@ namespace digitalcounterfeit.mediaplayer.api.Data
                                             commandType: CommandType.StoredProcedure))
                 {
                     var playlist = (await multi.ReadAsync<PlaylistModel>()).FirstOrDefault();
-                    playlist.TrackList = await multi.ReadAsync<AudioTrackModel>();
+
+                    if (playlist != null)
+                        playlist.TrackList = await multi.ReadAsync<AudioTrackModel>();
+
                     return playlist;
                 }
             }
