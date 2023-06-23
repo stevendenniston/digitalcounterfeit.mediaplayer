@@ -1,6 +1,4 @@
-﻿using System.Web.Mvc;
-
-namespace digitalcounterfeit.mediaplayer.services.Interfaces
+﻿namespace digitalcounterfeit.mediaplayer.services.Interfaces
 {
     public interface IAzureImageStorage
     {

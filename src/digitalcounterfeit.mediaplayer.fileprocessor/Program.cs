@@ -3,6 +3,7 @@ using digitalcounterfeit.mediaplayer.fileprocessor.Clients;
 using digitalcounterfeit.mediaplayer.fileprocessor.Clients.Interfaces;
 using digitalcounterfeit.mediaplayer.services;
 using digitalcounterfeit.mediaplayer.services.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -34,7 +35,8 @@ IHost host = Host.CreateDefaultBuilder(args)
     .UseSerilog()
     .ConfigureServices(services =>
     {
-        services.AddHttpClient();        
+        services.AddHttpClient();
+        services.AddSingleton<IMemoryCache, MemoryCache>();
         services.AddSingleton<IMediaPlayerApi, MediaPlayerApi>();
         services.AddSingleton<IAzureAudioStorage, AzureAudioStorage>();
         services.AddSingleton<IAzureImageStorage, AzureImageStorage>();

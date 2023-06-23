@@ -1,19 +1,22 @@
 ﻿using digitalcounterfeit.mediaplayer.fileprocessor.Clients.Interfaces;
 using digitalcounterfeit.mediaplayer.models;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace digitalcounterfeit.mediaplayer.fileprocessor.Clients
 {
     public class MediaPlayerApi : ApiClientBase, IMediaPlayerApi
     {
+        private readonly IMemoryCache _memoryCache;
+
         protected override HttpClient Client { get; }
         protected override string AccessToken { get; }
 
 
-        public MediaPlayerApi(IConfiguration configuration, IHttpClientFactory httpClientFactory)
+        public MediaPlayerApi(IConfiguration configuration, IHttpClientFactory httpClientFactory, IMemoryCache memoryCache)
         {
-
+            _memoryCache = memoryCache;
             Client = httpClientFactory.CreateClient();
-            AccessToken = configuration.GetValue<string>("AccessToken");
+            AccessToken = GetAccessToken(configuration);
             Client.BaseAddress = new Uri(configuration.GetValue<string>("MediaPlayerApiUri"));
         }
 
@@ -53,6 +56,18 @@ namespace digitalcounterfeit.mediaplayer.fileprocessor.Clients
         public async Task UpsertAudioTrackAsync(AudioTrackModel audioTrack)
         {
             await PutAsync("api/audio-track", audioTrack);
+        }
+
+        private string GetAccessToken(IConfiguration configuration)
+        {
+            if (_memoryCache.TryGetValue<string>("AuthToken", out var accessToken))
+            {
+                return accessToken;
+            }
+            else
+            {
+                return configuration.GetValue<string>("AccessToken");
+            }
         }
     }
 }

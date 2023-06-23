@@ -7,7 +7,6 @@ using digitalcounterfeit.mediaplayer.services.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Web.Mvc;
 
 namespace digitalcounterfeit.mediaplayer.services
 {

@@ -38,9 +38,9 @@ namespace digitalcounterfeit.mediaplayer.services
             await blob.DeleteIfExistsAsync(DeleteSnapshotsOption.IncludeSnapshots);
         }
 
-        public Task<string> GetAudioTrackSasUriAsync(string blobName)
+        public Task<string?> GetAudioTrackSasUriAsync(string blobName)
         {
-            if (_uriCache.TryGetValue<string>(blobName, out var cachedUri))
+            if (_uriCache.TryGetValue<string?>(blobName, out var cachedUri))
             {
                 return Task.FromResult(cachedUri);
             }
@@ -67,7 +67,7 @@ namespace digitalcounterfeit.mediaplayer.services
         }
 
 
-        private (string, DateTimeOffset) GenerateSasUri(string blobName)
+        private (string?, DateTimeOffset) GenerateSasUri(string blobName)
         {
             var expiresOn = DateTimeOffset.UtcNow.AddHours(24);            
             var blob = _container.GetBlockBlobClient(blobName);
