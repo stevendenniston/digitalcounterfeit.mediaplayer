@@ -1,9 +1,0 @@
-<div class="content" >
-    <div class="artist-list">
-        <mat-card [routerLink]="['/artist', artist.id]" *ngFor="let artist of artistList | async">
-            <mat-card-content>
-                <h4>{{artist.name}}</h4>
-            </mat-card-content>
-        </mat-card>
-    </div>
-</div>
