@@ -45,10 +45,7 @@ export default function Player() {
             <Icon className="material-icons-round">skip_previous</Icon>
           </StyledFab>
           <StyledFab color="primary" onClick={() => play(!isPlaying)}>
-            <Icon
-              sx={{ transform: "scale(1.5)" }}
-              className="material-icons-round"
-            >
+            <Icon sx={{ transform: "scale(1.5)" }} className="material-icons-round">
               {isPlaying ? "pause_circle_outline" : "play_circle_outline"}
             </Icon>
           </StyledFab>
