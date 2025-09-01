@@ -1,16 +1,26 @@
-import { Container } from "@mui/material";
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import MenuLayout from "./MenuLayout";
 import ArtistList from "./ArtistList";
-import Menu from "./Menu";
-import Player from "./Player";
 
-export default function App() {
+const App = () => {  
+
+  const {user} = useAuth0();
+
   return (
     <>
-      <Container sx={{ display: "flex", flexDirection: "column"}}>
-        <Menu />
-        <ArtistList />
-        <Player />
-      </Container>
+      <BrowserRouter basename="/">
+        <MenuLayout>
+            <Routes>
+              <Route path="/" element={null}/>
+              <Route path="/user-profile" element={<pre>{JSON.stringify(user, null, 2)}</pre>}/>
+              <Route path="/user-settings" element={<pre>User Settings</pre>}/>
+              <Route path="/music-library" element={<ArtistList />}/>
+            </Routes>
+        </MenuLayout>
+      </BrowserRouter>      
     </>
-  );
+  )
 }
+
+export default withAuthenticationRequired(App);

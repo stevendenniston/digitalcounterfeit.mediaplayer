@@ -34,7 +34,7 @@ export default function Player() {
   const [isPlaying, play] = useState(false);
 
   return (
-    <AppBar color="secondary" sx={{ top: "auto", bottom: 0 }}>
+    <AppBar color="secondary" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, top: "auto", bottom: 0 }}>
       <Toolbar>
         <TrackInfoBox>
           <Typography>Some Track</Typography>

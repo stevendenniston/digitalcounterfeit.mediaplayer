@@ -1,5 +1,9 @@
 import { Card, CardMedia, Typography } from "@mui/material";
 
+interface IArtistCardProps {
+    name: string
+}
+
 const artistCardStyle = {
   display: "flex",
   flexFlow: "column-reverse",
@@ -26,7 +30,7 @@ const artistNameStyle = {
   color: "whitesmoke",
 };
 
-export default function ArtistCard({ name }) {
+export default function ArtistCard({ name } : IArtistCardProps) {
   return (
     <Card sx={artistCardStyle}>
       <CardMedia component="img" height="100%" width="100%" />
