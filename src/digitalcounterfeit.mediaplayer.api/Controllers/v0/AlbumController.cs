@@ -1,167 +1,169 @@
-﻿//using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
-//using digitalcounterfeit.mediaplayer.extensions;
-//using digitalcounterfeit.mediaplayer.models;
-//using digitalcounterfeit.mediaplayer.services.Interfaces;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.JsonPatch;
-//using Microsoft.AspNetCore.Mvc;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
+﻿using Asp.Versioning;
+using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
+using digitalcounterfeit.mediaplayer.extensions;
+using digitalcounterfeit.mediaplayer.models;
+using digitalcounterfeit.mediaplayer.services.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-//namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
-//{
-//    [ApiController]
-//    [Route("api/album")]
-//    public class AlbumController : ControllerBase
-//    {
-//        private readonly IAlbumRepository _albumRepository;
-//        private readonly IAzureImageStorage _imageStorage;
-//        private readonly IIdentityRepository _identityRepository;
+namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
+{
+    [ApiController]
+    [Route("api/v{version:apiVersion}/album")]
+    [ApiVersion(0.0)]
+    public class AlbumController : ControllerBase
+    {
+        private readonly IAlbumRepository _albumRepository;
+        private readonly IAzureImageStorage _imageStorage;
+        private readonly IIdentityRepository _identityRepository;
 
-//        public AlbumController(IAlbumRepository albumRepository, IAzureImageStorage imageStorage, IIdentityRepository identityRepository)
-//        {
-//            _albumRepository = albumRepository;
-//            _imageStorage = imageStorage;
-//            _identityRepository = identityRepository;
-//        }
+        public AlbumController(IAlbumRepository albumRepository, IAzureImageStorage imageStorage, IIdentityRepository identityRepository)
+        {
+            _albumRepository = albumRepository;
+            _imageStorage = imageStorage;
+            _identityRepository = identityRepository;
+        }
 
-//        [HttpGet("{id:guid}")]
-//        public async Task<ActionResult<AlbumModel>> GetByIdAsync(Guid id)
-//        {
-//            var subjectId = User?.GetUserSubjectId();
-//            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<AlbumModel>> GetByIdAsync(Guid id)
+        {
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-//            if (identity != null)
-//            {
-//                var album = await _albumRepository.GetByIdAsync(id);
+            if (identity != null)
+            {
+                var album = await _albumRepository.GetByIdAsync(id);
 
-//                if (album == null)
-//                    return NotFound();
+                if (album == null)
+                    return NotFound();
 
-//                album.ImageUri = await _imageStorage.GetImageSasUriAsync($@"{identity.Id}/{album.ArtistId}/{album.Id}");
+                album.ImageUri = await _imageStorage.GetImageSasUriAsync($@"{identity.Id}/{album.ArtistId}/{album.Id}");
 
-//                return Ok(album);
-//            }
+                return Ok(album);
+            }
 
-//            return StatusCode(418);
-//        }
+            return StatusCode(418);
+        }
 
-//        [HttpGet("/api/artist/{artistId:guid}/album-list")]
-//        public async Task<ActionResult<IEnumerable<AlbumModel>>> GetArtistAlbumListAsync(Guid artistId)
-//        {
-//            var subjectId = User?.GetUserSubjectId();
-//            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
-//            var albumList = await _albumRepository.GetArtistAlbumListAsync(artistId);
-//            var result = new List<AlbumModel>();
+        [HttpGet("/api/v{version:apiVersion}/artist/{artistId:guid}/album-list")]
+        public async Task<ActionResult<IEnumerable<AlbumModel>>> GetArtistAlbumListAsync(Guid artistId)
+        {
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
+            var albumList = await _albumRepository.GetArtistAlbumListAsync(artistId);
+            var result = new List<AlbumModel>();
 
-//            if (albumList.Any())
-//            {
-//                foreach (var album in albumList)
-//                {
-//                    var imageUrl = identity != null ? await _imageStorage.GetImageSasUriAsync($@"{identity.Id}/{album.ArtistId}/{album.Id}") : string.Empty;
+            if (albumList.Any())
+            {
+                foreach (var album in albumList)
+                {
+                    var imageUrl = identity != null ? await _imageStorage.GetImageSasUriAsync($@"{identity.Id}/{album.ArtistId}/{album.Id}") : string.Empty;
 
-//                    result.Add(
-//                        new AlbumModel
-//                        {
-//                            ArtistId = album.ArtistId,
-//                            Id = album.Id,
-//                            ImageUri = imageUrl,
-//                            LibraryId = album.LibraryId,
-//                            Name = album.Name,
-//                            Year = album.Year
-//                        });
-//                }
-//            }
+                    result.Add(
+                        new AlbumModel
+                        {
+                            ArtistId = album.ArtistId,
+                            Id = album.Id,
+                            ImageUri = imageUrl,
+                            LibraryId = album.LibraryId,
+                            Name = album.Name,
+                            Year = album.Year
+                        });
+                }
+            }
 
-//            return Ok(result);
-//        }
+            return Ok(result);
+        }
 
-//        [HttpGet("/api/artist/{artistId:guid}/album")]
-//        public async Task<ActionResult<AlbumModel>> GetByArtistIdAlbumNameAsync(Guid artistId, [FromQuery] string name)
-//        {
-//            var album = await _albumRepository.GetByArtistIdAlbumName(artistId, name);
+        [HttpGet("/api/v{version:apiVersion}/artist/{artistId:guid}/album")]
+        public async Task<ActionResult<AlbumModel>> GetByArtistIdAlbumNameAsync(Guid artistId, [FromQuery] string name)
+        {
+            var album = await _albumRepository.GetByArtistIdAlbumName(artistId, name);
 
-//            if (album == null)
-//                return NotFound();
+            if (album == null)
+                return NotFound();
 
-//            return Ok(album);
-//        }
+            return Ok(album);
+        }
 
-//        [HttpGet("/api/artist/{artistId:guid}/album/{albumId:guid}/image-uri")]
-//        public async Task<ActionResult<IEnumerable<string>>> GetAlbumImageSasUriAsync(Guid artistId, Guid albumId)
-//        {
-//            var subjectId = User?.GetUserSubjectId();
-//            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
+        [HttpGet("/api/v{version:apiVersion}/artist/{artistId:guid}/album/{albumId:guid}/image-uri")]
+        public async Task<ActionResult<IEnumerable<string>>> GetAlbumImageSasUriAsync(Guid artistId, Guid albumId)
+        {
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-//            if (identity != null)
-//            {
-//                var blobName = $@"{identity.Id}/{artistId}/{albumId}";
-//                var audioTrackUri = await _imageStorage.GetImageSasUriAsync(blobName);
+            if (identity != null)
+            {
+                var blobName = $@"{identity.Id}/{artistId}/{albumId}";
+                var audioTrackUri = await _imageStorage.GetImageSasUriAsync(blobName);
 
-//                if (string.IsNullOrWhiteSpace(audioTrackUri))
-//                    return NotFound();
+                if (string.IsNullOrWhiteSpace(audioTrackUri))
+                    return NotFound();
 
-//                return Ok(audioTrackUri);
-//            }
+                return Ok(audioTrackUri);
+            }
 
-//            return StatusCode(418);
-//        }
+            return StatusCode(418);
+        }
 
 
-//        [HttpPut("/api/artist/{artistId:guid}/album/{albumId:guid}/image")]
-//        public async Task<IActionResult> UpsertAlbumImageAsync(Guid artistId, Guid albumId, IFormFile file)
-//        {
-//            var subjectId = User?.GetUserSubjectId();
-//            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
+        [HttpPut("/api/v{version:apiVersion}/artist/{artistId:guid}/album/{albumId:guid}/image")]
+        public async Task<IActionResult> UpsertAlbumImageAsync(Guid artistId, Guid albumId, IFormFile file)
+        {
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-//            if (identity != null)
-//            {
-//                if (Request.ContentLength <= 0)
-//                    return BadRequest("Empty request body; Cannot upload an empty image file...");
+            if (identity != null)
+            {
+                if (Request.ContentLength <= 0)
+                    return BadRequest("Empty request body; Cannot upload an empty image file...");
 
-//                var blobName = $@"{identity.Id}/{artistId}/{albumId}";
+                var blobName = $@"{identity.Id}/{artistId}/{albumId}";
 
-//                using var stream = file.OpenReadStream();
+                using var stream = file.OpenReadStream();
 
-//                await _imageStorage.UploadImageAsync(stream, blobName, file.ContentType);
+                await _imageStorage.UploadImageAsync(stream, blobName, file.ContentType);
 
-//                return NoContent();
-//            }
+                return NoContent();
+            }
 
-//            return StatusCode(418);
-//        }
+            return StatusCode(418);
+        }
 
-//        [HttpPut]
-//        public async Task<IActionResult> UpsertAsync(AlbumModel album)
-//        {
-//            await _albumRepository.UpsertAsync(album);
+        [HttpPut]
+        public async Task<IActionResult> UpsertAsync(AlbumModel album)
+        {
+            await _albumRepository.UpsertAsync(album);
 
-//            return NoContent();
-//        }
+            return NoContent();
+        }
 
-//        [HttpPatch("{id:guid}")]
-//        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<AlbumModel> albumPatch)
-//        {
-//            var album = await _albumRepository.GetByIdAsync(id);
+        [HttpPatch("{id:guid}")]
+        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<AlbumModel> albumPatch)
+        {
+            var album = await _albumRepository.GetByIdAsync(id);
 
-//            if (album == null)
-//                return NotFound();
+            if (album == null)
+                return NotFound();
 
-//            albumPatch.ApplyTo(album);
+            albumPatch.ApplyTo(album);
 
-//            await _albumRepository.UpsertAsync(album);
+            await _albumRepository.UpsertAsync(album);
 
-//            return NoContent();
-//        }
+            return NoContent();
+        }
 
-//        [HttpDelete("{id:guid}")]
-//        public async Task<IActionResult> DeleteByIdAsync(Guid id)
-//        {
-//            await _albumRepository.DeleteByIdAsync(id);
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteByIdAsync(Guid id)
+        {
+            await _albumRepository.DeleteByIdAsync(id);
 
-//            return NoContent();
-//        }
-//    }
-//}
+            return NoContent();
+        }
+    }
+}

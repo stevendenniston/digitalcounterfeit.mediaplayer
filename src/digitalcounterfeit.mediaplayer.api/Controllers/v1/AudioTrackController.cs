@@ -1,4 +1,5 @@
-﻿using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
+﻿using Asp.Versioning;
+using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.extensions;
 using digitalcounterfeit.mediaplayer.models;
 using digitalcounterfeit.mediaplayer.services.Interfaces;
@@ -14,7 +15,8 @@ using System.Threading.Tasks;
 namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
 {
     [ApiController]
-    [Route("api/audio-track")]
+    [Route("api/v{version:apiVersion}/audio-track")]
+    [ApiVersion(1.0)]
     public class AudioTrackController : Controller
     {
         private readonly IConfiguration _configuration;
@@ -41,8 +43,8 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
 
-        [HttpGet("{id:guid}")]
-        public async Task<ActionResult<AudioTrackModel>> GetByIdAsync(Guid id)
+        [HttpGet]
+        public async Task<ActionResult<AudioTrackModel>> GetByIdAsync([FromQuery] Guid id)
         {
             var audioTrack = await _audioTrackRepository.GetByIdAsync(id);
 
@@ -52,8 +54,8 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
             return Ok(audioTrack);
         }
 
-        [HttpGet("{id:guid}/stream-uri")]
-        public async Task<ActionResult<IEnumerable<string>>> GetAudioTrackSasUriAsync(Guid id)
+        [HttpGet("stream-uri")]
+        public async Task<ActionResult<IEnumerable<string>>> GetAudioTrackSasUriAsync([FromQuery] Guid id)
         {
             var subjectId = User?.GetUserSubjectId();
             var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
@@ -72,8 +74,8 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
             return StatusCode(418);
         }
 
-        [HttpGet("/api/album/{albumId:guid}/audio-track-list")]
-        public async Task<ActionResult<IEnumerable<AudioTrackModel>>> GetAlbumAudioTrackListAsync(Guid albumId)
+        [HttpGet("/api/v{version:apiVersion}/album/audio-track-list")]
+        public async Task<ActionResult<IEnumerable<AudioTrackModel>>> GetAlbumAudioTrackListAsync([FromQuery] Guid albumId)
         {
             var audioTrackList = await _audioTrackRepository.GetAlbumAudioTrackListAsync(albumId);
 
@@ -81,7 +83,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpPut]
-        public async Task<IActionResult> UpsertAsync(AudioTrackModel audioTrack)
+        public async Task<IActionResult> UpsertAsync([FromBody] AudioTrackModel audioTrack)
         {
             await _artistRepository.UpsertAsync(audioTrack.Artist);
             await _albumRepository.UpsertAsync(audioTrack.Album);
@@ -91,7 +93,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpPost("file")]
-        public async Task<IActionResult> PutAudioTrackAsync(IFormFile file)
+        public async Task<IActionResult> PutAudioTrackAsync([FromBody] IFormFile file)
         {
             var subjectId = User?.GetUserSubjectId();
             var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
@@ -117,8 +119,8 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
             return StatusCode(418);
         }
 
-        [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<AudioTrackModel> audioTrackPatch)
+        [HttpPatch]
+        public async Task<IActionResult> PatchAsync([FromQuery] Guid id, [FromBody] JsonPatchDocument<AudioTrackModel> audioTrackPatch)
         {
             var audioTrack = await _audioTrackRepository.GetByIdAsync(id);
 
@@ -132,8 +134,8 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
             return NoContent();
         }
 
-        [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteByIdAsync(Guid id)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteByIdAsync([FromQuery] Guid id)
         {
             await _audioTrackRepository.DeleteByIdAsync(id);
 

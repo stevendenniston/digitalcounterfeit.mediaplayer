@@ -1,75 +1,77 @@
-﻿//using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
-//using digitalcounterfeit.mediaplayer.models;
-//using Microsoft.AspNetCore.JsonPatch;
-//using Microsoft.AspNetCore.Mvc;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Text.RegularExpressions;
-//using System.Threading.Tasks;
+﻿using Asp.Versioning;
+using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
+using digitalcounterfeit.mediaplayer.models;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
-//namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
-//{
-//    [ApiController]
-//    [Route("api/artist")]
-//    public class ArtistController : ControllerBase
-//    {
-//        private readonly IArtistRepository _artistRepository;
+namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
+{
+    [ApiController]
+    [Route("api/v{version:apiVersion}/artist")]
+    [ApiVersion(0.0)]
+    public class ArtistController : ControllerBase
+    {
+        private readonly IArtistRepository _artistRepository;
 
-//        public ArtistController(IArtistRepository artistRepository)
-//        {
-//            _artistRepository = artistRepository;
-//        }
+        public ArtistController(IArtistRepository artistRepository)
+        {
+            _artistRepository = artistRepository;
+        }
 
-//        [HttpGet("{id:guid}")]
-//        public async Task<ActionResult<ArtistModel>> GetByIdAsync(Guid id)
-//        {
-//            var artist = await _artistRepository.GetByIdAsync(id);
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<ArtistModel>> GetByIdAsync(Guid id)
+        {
+            var artist = await _artistRepository.GetByIdAsync(id);
 
-//            if (artist == null)
-//                return NotFound();
+            if (artist == null)
+                return NotFound();
 
-//            return Ok(artist);
-//        }
+            return Ok(artist);
+        }
 
-//        [HttpGet("/api/library/{libraryId:guid}/artist-list")]
-//        public async Task<ActionResult<IEnumerable<ArtistModel>>> GetLibraryArtistListAsync(Guid libraryId)
-//        {
-//            var artistList = await _artistRepository.GetLibraryArtistListAsync(libraryId);
+        [HttpGet("/api/v{version:apiVersion}/library/{libraryId:guid}/artist-list")]
+        public async Task<ActionResult<IEnumerable<ArtistModel>>> GetLibraryArtistListAsync(Guid libraryId)
+        {
+            var artistList = await _artistRepository.GetLibraryArtistListAsync(libraryId);
 
-//            return Ok(artistList.OrderBy(artist => Regex.Replace(artist.Name, @"^(?:the|The)\s*", string.Empty)));
-//        }
+            return Ok(artistList.OrderBy(artist => Regex.Replace(artist.Name, @"^(?:the|The)\s*", string.Empty)));
+        }
 
 
-//        [HttpPut]
-//        public async Task<IActionResult> UpsertAsync(ArtistModel artist)
-//        {
-//            await _artistRepository.UpsertAsync(artist);
+        [HttpPut]
+        public async Task<IActionResult> UpsertAsync(ArtistModel artist)
+        {
+            await _artistRepository.UpsertAsync(artist);
 
-//            return NoContent();
-//        }
+            return NoContent();
+        }
 
-//        [HttpPatch("{id:guid}")]
-//        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<ArtistModel> artistPatch)
-//        {
-//            var artist = await _artistRepository.GetByIdAsync(id);
+        [HttpPatch("{id:guid}")]
+        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<ArtistModel> artistPatch)
+        {
+            var artist = await _artistRepository.GetByIdAsync(id);
 
-//            if (artist == null)
-//                return NotFound();
+            if (artist == null)
+                return NotFound();
 
-//            artistPatch.ApplyTo(artist);
+            artistPatch.ApplyTo(artist);
 
-//            await _artistRepository.UpsertAsync(artist);
+            await _artistRepository.UpsertAsync(artist);
 
-//            return NoContent();
-//        }
+            return NoContent();
+        }
 
-//        [HttpDelete("{id:guid}")]
-//        public async Task<IActionResult> DeleteByIdAsync(Guid id)
-//        {
-//            await _artistRepository.DeleteByIdAsync(id);
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteByIdAsync(Guid id)
+        {
+            await _artistRepository.DeleteByIdAsync(id);
 
-//            return NoContent();
-//        }
-//    }
-//}
+            return NoContent();
+        }
+    }
+}

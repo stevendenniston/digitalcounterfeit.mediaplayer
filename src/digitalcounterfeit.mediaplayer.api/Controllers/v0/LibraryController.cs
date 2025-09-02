@@ -1,101 +1,109 @@
-﻿//using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
-//using digitalcounterfeit.mediaplayer.extensions;
-//using digitalcounterfeit.mediaplayer.models;
-//using Microsoft.AspNetCore.JsonPatch;
-//using Microsoft.AspNetCore.Mvc;
-//using System;
-//using System.Threading.Tasks;
+﻿using Asp.Versioning;
+using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
+using digitalcounterfeit.mediaplayer.extensions;
+using digitalcounterfeit.mediaplayer.models;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
-//namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
-//{
-//    [ApiController]
-//    [Route("api/library")]
-//    public class LibraryController : ControllerBase
-//    {
-//        private readonly IIdentityRepository _identityRepository;
-//        private readonly ILibraryRepository _libraryRepository;
+namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
+{
+    [ApiController]
+    [Route("api/v{version:apiVersion}/library")]
+    [ApiVersion(0.0)]
+    public class LibraryController : ControllerBase
+    {
+        private readonly IIdentityRepository _identityRepository;
+        private readonly ILibraryRepository _libraryRepository;
 
-//        public LibraryController(ILibraryRepository libraryRepository, IIdentityRepository identityRepository)
-//        {
-//            _identityRepository = identityRepository;
-//            _libraryRepository = libraryRepository;
-//        }
+        public LibraryController(ILibraryRepository libraryRepository, IIdentityRepository identityRepository)
+        {
+            _identityRepository = identityRepository;
+            _libraryRepository = libraryRepository;
+        }
 
-//        //[HttpGet]
-//        //public async Task<ActionResult<LibraryModel>> GetByIdAsync([FromQuery] Guid? id, [FromQuery] Guid? userId)
-//        //{
-//        //    var library = 
-//        //            id.HasValue ?
-//        //        await _libraryRepository.GetByIdAsync(id.Value) :
-//        //            userId.HasValue ?
-//        //        await _libraryRepository.GetByUserIdAsync(userId.Value) :
-//        //            null;
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<LibraryModel>> GetByIdAsync(Guid id)
+        {
+            var library = await _libraryRepository.GetByIdAsync(id);
 
-//        //    if (library == null)
-//        //        return NotFound();
+            if (library == null)
+                return NotFound();
 
-//        //    return Ok(library);
-//        //}
+            return Ok(library);
+        }
 
-//        [HttpGet]
-//        public async Task<ActionResult<LibraryModel>> GetByUserSubjectIdAsync()
-//        {
-//            var subjectId = User?.GetUserSubjectId();
-//            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
+        [HttpGet("")]
+        public async Task<ActionResult<LibraryModel>> GetByUserSubjectIdAsync()
+        {
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-//            if (identity == null)
-//            {
-//                identity = new IdentityModel { Id = Guid.NewGuid(), SubjectId = subjectId };
-//                await _identityRepository.UpsertAsync(identity);
-//            }
+            if (identity == null)
+            {
+                identity = new IdentityModel { Id = Guid.NewGuid(), SubjectId = subjectId };
+                await _identityRepository.UpsertAsync(identity);
+            }
 
-//            var library = await _libraryRepository.GetByUserIdAsync(identity.Id);
+            var library = await _libraryRepository.GetByUserIdAsync(identity.Id);
 
-//            if (library == null)
-//                return NotFound();
+            if (library == null)
+                return NotFound();
 
-//            return Ok(library);
-//        }
+            return Ok(library);
+        }
 
-//        [HttpPut]
-//        public async Task<IActionResult> UpsertAsync([FromBody] LibraryModel library)
-//        {
-//            var subjectId = User?.GetUserSubjectId();
-//            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
+        [HttpGet("user/{userId:guid}")]
+        public async Task<ActionResult<LibraryModel>> GetByUserId(Guid userId)
+        {
+            var library = await _libraryRepository.GetByUserIdAsync(userId);
 
-//            if (identity != null)
-//            {
-//                library.UserId = identity.Id;
+            if (library == null)
+                return NotFound();
 
-//                await _libraryRepository.UpsertAsync(library);
+            return Ok(library);
+        }
 
-//                return NoContent();
-//            }
+        [HttpPut]
+        public async Task<IActionResult> UpsertAsync([FromBody] LibraryModel library)
+        {
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-//            return StatusCode(418);
-//        }
+            if (identity != null)
+            {
+                library.UserId = identity.Id;
 
-//        [HttpPatch]
-//        public async Task<IActionResult> PatchAsync([FromQuery] Guid id, [FromBody] JsonPatchDocument<LibraryModel> libraryPatch)
-//        {
-//            var library = await _libraryRepository.GetByIdAsync(id);
+                await _libraryRepository.UpsertAsync(library);
 
-//            if (library == null)
-//                return NotFound();
+                return NoContent();
+            }
 
-//            libraryPatch.ApplyTo(library);
+            return StatusCode(418);
+        }
 
-//            await _libraryRepository.UpsertAsync(library);
+        [HttpPatch]
+        public async Task<IActionResult> PatchAsync([FromQuery] Guid id, [FromBody] JsonPatchDocument<LibraryModel> libraryPatch)
+        {
+            var library = await _libraryRepository.GetByIdAsync(id);
 
-//            return NoContent();
-//        }
+            if (library == null)
+                return NotFound();
 
-//        [HttpDelete]
-//        public async Task<IActionResult> DeleteByIdAsync([FromQuery] Guid id)
-//        {
-//            await _libraryRepository.DeleteByIdAsync(id);
+            libraryPatch.ApplyTo(library);
 
-//            return NoContent();
-//        }
-//    }
-//}
+            await _libraryRepository.UpsertAsync(library);
+
+            return NoContent();
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteByIdAsync([FromQuery] Guid id)
+        {
+            await _libraryRepository.DeleteByIdAsync(id);
+
+            return NoContent();
+        }
+    }
+}

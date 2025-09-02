@@ -1,4 +1,5 @@
-﻿using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
+﻿using Asp.Versioning;
+using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.extensions;
 using digitalcounterfeit.mediaplayer.models;
 using Microsoft.AspNetCore.JsonPatch;
@@ -9,7 +10,8 @@ using System.Threading.Tasks;
 namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
 {
     [ApiController]
-    [Route("api/library")]
+    [Route("api/v{version:apiVersion}/library")]
+    [ApiVersion(1.0)]
     public class LibraryController : ControllerBase
     {
         private readonly IIdentityRepository _identityRepository;

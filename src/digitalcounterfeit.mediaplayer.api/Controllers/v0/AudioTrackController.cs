@@ -1,143 +1,145 @@
-﻿//using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
-//using digitalcounterfeit.mediaplayer.extensions;
-//using digitalcounterfeit.mediaplayer.models;
-//using digitalcounterfeit.mediaplayer.services.Interfaces;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.JsonPatch;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.Extensions.Configuration;
-//using System;
-//using System.Collections.Generic;
-//using System.IO;
-//using System.Threading.Tasks;
+﻿using Asp.Versioning;
+using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
+using digitalcounterfeit.mediaplayer.extensions;
+using digitalcounterfeit.mediaplayer.models;
+using digitalcounterfeit.mediaplayer.services.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
-//namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
-//{
-//    [ApiController]
-//    [Route("api/audio-track")]
-//    public class AudioTrackController : Controller
-//    {
-//        private readonly IConfiguration _configuration;
-//        private readonly IAzureAudioStorage _azureAudioStorage;
-//        private readonly IArtistRepository _artistRepository;
-//        private readonly IAlbumRepository _albumRepository;
-//        private readonly IAudioTrackRepository _audioTrackRepository;
-//        private readonly IIdentityRepository _identityRepository;
+namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
+{
+    [ApiController]
+    [Route("api/v{version:apiVersion}/audio-track")]
+    [ApiVersion(0.0)]
+    public class AudioTrackController : Controller
+    {
+        private readonly IConfiguration _configuration;
+        private readonly IAzureAudioStorage _azureAudioStorage;
+        private readonly IArtistRepository _artistRepository;
+        private readonly IAlbumRepository _albumRepository;
+        private readonly IAudioTrackRepository _audioTrackRepository;
+        private readonly IIdentityRepository _identityRepository;
 
-//        public AudioTrackController(
-//            IConfiguration configuration,
-//            IAzureAudioStorage azureAudioStorage,
-//            IArtistRepository artistRepository,
-//            IAlbumRepository albumRepository,
-//            IAudioTrackRepository audioTrackRepository,
-//            IIdentityRepository identityRepository)
-//        {
-//            _configuration = configuration;
-//            _azureAudioStorage = azureAudioStorage;
-//            _artistRepository = artistRepository;
-//            _albumRepository = albumRepository;
-//            _audioTrackRepository = audioTrackRepository;
-//            _identityRepository = identityRepository;
-//        }
+        public AudioTrackController(
+            IConfiguration configuration,
+            IAzureAudioStorage azureAudioStorage,
+            IArtistRepository artistRepository,
+            IAlbumRepository albumRepository,
+            IAudioTrackRepository audioTrackRepository,
+            IIdentityRepository identityRepository)
+        {
+            _configuration = configuration;
+            _azureAudioStorage = azureAudioStorage;
+            _artistRepository = artistRepository;
+            _albumRepository = albumRepository;
+            _audioTrackRepository = audioTrackRepository;
+            _identityRepository = identityRepository;
+        }
 
 
-//        [HttpGet("{id:guid}")]
-//        public async Task<ActionResult<AudioTrackModel>> GetByIdAsync(Guid id)
-//        {
-//            var audioTrack = await _audioTrackRepository.GetByIdAsync(id);
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<AudioTrackModel>> GetByIdAsync(Guid id)
+        {
+            var audioTrack = await _audioTrackRepository.GetByIdAsync(id);
 
-//            if (audioTrack == null)
-//                return NotFound();
+            if (audioTrack == null)
+                return NotFound();
 
-//            return Ok(audioTrack);
-//        }
+            return Ok(audioTrack);
+        }
 
-//        [HttpGet("{id:guid}/stream-uri")]
-//        public async Task<ActionResult<IEnumerable<string>>> GetAudioTrackSasUriAsync(Guid id)
-//        {
-//            var subjectId = User?.GetUserSubjectId();
-//            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
+        [HttpGet("{id:guid}/stream-uri")]
+        public async Task<ActionResult<IEnumerable<string>>> GetAudioTrackSasUriAsync(Guid id)
+        {
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-//            if (identity != null)
-//            {
-//                var blobName = $@"{identity.Id}/{id}";
-//                var audioTrackUri = await _azureAudioStorage.GetAudioTrackSasUriAsync(blobName);
+            if (identity != null)
+            {
+                var blobName = $@"{identity.Id}/{id}";
+                var audioTrackUri = await _azureAudioStorage.GetAudioTrackSasUriAsync(blobName);
 
-//                if (string.IsNullOrWhiteSpace(audioTrackUri))
-//                    return NotFound();
+                if (string.IsNullOrWhiteSpace(audioTrackUri))
+                    return NotFound();
 
-//                return Ok(audioTrackUri);
-//            }
+                return Ok(audioTrackUri);
+            }
 
-//            return StatusCode(418);
-//        }
+            return StatusCode(418);
+        }
 
-//        [HttpGet("/api/album/{albumId:guid}/audio-track-list")]
-//        public async Task<ActionResult<IEnumerable<AudioTrackModel>>> GetAlbumAudioTrackListAsync(Guid albumId)
-//        {
-//            var audioTrackList = await _audioTrackRepository.GetAlbumAudioTrackListAsync(albumId);
+        [HttpGet("/api/v{version:apiVersion}/album/{albumId:guid}/audio-track-list")]
+        public async Task<ActionResult<IEnumerable<AudioTrackModel>>> GetAlbumAudioTrackListAsync(Guid albumId)
+        {
+            var audioTrackList = await _audioTrackRepository.GetAlbumAudioTrackListAsync(albumId);
 
-//            return Ok(audioTrackList);
-//        }
+            return Ok(audioTrackList);
+        }
 
-//        [HttpPut]
-//        public async Task<IActionResult> UpsertAsync(AudioTrackModel audioTrack)
-//        {
-//            await _artistRepository.UpsertAsync(audioTrack.Artist);
-//            await _albumRepository.UpsertAsync(audioTrack.Album);
-//            await _audioTrackRepository.UpsertAsync(audioTrack);
+        [HttpPut]
+        public async Task<IActionResult> UpsertAsync(AudioTrackModel audioTrack)
+        {
+            await _artistRepository.UpsertAsync(audioTrack.Artist);
+            await _albumRepository.UpsertAsync(audioTrack.Album);
+            await _audioTrackRepository.UpsertAsync(audioTrack);
 
-//            return NoContent();
-//        }
+            return NoContent();
+        }
 
-//        [HttpPost("file")]
-//        public async Task<IActionResult> PutAudioTrackAsync(IFormFile file)
-//        {
-//            var subjectId = User?.GetUserSubjectId();
-//            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
+        [HttpPost("file")]
+        public async Task<IActionResult> PutAudioTrackAsync(IFormFile file)
+        {
+            var subjectId = User?.GetUserSubjectId();
+            var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
 
-//            if (identity != null)
-//            {
-//                if (Request.ContentLength <= 0)
-//                    return BadRequest("Empty request body; Cannot upload an empty audio file...");
+            if (identity != null)
+            {
+                if (Request.ContentLength <= 0)
+                    return BadRequest("Empty request body; Cannot upload an empty audio file...");
 
-//                var directoryPath = Path.Combine(_configuration.GetValue<string>("AudioFileLocation"), $"{identity.Id}");
+                var directoryPath = Path.Combine(_configuration.GetValue<string>("AudioFileLocation"), $"{identity.Id}");
 
-//                if (!Directory.Exists(directoryPath))
-//                    Directory.CreateDirectory(directoryPath);
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
 
-//                using (var fileStream = new FileStream(Path.Combine(directoryPath, file.FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite))
-//                {
-//                    await file.OpenReadStream().CopyToAsync(fileStream);
-//                }
+                using (var fileStream = new FileStream(Path.Combine(directoryPath, file.FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                {
+                    await file.OpenReadStream().CopyToAsync(fileStream);
+                }
 
-//                return NoContent();
-//            }
+                return NoContent();
+            }
 
-//            return StatusCode(418);
-//        }
+            return StatusCode(418);
+        }
 
-//        [HttpPatch("{id:guid}")]
-//        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<AudioTrackModel> audioTrackPatch)
-//        {
-//            var audioTrack = await _audioTrackRepository.GetByIdAsync(id);
+        [HttpPatch("{id:guid}")]
+        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<AudioTrackModel> audioTrackPatch)
+        {
+            var audioTrack = await _audioTrackRepository.GetByIdAsync(id);
 
-//            if (audioTrack == null)
-//                return NotFound();
+            if (audioTrack == null)
+                return NotFound();
 
-//            audioTrackPatch.ApplyTo(audioTrack);
+            audioTrackPatch.ApplyTo(audioTrack);
 
-//            await _audioTrackRepository.UpsertAsync(audioTrack);
+            await _audioTrackRepository.UpsertAsync(audioTrack);
 
-//            return NoContent();
-//        }
+            return NoContent();
+        }
 
-//        [HttpDelete("{id:guid}")]
-//        public async Task<IActionResult> DeleteByIdAsync(Guid id)
-//        {
-//            await _audioTrackRepository.DeleteByIdAsync(id);
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteByIdAsync(Guid id)
+        {
+            await _audioTrackRepository.DeleteByIdAsync(id);
 
-//            return NoContent();
-//        }
-//    }
-//}
+            return NoContent();
+        }
+    }
+}

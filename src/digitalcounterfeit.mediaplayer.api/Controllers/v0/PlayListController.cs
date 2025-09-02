@@ -1,63 +1,65 @@
-﻿//using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
-//using digitalcounterfeit.mediaplayer.models;
-//using Microsoft.AspNetCore.JsonPatch;
-//using Microsoft.AspNetCore.Mvc;
-//using System;
-//using System.Threading.Tasks;
+﻿using Asp.Versioning;
+using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
+using digitalcounterfeit.mediaplayer.models;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
-//namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
-//{
-//    [ApiController]
-//    [Route("api/play-list")]
-//    public class PlaylistController : ControllerBase
-//    {
-//        private readonly IPlaylistRepository _playlistRepository;
+namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
+{
+    [ApiController]
+    [Route("api/v{version:apiVersion}/play-list")]
+    [ApiVersion(0.0)]
+    public class PlaylistController : ControllerBase
+    {
+        private readonly IPlaylistRepository _playlistRepository;
 
-//        public PlaylistController(IPlaylistRepository playlistRepository)
-//        {
-//            _playlistRepository = playlistRepository;
-//        }
+        public PlaylistController(IPlaylistRepository playlistRepository)
+        {
+            _playlistRepository = playlistRepository;
+        }
 
-//        [HttpGet("{id:guid}")]
-//        public async Task<ActionResult<PlaylistModel>> GetByIdAsync(Guid id)
-//        {
-//            var playlist = await _playlistRepository.GetByIdAsync(id);
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<PlaylistModel>> GetByIdAsync(Guid id)
+        {
+            var playlist = await _playlistRepository.GetByIdAsync(id);
 
-//            if (playlist == null)
-//                return NotFound();
+            if (playlist == null)
+                return NotFound();
 
-//            return Ok(playlist);
-//        }
+            return Ok(playlist);
+        }
 
-//        [HttpPut]
-//        public async Task<IActionResult> UpsertAsync(PlaylistModel playlist)
-//        {
-//            await _playlistRepository.UpsertAsync(playlist);
+        [HttpPut]
+        public async Task<IActionResult> UpsertAsync(PlaylistModel playlist)
+        {
+            await _playlistRepository.UpsertAsync(playlist);
 
-//            return NoContent();
-//        }
+            return NoContent();
+        }
 
-//        [HttpPatch("{id:guid}")]
-//        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<PlaylistModel> playlistPatch)
-//        {
-//            var playlist = await _playlistRepository.GetByIdAsync(id);
+        [HttpPatch("{id:guid}")]
+        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<PlaylistModel> playlistPatch)
+        {
+            var playlist = await _playlistRepository.GetByIdAsync(id);
 
-//            if (playlist == null)
-//                return NotFound();
+            if (playlist == null)
+                return NotFound();
 
-//            playlistPatch.ApplyTo(playlist);
+            playlistPatch.ApplyTo(playlist);
 
-//            await _playlistRepository.UpsertAsync(playlist);
+            await _playlistRepository.UpsertAsync(playlist);
 
-//            return NoContent();
-//        }
+            return NoContent();
+        }
 
-//        [HttpDelete("{id:guid}")]
-//        public async Task<IActionResult> DeleteByIdAsync(Guid id)
-//        {
-//            await _playlistRepository.DeleteByIdAsync(id);
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteByIdAsync(Guid id)
+        {
+            await _playlistRepository.DeleteByIdAsync(id);
 
-//            return NoContent();
-//        }
-//    }
-//}
+            return NoContent();
+        }
+    }
+}

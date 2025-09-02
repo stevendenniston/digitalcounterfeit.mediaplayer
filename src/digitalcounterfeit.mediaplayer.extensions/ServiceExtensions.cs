@@ -1,4 +1,5 @@
-﻿using digitalcounterfeit.mediaplayer.extensions.Security;
+﻿using Asp.Versioning.ApiExplorer;
+using digitalcounterfeit.mediaplayer.extensions.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -71,11 +72,41 @@ namespace digitalcounterfeit.mediaplayer.extensions
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
         }
 
-        public static void ConfigureSwagger(this IServiceCollection services, string version)
+        public static void ConfigureSwagger(this IServiceCollection services)
         {
-            services.AddSwaggerGen(opt =>
+            services.AddApiVersioning(setup =>
             {
-                opt.SwaggerDoc(name: version, new OpenApiInfo { Title = "DigitalCounterfeit Media Player Api", Version = version });
+                setup.ReportApiVersions = true;
+            })
+            .AddMvc()
+            .AddApiExplorer(setup =>
+            {
+                setup.DefaultApiVersion = new Asp.Versioning.ApiVersion(0, 0);
+                setup.AssumeDefaultVersionWhenUnspecified = true;
+                setup.SubstituteApiVersionInUrl = true;
+            });
+
+            services.AddSwaggerGen(setup =>
+            {
+                var versionDescriptionProvider = services
+                    .BuildServiceProvider()
+                    .GetService<IApiVersionDescriptionProvider>();
+
+                foreach (var description in versionDescriptionProvider?.ApiVersionDescriptions ?? [])
+                {
+                    setup.SwaggerDoc(
+                        description.GroupName,
+                        new OpenApiInfo
+                        { 
+                            Title = "DigitalCounterfeit Media Player Api", 
+                            Version = $"{description.ApiVersion}",
+                            License = new OpenApiLicense
+                            {
+                                Name = "MIT License",
+                                Url = new Uri("https://opensource.org/licenses/MIT")
+                            }
+                        });
+                }
             });
         }
     }
