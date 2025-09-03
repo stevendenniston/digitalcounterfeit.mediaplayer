@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-digitalcounterfeit.mediaplayer.fileprocessor-2CD3A3B2-B94C-40B9-BA4C-A24B9E50A964</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\digitalcounterfeit.mediaplayer.extensions\digitalcounterfeit.mediaplayer.extensions.csproj" />
+    <ProjectReference Include="..\digitalcounterfeit.mediaplayer.models\digitalcounterfeit.mediaplayer.models.csproj" />
+    <ProjectReference Include="..\digitalcounterfeit.mediaplayer.services\digitalcounterfeit.mediaplayer.services.csproj" />
+  </ItemGroup>
+</Project>

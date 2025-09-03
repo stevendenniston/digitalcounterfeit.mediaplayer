@@ -1,0 +1,17 @@
+﻿CREATE PROCEDURE [dbo].[Artist_GetById] (
+	@Id UNIQUEIDENTIFIER
+)
+AS
+BEGIN
+	SET NOCOUNT ON;
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	SELECT
+		[Id],
+		[LibraryId],
+		[Name]
+	FROM
+		[dbo].[Artist]
+	WHERE
+		[Id] = @Id
+END

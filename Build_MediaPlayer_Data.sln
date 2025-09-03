@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "digitalcounterfeit.mediaplayer.data", "src\digitalcounterfeit.mediaplayer.data\digitalcounterfeit.mediaplayer.data.sqlproj", "{6AC239F8-DAD4-48AA-BB24-30DC78F47606}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6AC239F8-DAD4-48AA-BB24-30DC78F47606}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AC239F8-DAD4-48AA-BB24-30DC78F47606}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AC239F8-DAD4-48AA-BB24-30DC78F47606}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AC239F8-DAD4-48AA-BB24-30DC78F47606}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EBF499F3-FC62-48D4-B947-7AF7A20CF6FC}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,6 @@
+﻿CREATE TABLE [dbo].[Playlist] (
+	[Id] UNIQUEIDENTIFIER,
+	[LibraryId] UNIQUEIDENTIFIER,
+	[Name] NVARCHAR(255)
+)
+GO;

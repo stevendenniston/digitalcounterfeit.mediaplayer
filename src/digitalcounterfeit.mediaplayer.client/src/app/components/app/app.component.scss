@@ -1,0 +1,11 @@
+.content{
+    display: flex;
+    flex-direction: column;
+    height: 100%;    
+}
+
+.main{    
+    flex-grow: 1;
+    overflow: auto;
+    background-color: grayscale($color: linen);    
+}
