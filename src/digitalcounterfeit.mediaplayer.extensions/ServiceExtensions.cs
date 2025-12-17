@@ -52,6 +52,7 @@ namespace digitalcounterfeit.mediaplayer.extensions
                 {
                     options.Authority = configuration.GetValue<string>("AuthenticationDomain");
                     options.Audience = configuration.GetValue<string>("AuthenticationAudience");
+                    options.RequireHttpsMetadata = configuration.GetValue<bool>("RequireHttpsMetadata");
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         NameClaimType = ClaimTypes.NameIdentifier
