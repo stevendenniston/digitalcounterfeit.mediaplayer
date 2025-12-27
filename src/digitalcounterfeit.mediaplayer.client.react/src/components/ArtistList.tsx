@@ -3,12 +3,10 @@ import { data } from "../../ArtistData";
 import ArtistCard from "./ArtistCard";
 
 const artistListStyle = {
-  mt: 10,
-  mb: 10,
+  margin: 5,  
   display: "flex",
   justifyContent: "center",
-  flexWrap: "wrap",
-  maxWidth: "1880px",
+  flexWrap: "wrap",  
 };
 
 export default function ArtistList() {

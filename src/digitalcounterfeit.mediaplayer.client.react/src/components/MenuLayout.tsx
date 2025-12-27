@@ -11,8 +11,7 @@ const drawerWidth = 240;
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     open?: boolean;
     }>(({ theme }) => ({
-        flexGrow: 0,
-        padding: theme.spacing(3),
+        flexGrow: 0,        
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -47,7 +46,7 @@ export default function MenuLayout(props: any) {
     };
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', margin: 0 }}>
             <MenuBar handleDrawerToggle={handleDrawerToggle} handleProfileClick={handleProfileClick} />
             <ProfileMenu profileAnchor={profileAnchor} setProfileAnchor={setProfileAnchor} />
             <MenuDrawer open={open} drawerWidth={drawerWidth} />
