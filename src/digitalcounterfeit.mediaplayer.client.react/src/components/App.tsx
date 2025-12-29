@@ -18,7 +18,7 @@ const App = () => {
               <Route path="/music-library" element={<ArtistList />}/>
             </Routes>
         </MenuLayout>
-      </BrowserRouter>      
+      </BrowserRouter>
     </>
   )
 }

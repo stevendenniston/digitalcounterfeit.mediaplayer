@@ -17,6 +17,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
             duration: theme.transitions.duration.leavingScreen,
     }),
     marginTop: '64px',
+    marginBottom: '64px',
     marginLeft: `-${drawerWidth}px`,
     variants: [
         {
