@@ -1,8 +1,9 @@
-import { Box, Typography } from "@mui/material";
-import ArtistCard from "./ArtistCard";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
+import DisplayCard from "./DisplayCard";
+import { useNavigate } from "react-router";
 
 type ArtistListState = {
   artistList: {id: string, name: string}[];
@@ -19,6 +20,7 @@ const artistListStyle = {
 
 export default function ArtistList() {
 
+  const navigate = useNavigate();
   const { getAccessTokenSilently } = useAuth0();
   const [ artistListState, setArtistListState ] = useState<ArtistListState>({
     artistList: [],
@@ -67,14 +69,22 @@ export default function ArtistList() {
   }
 
   if (artistListState.loadingStatus === "loading") {
-    return <Typography>Loading...</Typography>;
+    return (
+      <Box sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100%' }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
-  return (
+  return (    
     <Box sx={artistListStyle}>
       {artistListState.artistList.map(function (artist) {
-        return <ArtistCard key={artist.id} name={artist.name} />;
+        return <DisplayCard key={artist.id} name={artist.name} onClick={() => navigate(`/artist/${artist.id}`)}/>;
       })}
-    </Box>
+    </Box>    
   );
 }

@@ -1,7 +1,8 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MenuLayout from "./MenuLayout";
+import Layout from "./Layout";
 import ArtistList from "./ArtistList";
+import Artist from "./Artist";
 
 const App = () => {  
 
@@ -10,14 +11,15 @@ const App = () => {
   return (
     <>
       <BrowserRouter basename="/">
-        <MenuLayout>
+        <Layout>
             <Routes>
               <Route path="/" element={null}/>
               <Route path="/user-profile" element={<pre>{JSON.stringify(user, null, 2)}</pre>}/>
               <Route path="/user-settings" element={<pre>User Settings</pre>}/>
               <Route path="/music-library" element={<ArtistList />}/>
+              <Route path="/artist/:artistId" Component={Artist}/>
             </Routes>
-        </MenuLayout>
+        </Layout>
       </BrowserRouter>
     </>
   )
