@@ -1,27 +1,34 @@
-import { Card, Typography } from "@mui/material";
+import { Card, Typography, type SxProps, type Theme } from "@mui/material";
 
-interface IDisplayCardProps {    
+interface IDisplayCardProps {
+    sx?: SxProps<Theme> | undefined
     name?: string | undefined
-    imageUri?: string | undefined
+    imageUri?: string | undefined    
     onClick?: () => void
 }
 
-const displayCardStyle = {
+const displayCardStyle = (enableHover: boolean | undefined, imageUri?: string | undefined) => ({
   display: "flex",
   flexFlow: "column-reverse",
   width: 148,
   height: 136,
-  borderRadius: 1,  
-  p: "0px",
+  borderRadius: 1,    
   m: "3px",
   backgroundColor: "primary.main",
-  "&:hover": {
-    cursor: "pointer",
-    bgcolor: "primary.dark",
-    WebkitBoxShadow: "0px 0px 3px 3px rgb(165, 163, 163)",
-    boxShadow: "0px 0px 3px 3px rgb(165, 163, 163);",
-  },
-};
+  ...(enableHover && {
+    "&:hover": {
+      cursor: "pointer",
+      bgcolor: "primary.dark",
+      WebkitBoxShadow: "0px 0px 3px 3px rgb(165, 163, 163)",
+      boxShadow: "0px 0px 3px 3px rgb(165, 163, 163);",
+    },
+  }),
+  ...(imageUri && {
+      backgroundImage: `url(${imageUri})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+  })  
+});
 
 const nameStyle = {
   postition: "absolute",
@@ -36,16 +43,14 @@ const nameStyle = {
   `,
 };
 
-export default function DisplayCard({ name, imageUri, onClick } : IDisplayCardProps) {  
+export default function DisplayCard({ sx, name, imageUri, onClick } : IDisplayCardProps) {  
   
   return (
     <Card
       sx={{
-        ...displayCardStyle,
-        backgroundImage: `url(${imageUri})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",        
-        }}
+        ...displayCardStyle(onClick && true, imageUri),
+        ...sx,        
+      }}
       onClick={onClick}>
       <Typography variant="subtitle2" sx={nameStyle}>
         {name}

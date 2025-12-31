@@ -2,7 +2,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 import DisplayCard from "./DisplayCard";
 
 type ArtistState = {
@@ -69,6 +69,22 @@ export default function Artist() {
     
         fetchData();        
     }, []);
+
+    if (artistState.loadingStatus === "error") {
+        return <Typography>Error: {artistState.error}</Typography>;
+    }
+
+    if (artistState.loadingStatus === "loading") {
+        return (
+            <Box sx={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100%' }}>
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return (
         <>

@@ -12,10 +12,11 @@ type ArtistListState = {
 }
 
 const artistListStyle = {
-  margin: 5,  
+  margin: 2,
+  marginBottom: 4,
   display: "flex",
   justifyContent: "center",
-  flexWrap: "wrap",  
+  flexWrap: "wrap",
 };
 
 export default function ArtistList() {
@@ -83,7 +84,11 @@ export default function ArtistList() {
   return (    
     <Box sx={artistListStyle}>
       {artistListState.artistList.map(function (artist) {
-        return <DisplayCard key={artist.id} name={artist.name} onClick={() => navigate(`/artist/${artist.id}`)}/>;
+        return <DisplayCard 
+          key={artist.id} 
+          name={artist.name} 
+          onClick={() => navigate(`/artist/${artist.id}`)}
+        />;
       })}
     </Box>    
   );

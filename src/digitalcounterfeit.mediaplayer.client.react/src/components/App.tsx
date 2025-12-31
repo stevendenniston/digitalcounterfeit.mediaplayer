@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./Layout";
 import ArtistList from "./ArtistList";
 import Artist from "./Artist";
+import Album from "./Abum";
 
 const App = () => {  
 
@@ -18,6 +19,7 @@ const App = () => {
               <Route path="/user-settings" element={<pre>User Settings</pre>}/>
               <Route path="/music-library" element={<ArtistList />}/>
               <Route path="/artist/:artistId" Component={Artist}/>
+              <Route path="/album/:albumId" Component={Album}/>
             </Routes>
         </Layout>
       </BrowserRouter>

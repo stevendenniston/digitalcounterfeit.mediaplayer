@@ -24,7 +24,7 @@ export default function MenuDrawer({open, drawerWidth}: IMenuDrawerProps) {
         >
             <Toolbar />
             <MenuItemList itemList={[{ title: 'Music Library', path: 'music-library' }]} />
-            <Divider />            
+            <Divider />
         </Drawer>
     );
 }
