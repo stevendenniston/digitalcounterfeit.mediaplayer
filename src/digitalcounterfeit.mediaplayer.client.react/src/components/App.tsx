@@ -17,7 +17,7 @@ const App = () => {
               <Route path="/" element={null}/>
               <Route path="/user-profile" element={<pre>{JSON.stringify(user, null, 2)}</pre>}/>
               <Route path="/user-settings" element={<pre>User Settings</pre>}/>
-              <Route path="/music-library" element={<ArtistList />}/>
+              <Route path="/music-library" Component={ArtistList}/>
               <Route path="/artist/:artistId" Component={Artist}/>
               <Route path="/album/:albumId" Component={Album}/>
             </Routes>
