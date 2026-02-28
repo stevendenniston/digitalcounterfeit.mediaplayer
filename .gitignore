@@ -355,4 +355,6 @@ src/digitalcounterfeit.mediaplayer.client/.angular/*
 src/digitalcounterfeit.mediaplayer.fileprocessor/appsettings.Development.json
 .sonarqube/*
 /src/digitalcounterfeit.mediaplayer.client.angular/.angular
+/src/digitalcounterfeit.mediaplayer.client.angular/dist
 src/digitalcounterfeit.mediaplayer.client.react/.env.development
+/src/digitalcounterfeit.mediaplayer.client.react/dist
