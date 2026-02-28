@@ -3,7 +3,7 @@ using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.models;
 using Microsoft.Extensions.Configuration;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 
 namespace digitalcounterfeit.mediaplayer.api.Data
