@@ -4,19 +4,21 @@ namespace digitalcounterfeit.mediaplayer.extensions
 {
     public static class ApplicationBuilderExtensions
     {
-        public static void ConfigureSwagger(this IApplicationBuilder app, string version)
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI(config =>
-            {
-                config.SwaggerEndpoint(url: $"/swagger/{version}/swagger.json", name: $"DigitalCounterfeit Media Player Api {version}");
-            });
-        }
-
         public static void ConfigureEndpoints(this IApplicationBuilder app)
         {
             app.UseEndpoints(endpoints =>
             {
+                app.UseSwagger();
+                app.UseSwaggerUI(setup =>
+                {
+                    var descriptions = endpoints.DescribeApiVersions();
+
+                    foreach (var description in descriptions)
+                    {
+                        setup.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                    }
+                });                
+
                 endpoints.MapControllers();
             });
         }

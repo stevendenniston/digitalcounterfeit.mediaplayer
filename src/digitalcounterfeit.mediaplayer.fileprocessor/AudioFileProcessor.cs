@@ -45,9 +45,7 @@ namespace digitalcounterfeit.mediaplayer.fileprocessor
         {
             try
             {
-
                 var directoryInfo = new DirectoryInfo(directoryLocation);
-
                 var directories = directoryInfo.GetDirectories();
 
                 if (Guid.TryParse(directoryInfo.Name, out var userId))
@@ -73,7 +71,8 @@ namespace digitalcounterfeit.mediaplayer.fileprocessor
 
                 return;
 
-            } catch (Exception ex)
+            } 
+            catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error processing files");
             }

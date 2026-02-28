@@ -1,15 +1,18 @@
-﻿using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
+﻿using Asp.Versioning;
+using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.extensions;
 using digitalcounterfeit.mediaplayer.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
-namespace digitalcounterfeit.mediaplayer.api.Controllers
+namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
 {
     [ApiController]
-    [Route("api/library")]
+    [Route("api/v{version:apiVersion}/library")]
+    [ApiVersion(1.0)]    
     public class LibraryController : ControllerBase
     {
         private readonly IIdentityRepository _identityRepository;
@@ -19,31 +22,21 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
         {
             _identityRepository = identityRepository;
             _libraryRepository = libraryRepository;
-        }
+        }        
 
-        [HttpGet("{id:guid}")]
-        public async Task<ActionResult<LibraryModel>> GetByIdAsync(Guid id)
-        {
-            var library = await _libraryRepository.GetByIdAsync(id);
-
-            if (library == null)
-                return NotFound();
-
-            return Ok(library);
-        }
-
-        [HttpGet("")]
+        [HttpGet]
+        [Authorize("read:api")]
         public async Task<ActionResult<LibraryModel>> GetByUserSubjectIdAsync()
         {
             var subjectId = User?.GetUserSubjectId();
             var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
-            
+
             if (identity == null)
             {
-                identity = new IdentityModel { Id = Guid.NewGuid(), SubjectId = subjectId};
+                identity = new IdentityModel { Id = Guid.NewGuid(), SubjectId = subjectId };
                 await _identityRepository.UpsertAsync(identity);
             }
-            
+
             var library = await _libraryRepository.GetByUserIdAsync(identity.Id);
 
             if (library == null)
@@ -52,19 +45,9 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
             return Ok(library);
         }
 
-        [HttpGet("user/{userId:guid}")]
-        public async Task<ActionResult<LibraryModel>> GetByUserId(Guid userId)
-        {
-            var library = await _libraryRepository.GetByUserIdAsync(userId);
-
-            if (library == null)
-                return NotFound();
-
-            return Ok(library);
-        }
-
         [HttpPut]
-        public async Task<IActionResult> UpsertAsync(LibraryModel library)
+        [Authorize("write:api")]
+        public async Task<IActionResult> UpsertAsync([FromBody] LibraryModel library)
         {
             var subjectId = User?.GetUserSubjectId();
             var identity = await _identityRepository.GetBySubjectIdAsync(subjectId);
@@ -81,8 +64,9 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
             return StatusCode(418);
         }
 
-        [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> PatchAsync(Guid id, JsonPatchDocument<LibraryModel> libraryPatch)
+        [HttpPatch]
+        [Authorize("write:api")]
+        public async Task<IActionResult> PatchAsync([FromQuery] Guid id, [FromBody] JsonPatchDocument<LibraryModel> libraryPatch)
         {
             var library = await _libraryRepository.GetByIdAsync(id);
 
@@ -96,8 +80,9 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteByIdAsync(Guid id)
+        [HttpDelete]
+        [Authorize("delete:api")]
+        public async Task<IActionResult> DeleteByIdAsync([FromQuery] Guid id)
         {
             await _libraryRepository.DeleteByIdAsync(id);
 

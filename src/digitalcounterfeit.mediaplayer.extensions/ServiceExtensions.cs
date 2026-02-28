@@ -1,11 +1,12 @@
-﻿using digitalcounterfeit.mediaplayer.extensions.Security;
+﻿using Asp.Versioning.ApiExplorer;
+using digitalcounterfeit.mediaplayer.extensions.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Newtonsoft.Json.Serialization;
 using System.Security.Claims;
 
@@ -51,6 +52,7 @@ namespace digitalcounterfeit.mediaplayer.extensions
                 {
                     options.Authority = configuration.GetValue<string>("AuthenticationDomain");
                     options.Audience = configuration.GetValue<string>("AuthenticationAudience");
+                    options.RequireHttpsMetadata = configuration.GetValue<bool>("RequireHttpsMetadata");
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         NameClaimType = ClaimTypes.NameIdentifier
@@ -66,16 +68,47 @@ namespace digitalcounterfeit.mediaplayer.extensions
             {
                 options.AddPolicy("read:api", policy => policy.Requirements.Add(new HasScopeRequirement("read:api", domain)));
                 options.AddPolicy("write:api", policy => policy.Requirements.Add(new HasScopeRequirement("write:api", domain)));
+                options.AddPolicy("delete:api", policy => policy.Requirements.Add(new HasScopeRequirement("delete:api", domain)));
             });
 
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
         }
 
-        public static void ConfigureSwagger(this IServiceCollection services, string version)
+        public static void ConfigureSwagger(this IServiceCollection services)
         {
-            services.AddSwaggerGen(opt =>
+            services.AddApiVersioning(setup =>
             {
-                opt.SwaggerDoc(name: version, new OpenApiInfo { Title = "DigitalCounterfeit Media Player Api", Version = version });
+                setup.ReportApiVersions = true;
+            })
+            .AddMvc()
+            .AddApiExplorer(setup =>
+            {
+                setup.DefaultApiVersion = new Asp.Versioning.ApiVersion(0, 0);
+                setup.AssumeDefaultVersionWhenUnspecified = true;
+                setup.SubstituteApiVersionInUrl = true;
+            });
+
+            services.AddSwaggerGen(setup =>
+            {
+                var versionDescriptionProvider = services
+                    .BuildServiceProvider()
+                    .GetService<IApiVersionDescriptionProvider>();
+
+                foreach (var description in versionDescriptionProvider?.ApiVersionDescriptions ?? [])
+                {
+                    setup.SwaggerDoc(
+                        description.GroupName,
+                        new OpenApiInfo
+                        { 
+                            Title = "DigitalCounterfeit Media Player Api", 
+                            Version = $"{description.ApiVersion}",
+                            License = new OpenApiLicense
+                            {
+                                Name = "MIT License",
+                                Url = new Uri("https://opensource.org/licenses/MIT")
+                            }
+                        });
+                }
             });
         }
     }

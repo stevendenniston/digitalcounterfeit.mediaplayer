@@ -17,20 +17,19 @@ namespace digitalcounterfeit.mediaplayer.api
 
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
-            Version = Configuration.GetValue<string>("Version");
+            Configuration = configuration;            
         }
 
         public IConfiguration Configuration { get; }
-        public string Version { get; }
+        
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.ConfigureSwagger();
+            services.ConfigureControllers();
             services.ConfigureCors(Configuration, _corsPolicy);
             services.ConfigureAuthentication(Configuration);
             services.ConfigureAuthorization(Configuration);
-            services.ConfigureControllers();
-            services.ConfigureSwagger(Version);
 
             services.AddSingleton<IAzureAudioStorage, AzureAudioStorage>();
             services.AddSingleton<IAzureImageStorage, AzureImageStorage>();
@@ -54,8 +53,7 @@ namespace digitalcounterfeit.mediaplayer.api
             app.ConfigureExceptionHandler();
             app.UseRouting();
             app.UseAuthentication();
-            app.UseAuthorization();
-            app.ConfigureSwagger(Version);
+            app.UseAuthorization();            
             app.ConfigureEndpoints();
         }
     }
