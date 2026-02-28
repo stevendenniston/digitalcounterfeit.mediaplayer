@@ -33,11 +33,14 @@ namespace digitalcounterfeit.mediaplayer.extensions
         {
             services.AddCors(options =>
             {
+                var origins = configuration["CorsOrigin"]?
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries) ?? [];
+
                 options.AddPolicy(
                     name: policyName,
                     builder =>
                     {
-                        builder.WithOrigins(configuration.GetValue<string[]>("CorsOrigin") ?? []);
+                        builder.WithOrigins(origins);
                         builder.WithHeaders("Content-Type");
                         builder.WithHeaders("Authorization");
                         builder.WithMethods("GET", "PUT", "PATCH", "DELETE");
