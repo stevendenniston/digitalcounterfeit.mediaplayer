@@ -3,6 +3,7 @@ using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.extensions;
 using digitalcounterfeit.mediaplayer.models;
 using digitalcounterfeit.mediaplayer.services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpGet]
+        [Authorize("read:api")]
         public async Task<ActionResult<AlbumModel>> GetByIdAsync([FromQuery] Guid id)
         {
             var subjectId = User?.GetUserSubjectId();
@@ -51,6 +53,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpGet("/api/v{version:apiVersion}/artist/album-list")]
+        [Authorize("read:api")]
         public async Task<ActionResult<IEnumerable<AlbumModel>>> GetArtistAlbumListAsync([FromQuery] Guid artistId)
         {
             var subjectId = User?.GetUserSubjectId();
@@ -81,6 +84,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpGet("/api/v{version:apiVersion}/artist/album")]
+        [Authorize("read:api")]
         public async Task<ActionResult<AlbumModel>> GetByArtistIdAlbumNameAsync([FromQuery] Guid artistId, [FromQuery] string name)
         {
             var album = await _albumRepository.GetByArtistIdAlbumName(artistId, name);
@@ -92,6 +96,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpGet("/api/v{version:apiVersion}/artist/album/image-uri")]
+        [Authorize("read:api")]
         public async Task<ActionResult<IEnumerable<string>>> GetAlbumImageSasUriAsync([FromQuery] Guid artistId, [FromQuery] Guid albumId)
         {
             var subjectId = User?.GetUserSubjectId();
@@ -113,6 +118,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
 
 
         [HttpPut("/api/v{version:apiVersion}/artist/album/image")]
+        [Authorize("write:api")]
         public async Task<IActionResult> UpsertAlbumImageAsync([FromQuery] Guid artistId, [FromQuery] Guid albumId, [FromBody] IFormFile file)
         {
             var subjectId = User?.GetUserSubjectId();
@@ -136,6 +142,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpPut]
+        [Authorize("write:api")]
         public async Task<IActionResult> UpsertAsync([FromBody] AlbumModel album)
         {
             await _albumRepository.UpsertAsync(album);
@@ -144,6 +151,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpPatch]
+        [Authorize("write:api")]
         public async Task<IActionResult> PatchAsync([FromQuery] Guid id, [FromBody] JsonPatchDocument<AlbumModel> albumPatch)
         {
             var album = await _albumRepository.GetByIdAsync(id);
@@ -159,6 +167,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpDelete]
+        [Authorize("delete:api")]
         public async Task<IActionResult> DeleteByIdAsync([FromQuery] Guid id)
         {
             await _albumRepository.DeleteByIdAsync(id);

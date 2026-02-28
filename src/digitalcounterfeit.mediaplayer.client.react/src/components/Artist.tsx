@@ -67,7 +67,7 @@ export default function Artist() {
             }
         }
     
-        fetchData();        
+        fetchData();
     }, []);
 
     if (artistState.loadingStatus === "error") {

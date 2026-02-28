@@ -1,6 +1,7 @@
 ﻿using Asp.Versioning;
 using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -21,6 +22,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpGet]
+        [Authorize("read:api")]
         public async Task<ActionResult<PlaylistModel>> GetByIdAsync([FromQuery] Guid id)
         {
             var playlist = await _playlistRepository.GetByIdAsync(id);
@@ -32,6 +34,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpPut]
+        [Authorize("write:api")]
         public async Task<IActionResult> UpsertAsync([FromBody] PlaylistModel playlist)
         {
             await _playlistRepository.UpsertAsync(playlist);
@@ -40,6 +43,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpPatch]
+        [Authorize("write:api")]
         public async Task<IActionResult> PatchAsync([FromQuery] Guid id, [FromBody] JsonPatchDocument<PlaylistModel> playlistPatch)
         {
             var playlist = await _playlistRepository.GetByIdAsync(id);
@@ -55,6 +59,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v1
         }
 
         [HttpDelete]
+        [Authorize("delete:api")]
         public async Task<IActionResult> DeleteByIdAsync([FromQuery] Guid id)
         {
             await _playlistRepository.DeleteByIdAsync(id);

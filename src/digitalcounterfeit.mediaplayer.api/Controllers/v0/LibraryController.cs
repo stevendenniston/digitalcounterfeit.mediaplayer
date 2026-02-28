@@ -2,6 +2,7 @@
 using digitalcounterfeit.mediaplayer.api.Data.Interfaces;
 using digitalcounterfeit.mediaplayer.extensions;
 using digitalcounterfeit.mediaplayer.models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -24,6 +25,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
         }
 
         [HttpGet("{id:guid}")]
+        [Authorize("read:api")]
         public async Task<ActionResult<LibraryModel>> GetByIdAsync(Guid id)
         {
             var library = await _libraryRepository.GetByIdAsync(id);
@@ -35,6 +37,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
         }
 
         [HttpGet("")]
+        [Authorize("read:api")]
         public async Task<ActionResult<LibraryModel>> GetByUserSubjectIdAsync()
         {
             var subjectId = User?.GetUserSubjectId();
@@ -55,6 +58,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
         }
 
         [HttpGet("user/{userId:guid}")]
+        [Authorize("read:api")]
         public async Task<ActionResult<LibraryModel>> GetByUserId(Guid userId)
         {
             var library = await _libraryRepository.GetByUserIdAsync(userId);
@@ -66,6 +70,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
         }
 
         [HttpPut]
+        [Authorize("write:api")]
         public async Task<IActionResult> UpsertAsync([FromBody] LibraryModel library)
         {
             var subjectId = User?.GetUserSubjectId();
@@ -84,6 +89,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
         }
 
         [HttpPatch]
+        [Authorize("write:api")]
         public async Task<IActionResult> PatchAsync([FromQuery] Guid id, [FromBody] JsonPatchDocument<LibraryModel> libraryPatch)
         {
             var library = await _libraryRepository.GetByIdAsync(id);
@@ -99,6 +105,7 @@ namespace digitalcounterfeit.mediaplayer.api.Controllers.v0
         }
 
         [HttpDelete]
+        [Authorize("delete:api")]
         public async Task<IActionResult> DeleteByIdAsync([FromQuery] Guid id)
         {
             await _libraryRepository.DeleteByIdAsync(id);

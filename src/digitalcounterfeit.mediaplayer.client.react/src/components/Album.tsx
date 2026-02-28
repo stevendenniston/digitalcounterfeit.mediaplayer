@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Box, Icon, IconButton, List, ListItem, ListItemText, Stack } from "@mui/material";
 import DisplayCard from "./DisplayCard";
 import { useParams } from "react-router-dom";
+import { useAudioPlayer } from "../contexts/AudioPlayerContext";
 
 type AlbumState = {
   album: {id: string, name: string, imageUri: string} | undefined;
@@ -22,6 +23,10 @@ export default function Album() {
         loadingStatus: "loading",
         error: undefined
       })
+    const { setPlaylist } = useAudioPlayer();
+
+    
+
 
     useEffect(() => {
         async function fetchData() {
@@ -41,6 +46,16 @@ export default function Album() {
                         Authorization: `Bearer ${token}`
                     }
                 });
+
+                setPlaylist(await Promise.all(
+                    trackList.data.map(
+                        async (track: {id: string}) => 
+                            await axios.get(`${import.meta.env.APP_API_BASE_URL}/audio-track/stream-uri?id=${track.id}`, {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }})
+                        .then(response => response.data))
+                ));
 
                 setAlbumState({
                     album: album.data,

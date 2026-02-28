@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./Layout";
 import ArtistList from "./ArtistList";
 import Artist from "./Artist";
-import Album from "./Abum";
+import Album from "./Album";
 
 const App = () => {  
 

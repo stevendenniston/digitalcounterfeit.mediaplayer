@@ -68,6 +68,7 @@ namespace digitalcounterfeit.mediaplayer.extensions
             {
                 options.AddPolicy("read:api", policy => policy.Requirements.Add(new HasScopeRequirement("read:api", domain)));
                 options.AddPolicy("write:api", policy => policy.Requirements.Add(new HasScopeRequirement("write:api", domain)));
+                options.AddPolicy("delete:api", policy => policy.Requirements.Add(new HasScopeRequirement("delete:api", domain)));
             });
 
             services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();

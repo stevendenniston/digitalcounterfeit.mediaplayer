@@ -7,6 +7,7 @@ import Fab from "@mui/material/Fab";
 import Icon from "@mui/material/Icon";
 import { Typography } from "@mui/material";
 import { useState } from "react";
+import { useAudioPlayer } from "../contexts/AudioPlayerContext";
 
 const StyledFab = styled(Fab)({
   zIndex: 1,
@@ -31,7 +32,8 @@ const ControlBox = styled(Box)({
 });
 
 export default function Player() {
-  const [isPlaying, play] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const { play, pause, next, previous } = useAudioPlayer();
 
   return (
     <AppBar color="secondary" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, top: "auto", bottom: 0 }}>
@@ -41,15 +43,20 @@ export default function Player() {
           <Typography>Some Artist - Some Album</Typography>
         </TrackInfoBox>
         <ControlBox>
-          <StyledFab size="small" color="primary">
+          <StyledFab size="small" color="primary" onClick={() => previous()}>
             <Icon className="material-icons-round">skip_previous</Icon>
           </StyledFab>
-          <StyledFab color="primary" onClick={() => play(!isPlaying)}>
+          <StyledFab 
+            color="primary" 
+            onClick={() => 
+              isPlaying ? 
+              pause().then(() => setIsPlaying(false)) : 
+              play().then(() => setIsPlaying(true))}>
             <Icon sx={{ transform: "scale(1.5)" }} className="material-icons-round">
               {isPlaying ? "pause_circle_outline" : "play_circle_outline"}
             </Icon>
           </StyledFab>
-          <StyledFab size="small" color="primary">
+          <StyledFab size="small" color="primary" onClick={() => next()}>
             <Icon className="material-icons-round">skip_next</Icon>
           </StyledFab>
         </ControlBox>

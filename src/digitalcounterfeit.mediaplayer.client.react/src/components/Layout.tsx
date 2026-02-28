@@ -5,6 +5,7 @@ import MenuBar from "./MenuBar";
 import ProfileMenu from "./ProfileMenu";
 import MenuDrawer from "./MenuDrawer";
 import Player from "./Player";
+import { AudioPlayerProvider } from "../contexts/AudioPlayerContext";
 
 const drawerWidth = 240;
 
@@ -51,16 +52,18 @@ export default function Layout(props: any) {
             <MenuBar handleDrawerToggle={handleDrawerToggle} handleProfileClick={handleProfileClick} />
             <ProfileMenu profileAnchor={profileAnchor} setProfileAnchor={setProfileAnchor} />
             <MenuDrawer open={open} drawerWidth={drawerWidth} />
-            <Main 
-                open={open} 
-                sx={{ 
-                    textAlign: 'left', 
-                    width: open ? `calc(100% - ${drawerWidth}px)` : `100%`, 
-                    height: 'calc(100vh - 128px)', overflowY: 'auto' }}
-            >
-                {props.children}
-            </Main>
-            <Player />
+            <AudioPlayerProvider>
+                <Main 
+                    open={open} 
+                    sx={{ 
+                        textAlign: 'left', 
+                        width: open ? `calc(100% - ${drawerWidth}px)` : `100%`, 
+                        height: 'calc(100vh - 128px)', overflowY: 'auto' }}
+                >
+                    {props.children}
+                </Main>
+                <Player />
+            </AudioPlayerProvider>
         </Box>
     );
 }
