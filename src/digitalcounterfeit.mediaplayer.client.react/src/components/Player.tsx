@@ -1,4 +1,4 @@
-import { styled } from "@mui/material/styles";
+import { styled, keyframes } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -7,6 +7,12 @@ import Fab from "@mui/material/Fab";
 import Icon from "@mui/material/Icon";
 import { Typography } from "@mui/material";
 import { useAudioPlayer } from "../contexts/AudioPlayerContext";
+import { useEffect, useRef } from "react";
+
+const marquee = keyframes`
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+`;
 
 const StyledFab = styled(Fab)({
   zIndex: 1,
@@ -18,8 +24,20 @@ const TrackInfoBox = styled(Box)({
   display: "flex",
   flexDirection: "column",
   flexGrow: 1,
-  whiteSpace: "nowrap",
+  flexShrink: 1,
+  minWidth: 0,
   overflow: "hidden",
+});
+
+const ScrollingText = styled(Typography)({
+  whiteSpace: "nowrap",
+  display: "inline-block",
+  "&.overflowing": {
+      animation: `${marquee} 12s linear infinite`,
+      "&:hover": {
+          animationPlayState: "paused",
+      },
+  },
 });
 
 const ControlBox = styled(Box)({
@@ -30,16 +48,49 @@ const ControlBox = styled(Box)({
   alignItems: "center",
 });
 
+function useOverflowClass(ref: React.RefObject<HTMLElement | null>) {
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+
+        function update() {
+            if (!el) return;
+            el.classList.toggle("overflowing", el.scrollWidth > el.parentElement!.clientWidth);
+        }
+
+        update();
+
+        const observer = new ResizeObserver(update);
+        observer.observe(el);
+        if (el.parentElement) observer.observe(el.parentElement);
+
+        return () => observer.disconnect();
+    }, [ref]);
+}
+
 export default function Player() {
 
   const { play, pause, next, previous, isPlaying, currentTrack } = useAudioPlayer();
 
+  const titleRef = useRef<HTMLElement>(null);
+  const subtitleRef = useRef<HTMLElement>(null);
+  useOverflowClass(titleRef);
+  useOverflowClass(subtitleRef);
+
   return (
     <AppBar color="secondary" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, top: "auto", bottom: 0 }}>
       <Toolbar>
-        <TrackInfoBox>
-          <Typography>{currentTrack?.name}</Typography>
-          <Typography>{currentTrack?.artist.name} - {currentTrack?.album.name}</Typography>
+        <TrackInfoBox sx={{ visibility: currentTrack ? "visible" : "hidden" }}>
+          <Box sx={{ overflow: "hidden" }}>
+            <ScrollingText ref={titleRef}>
+              {currentTrack?.name}
+            </ScrollingText>
+          </Box>
+          <Box sx={{ overflow: "hidden" }}>
+            <ScrollingText ref={subtitleRef} variant="body2">
+              {currentTrack?.artist.name} – {currentTrack?.album.name}
+            </ScrollingText>
+          </Box>
         </TrackInfoBox>
         <ControlBox>
           <StyledFab size="small" color="primary" onClick={() => previous()}>
