@@ -5,10 +5,11 @@ import { Box, Icon, IconButton, List, ListItem, ListItemText, Stack } from "@mui
 import DisplayCard from "./DisplayCard";
 import { useParams } from "react-router-dom";
 import { useAudioPlayer } from "../contexts/AudioPlayerContext";
+import { type AudioTrack } from "../services/AudioPlayerService";
 
 type AlbumState = {
   album: {id: string, name: string, imageUri: string} | undefined;
-  trackList: {id: string, name: string}[];
+  trackList: AudioTrack[];
   loadingStatus: "loading" | "success" | "error";
   error: string | undefined;
 }
@@ -23,10 +24,7 @@ export default function Album() {
         loadingStatus: "loading",
         error: undefined
       })
-    const { setPlaylist } = useAudioPlayer();
-
-    
-
+    const { setPlaylist, play } = useAudioPlayer();
 
     useEffect(() => {
         async function fetchData() {
@@ -45,17 +43,7 @@ export default function Album() {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
-                });
-
-                setPlaylist(await Promise.all(
-                    trackList.data.map(
-                        async (track: {id: string}) => 
-                            await axios.get(`${import.meta.env.APP_API_BASE_URL}/audio-track/stream-uri?id=${track.id}`, {
-                            headers: {
-                                Authorization: `Bearer ${token}`
-                            }})
-                        .then(response => response.data))
-                ));
+                });                
 
                 setAlbumState({
                     album: album.data,
@@ -77,15 +65,29 @@ export default function Album() {
         fetchData();        
     }, []);
 
+     function handleTrackClick(trackIndex: number) {        
+        const resolver = async (trackId: string): Promise<string> => {
+            const token = await getAccessTokenSilently();
+            const response = await axios.get(
+                `${import.meta.env.APP_API_BASE_URL}/audio-track/stream-uri?id=${trackId}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            return response.data;
+        };
+        
+        setPlaylist(albumState.trackList, resolver);
+        play(trackIndex);
+    }
+
     return (
         <Stack spacing={2} sx={{ alignItems: 'center', margin: 2 }}>
             <Box sx={{ width: '100%', maxWidth: 1080 }}>
                 <DisplayCard sx={{ width: 250, height: 250 }} imageUri={albumState.album?.imageUri} />
                 <List dense={false} sx={{ width: '100%', alignSelf: 'center' }}>
-                    {albumState.trackList.map((track) => {
+                    {albumState.trackList.map((track, index) => {
                         return (
                             <ListItem key={track.id} sx={{ bgcolor: 'primary.main', marginBottom: 1, borderRadius: 2 }}>
-                                <IconButton edge="start" aria-label="play">
+                                <IconButton edge="start" aria-label="play" onClick={() => handleTrackClick(index)}>
                                     <Icon sx={{ transform: "scale(1.5)" }} className="material-icons-round">
                                         {"play_circle_outline"}
                                     </Icon> 
