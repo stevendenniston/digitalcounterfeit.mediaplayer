@@ -6,7 +6,6 @@ import IconButton from "@mui/material/IconButton";
 import Fab from "@mui/material/Fab";
 import Icon from "@mui/material/Icon";
 import { Typography } from "@mui/material";
-import { useState } from "react";
 import { useAudioPlayer } from "../contexts/AudioPlayerContext";
 
 const StyledFab = styled(Fab)({
@@ -32,15 +31,15 @@ const ControlBox = styled(Box)({
 });
 
 export default function Player() {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const { play, pause, next, previous } = useAudioPlayer();
+
+  const { play, pause, next, previous, isPlaying, currentTrack } = useAudioPlayer();
 
   return (
     <AppBar color="secondary" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, top: "auto", bottom: 0 }}>
       <Toolbar>
         <TrackInfoBox>
-          <Typography>Some Track</Typography>
-          <Typography>Some Artist - Some Album</Typography>
+          <Typography>{currentTrack?.name}</Typography>
+          <Typography>{currentTrack?.artist.name} - {currentTrack?.album.name}</Typography>
         </TrackInfoBox>
         <ControlBox>
           <StyledFab size="small" color="primary" onClick={() => previous()}>
@@ -48,10 +47,7 @@ export default function Player() {
           </StyledFab>
           <StyledFab 
             color="primary" 
-            onClick={() => 
-              isPlaying ? 
-              pause().then(() => setIsPlaying(false)) : 
-              play().then(() => setIsPlaying(true))}>
+            onClick={() => isPlaying ? pause() : play()}>
             <Icon sx={{ transform: "scale(1.5)" }} className="material-icons-round">
               {isPlaying ? "pause_circle_outline" : "play_circle_outline"}
             </Icon>
@@ -61,10 +57,10 @@ export default function Player() {
           </StyledFab>
         </ControlBox>
         <Box sx={{ display: "flex", flexDirection: "row" }}>
-          <IconButton color="inherit">
+          <IconButton color="inherit" disabled title="Shuffle (not yet implemented)">
             <Icon className="material-icons-round">shuffle</Icon>
           </IconButton>
-          <IconButton color="inherit">
+          <IconButton color="inherit" disabled title="Repeat (not yet implemented)">
             <Icon className="material-icons-round">repeat</Icon>
           </IconButton>
         </Box>
