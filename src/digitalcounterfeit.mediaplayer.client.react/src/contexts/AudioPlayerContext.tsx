@@ -1,9 +1,13 @@
 import react from "react";
-import audioPlayerService, {type AudioPlayerState} from "../services/AudioPlayerService";
+import audioPlayerService, {
+    type AudioPlayerState, 
+    type AudioTrack,
+    type UriResolver
+} from "../services/AudioPlayerService";
 
 
 export interface AudioPlayerContextType extends AudioPlayerState {
-    setPlaylist: (playlist: string[]) => void;
+    setPlaylist: (playlist: AudioTrack[], resolver: UriResolver) => void;
     play: (index?: number) => Promise<void>;
     pause: () => Promise<void>;
     seek: (time: number) => void;
