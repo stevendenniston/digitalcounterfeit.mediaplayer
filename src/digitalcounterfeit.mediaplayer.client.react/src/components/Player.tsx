@@ -8,6 +8,7 @@ import Icon from "@mui/material/Icon";
 import { Typography } from "@mui/material";
 import { useAudioPlayer } from "../contexts/AudioPlayerContext";
 import { useEffect, useRef } from "react";
+import ProgressBar from "./ProgressBar";
 
 const marquee = keyframes`
     0%   { transform: translateX(0); }
@@ -48,6 +49,22 @@ const ControlBox = styled(Box)({
   alignItems: "center",
 });
 
+const TimeDisplay = styled(Typography)({
+    flexShrink: 0,
+    fontVariantNumeric: "tabular-nums", // fixed-width digits prevent layout shift as time ticks
+    whiteSpace: "nowrap",
+    padding: "0 16px",
+    opacity: 0.8,
+});
+
+function formatTime(seconds: number): string {
+    if (!isFinite(seconds) || isNaN(seconds) || seconds < 0) 
+      return "–:––";
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
 function useOverflowClass(ref: React.RefObject<HTMLElement | null>) {
     useEffect(() => {
         const el = ref.current;
@@ -70,15 +87,35 @@ function useOverflowClass(ref: React.RefObject<HTMLElement | null>) {
 
 export default function Player() {
 
-  const { play, pause, next, previous, isPlaying, currentTrack } = useAudioPlayer();
+  const {
+    play, pause, next, previous, seek,
+    isPlaying, currentTrack, currentTime, duration,    
+  } = useAudioPlayer();
 
   const titleRef = useRef<HTMLElement>(null);
   const subtitleRef = useRef<HTMLElement>(null);
   useOverflowClass(titleRef);
-  useOverflowClass(subtitleRef);
+  useOverflowClass(subtitleRef);  
 
   return (
-    <AppBar color="secondary" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, top: "auto", bottom: 0 }}>
+    <>
+    
+    <AppBar 
+      color="secondary" 
+      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, top: "auto", bottom: 0 }}>
+      <ProgressBar
+        currentTime={currentTime}
+        duration={duration}
+        onSeek={seek}
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 1,
+          visibility: currentTrack ? "visible" : "hidden",
+        }}
+      />
       <Toolbar>
         <TrackInfoBox sx={{ visibility: currentTrack ? "visible" : "hidden" }}>
           <Box sx={{ overflow: "hidden" }}>
@@ -92,6 +129,9 @@ export default function Player() {
             </ScrollingText>
           </Box>
         </TrackInfoBox>
+        <TimeDisplay variant="body2" sx={{ visibility: currentTrack ? "visible" : "hidden" }}>
+          {formatTime(duration)} / {formatTime(currentTime)}
+        </TimeDisplay>
         <ControlBox>
           <StyledFab size="small" color="primary" onClick={() => previous()}>
             <Icon className="material-icons-round">skip_previous</Icon>
@@ -117,5 +157,6 @@ export default function Player() {
         </Box>
       </Toolbar>
     </AppBar>
+    </>
   );
 }
