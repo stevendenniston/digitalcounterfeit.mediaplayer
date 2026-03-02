@@ -57,9 +57,10 @@ interface ProgressBarProps extends Omit<BoxProps, "onSeek"> {
     currentTime: number;
     duration: number;
     onSeek: (time: number) => void;
+    onDragTime?: (time: number) => void;
 }
 
-export default function ProgressBar({ currentTime, duration, onSeek, ...boxProps }: ProgressBarProps) {
+export default function ProgressBar({ currentTime, duration, onSeek, onDragTime, ...boxProps }: ProgressBarProps) {
 
     const hitAreaRef = React.useRef<HTMLDivElement>(null);
     const fillRef = React.useRef<HTMLDivElement>(null);
@@ -81,13 +82,17 @@ export default function ProgressBar({ currentTime, duration, onSeek, ...boxProps
         e.currentTarget.setPointerCapture(e.pointerId);
         isDragging.current = true;
         hitAreaRef.current?.classList.add("dragging");
-        setFillPercent(ratioFromEvent(e) * 100);
+        const ratio = ratioFromEvent(e);
+        setFillPercent(ratio * 100);
+        onDragTime?.(ratio * duration);
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
         if (!isDragging.current) 
             return;
-        setFillPercent(ratioFromEvent(e) * 100);
+        const ratio = ratioFromEvent(e);
+        setFillPercent(ratio * 100);
+        onDragTime?.(ratio * duration);
     };
 
     const handlePointerUp = (e: React.PointerEvent) => {

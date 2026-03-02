@@ -11,8 +11,10 @@ import { useEffect, useRef } from "react";
 import ProgressBar from "./ProgressBar";
 
 const marquee = keyframes`
-    0%   { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
+    0%   { transform: translateX(0);     animation-timing-function: linear; }
+    45%  { transform: translateX(-110%); animation-timing-function: steps(1); }
+    55%  { transform: translateX(110%);  animation-timing-function: linear; }
+    100% { transform: translateX(0); }
 `;
 
 const StyledFab = styled(Fab)({
@@ -34,10 +36,10 @@ const ScrollingText = styled(Typography)({
   whiteSpace: "nowrap",
   display: "inline-block",
   "&.overflowing": {
-      animation: `${marquee} 12s linear infinite`,
-      "&:hover": {
-          animationPlayState: "paused",
-      },
+    animation: `${marquee} 16s linear infinite`,
+    "&:hover": {
+        animationPlayState: "paused",
+    },
   },
 });
 
@@ -94,12 +96,21 @@ export default function Player() {
 
   const titleRef = useRef<HTMLElement>(null);
   const subtitleRef = useRef<HTMLElement>(null);
+  const timeDisplayRef = useRef<HTMLElement>(null);
+
   useOverflowClass(titleRef);
-  useOverflowClass(subtitleRef);  
+  useOverflowClass(subtitleRef);
+
+  const writeTimeDisplay = (time: number) => {
+      if (timeDisplayRef.current)
+          timeDisplayRef.current.textContent = `${formatTime(duration)} / ${formatTime(time)}`;
+  };
+
+  useEffect(() => {
+    writeTimeDisplay(currentTime);
+  }, [currentTime, duration]);
 
   return (
-    <>
-    
     <AppBar 
       color="secondary" 
       sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, top: "auto", bottom: 0 }}>
@@ -107,6 +118,7 @@ export default function Player() {
         currentTime={currentTime}
         duration={duration}
         onSeek={seek}
+        onDragTime={writeTimeDisplay}
         sx={{
           position: "absolute",
           top: 0,
@@ -129,9 +141,7 @@ export default function Player() {
             </ScrollingText>
           </Box>
         </TrackInfoBox>
-        <TimeDisplay variant="body2" sx={{ visibility: currentTrack ? "visible" : "hidden" }}>
-          {formatTime(duration)} / {formatTime(currentTime)}
-        </TimeDisplay>
+        <TimeDisplay ref={timeDisplayRef} variant="body2" sx={{ visibility: currentTrack ? "visible" : "hidden" }} />        
         <ControlBox>
           <StyledFab size="small" color="primary" onClick={() => previous()}>
             <Icon className="material-icons-round">skip_previous</Icon>
@@ -156,7 +166,6 @@ export default function Player() {
           </IconButton>
         </Box>
       </Toolbar>
-    </AppBar>
-    </>
+    </AppBar>    
   );
 }
